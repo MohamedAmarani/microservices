@@ -50,6 +50,7 @@ public class HomeController {
 
         return "Hello from Product Service running at port: " + env.getProperty("local.server.port") +
         " InstanceId " + instanceId;
+
     }
 
     @GetMapping("")
