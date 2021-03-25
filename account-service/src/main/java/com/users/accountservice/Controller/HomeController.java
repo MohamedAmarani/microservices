@@ -42,6 +42,8 @@ public class HomeController {
     @Autowired
     private UserRepository userRepository;
 
+    @Value("${eureka.instance.instance-id}")
+    private String instanceId;
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -61,7 +63,8 @@ public class HomeController {
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
         // We load balance among them, and display which instance received the request.
-        return "Hello from Account Service running at port: " + env.getProperty("local.server.port");
+        return "Hello from Account Service running at port: " + env.getProperty("local.server.port") +
+        " InstanceId " + instanceId;
     }
 
     @GetMapping("")
