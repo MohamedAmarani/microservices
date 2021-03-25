@@ -15,7 +15,22 @@ spec:
       nodePort: 30002
   type: LoadBalancer
 
-
+kind: Service
+apiVersion: v1
+metadata:
+  name: account-service
+spec:
+  selector:
+    app: accountse
+  ports:
+    - protocol: "TCP"
+      # Port accessible inside cluster
+      port: 8082
+      # Port to forward to inside the pod
+      targetPort: 8080
+      # Port accessible outside cluster
+      nodePort: 30003
+  type: LoadBalancer
 
 ---
 apiVersion: apps/v1
@@ -35,5 +50,25 @@ spec:
       containers:
         - name: productse
           image: scaredste/product-service:v1.0.4
+          ports:
+            - containerPort: 8080
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accountse
+  template:
+    metadata:
+      labels:
+        app: accountse
+    spec:
+      containers:
+        - name: accountse
+          image: scaredste/account-service:v1.0.0
           ports:
             - containerPort: 8080
