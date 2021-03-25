@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: exampleservice
+  name: product-service
 spec:
   selector:
-    app: myapp
+    app: productse
   ports:
     - protocol: "TCP"
       # Port accessible inside cluster
@@ -18,19 +18,22 @@ spec:
 
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myappdeployment
+  name: product-deployment
 spec:
-  replicas: 5
+  replicas: 1
+  selector:
+    matchLabels:
+      app: productse
   template:
     metadata:
       labels:
-        app: myapp
+        app: productse
     spec:
       containers:
-        - name: myapp
-          image: scared/product-service:v1.0.0
+        - name: productse
+          image: scaredste/product-service:v1.0.4
           ports:
             - containerPort: 8080
