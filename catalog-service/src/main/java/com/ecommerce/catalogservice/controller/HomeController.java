@@ -36,6 +36,9 @@ public class HomeController {
     @Value("${message:Hello default}")
     private String message;
 
+    @Value("${eureka.instance.instance-id}")
+    private String instanceId;
+
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         System.out.println(message);
@@ -48,7 +51,8 @@ public class HomeController {
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
         // We load balance among them, and display which instance received the request.
-        return "Hello from Catalog Service running at port: " + env.getProperty("local.server.port");
+        return "Hello from Catalog Service running at port: " + env.getProperty("local.server.port") +
+                " InstanceId " + instanceId;
     }
 
     @GetMapping("")
