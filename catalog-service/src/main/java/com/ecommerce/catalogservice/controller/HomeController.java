@@ -104,6 +104,14 @@ public class HomeController {
         return  res.getBody();
     }
 
+    @GetMapping("/na")
+    public String getNa() {
+        ResponseEntity<String> res = restTemplate.exchange("http://product-service/na",
+                HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
+                });
+        return  res.getBody();
+    }
+
     @GetMapping("/{catalogId}/products/{productId}")
     public ProductDTO getCatalogProduct(@PathVariable final String catalogId, @PathVariable final String productId) {
         Optional<Catalog> catalog = catalogRepository.findById(catalogId);

@@ -71,6 +71,11 @@ public class HomeController {
         return product.get();
     }
 
+    @GetMapping("/na")
+    public String getNa() {
+        return "holas";
+    }
+
     // -------- Admin Area --------
     // This method should only be accessed by users with role of 'admin'
     // We'll add the logic of role based auth later
