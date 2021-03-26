@@ -1,6 +1,5 @@
 package com.users.accountservice.Controller;
 
-import com.google.gson.Gson;
 import com.users.accountservice.Model.Account;
 import com.users.accountservice.repository.UserRepository;
 import net.minidev.json.JSONObject;
