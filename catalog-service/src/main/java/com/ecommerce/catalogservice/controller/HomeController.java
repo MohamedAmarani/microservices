@@ -8,11 +8,14 @@ import com.ecommerce.catalogservice.repository.CatalogRepository;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,6 +36,9 @@ public class HomeController {
     @Autowired
     private CatalogRepository catalogRepository;
 
+    @Autowired
+    private DiscoveryClient discoveryClient;
+
     @Value("${message:Hello default}")
     private String message;
 
@@ -44,6 +50,27 @@ public class HomeController {
         System.out.println(message);
         System.out.println(env.getProperty("message"));
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/pr/p")
+    public String getPr() {
+        RestTemplate restTemplate = new RestTemplate();
+        String resourceUrl = "http://product-service:8080/na";
+        ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
+
+        String serviceList = "";
+        if (discoveryClient != null) {
+            List<String> services = this.discoveryClient.getServices();
+
+            for (String service : services) {
+
+                List<ServiceInstance> instances = this.discoveryClient.getInstances(service);
+
+                serviceList += ("[" + service + " : " + ((!CollectionUtils.isEmpty(instances)) ? instances.size() : 0) + " instances ]");
+            }
+        }
+        return String.format("config.getMessage()", response.getBody(), serviceList);
     }
 
     @RequestMapping("/info")

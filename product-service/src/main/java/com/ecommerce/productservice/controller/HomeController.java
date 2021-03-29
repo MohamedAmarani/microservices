@@ -4,6 +4,8 @@ import com.ecommerce.productservice.model.Product;
 import com.ecommerce.productservice.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
@@ -12,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +39,14 @@ public class HomeController {
     @Value("${eureka.instance.instance-id}")
     private String instanceId;
 
+    @Autowired
+    private DiscoveryClient discoveryClient;
+
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         System.out.println(message);
         System.out.println(env.getProperty("message"));
-        return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
+        return new ResponseEntity<String>(env.getProperty("message"), HttpStatus.OK);
     }
 
     @RequestMapping("/info")
@@ -49,7 +56,7 @@ public class HomeController {
         // We load balance among them, and display which instance received the request.
 
         return "Hello from Product Service running at port: " + env.getProperty("local.server.port") +
-        " InstanceId " + instanceId;
+                " InstanceId " + instanceId;
 
     }
 
