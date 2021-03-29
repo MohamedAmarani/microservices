@@ -1,38 +1,38 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: product-service
+  name: catalog-service
 spec:
   selector:
-    app: productse
+    app: catalogse
   ports:
     - protocol: "TCP"
       # Port accessible inside cluster
       port: 8081
-      # Port to forward to inside the pod
+      # Port to forward to inside the pod puerto real de la aplicacion
       targetPort: 8080
-      # Port accessible outside cluster
-      nodePort: 30002
+      # Port accessible outside cluster puerto exterior
+      nodePort: 30006
   type: LoadBalancer
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: product-deployment
+  name: catalog-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: productse
+      app: catalogse
   template:
     metadata:
       labels:
-        app: productse
+        app: catalogse
     spec:
       containers:
-        - name: productse
-          image: scaredste/product-service:v1.2.6
+        - name: catalogse
+          image: scaredste/catalog-service:v1.2.6
           ports:
             - containerPort: 8080
 
