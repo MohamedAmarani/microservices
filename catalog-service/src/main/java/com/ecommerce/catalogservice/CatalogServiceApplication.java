@@ -25,8 +25,8 @@ public class CatalogServiceApplication {
 class RestTemplateConfig {
 
 	// Create a bean for restTemplate to call services
+	//@LoadBalanced        // Load balance between service instances running at different ports.
 	@Bean
-	@LoadBalanced        // Load balance between service instances running at different ports.
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
