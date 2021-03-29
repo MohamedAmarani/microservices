@@ -56,7 +56,7 @@ public class HomeController {
     @GetMapping("/pr/p")
     public String getPr() {
         RestTemplate restTemplate = new RestTemplate();
-        String resourceUrl = "http://product-service:8080/na";
+        String resourceUrl = "http://product-service/na";
         ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
 
         String serviceList = "";
