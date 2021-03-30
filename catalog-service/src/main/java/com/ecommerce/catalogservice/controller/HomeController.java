@@ -70,7 +70,7 @@ public class HomeController {
                 serviceList += ("[" + service + " : " + ((!CollectionUtils.isEmpty(instances)) ? instances.size() : 0) + " instances ]");
             }
         }
-        return String.format("config.getMessage()", response.getBody(), serviceList);
+        return response.getBody().toString();
     }
 
     @RequestMapping("/info")
