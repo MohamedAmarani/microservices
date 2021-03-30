@@ -52,6 +52,25 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
+    @GetMapping("/pr/r")
+    public String getPrr() {
+        RestTemplate restTemplate = new RestTemplate();
+        String resourceUrl = "http://product-service/na";
+        ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
+
+        String serviceList = "";
+        if (discoveryClient != null) {
+            List<String> services = this.discoveryClient.getServices();
+
+            for (String service : services) {
+
+                List<ServiceInstance> instances = this.discoveryClient.getInstances(service);
+
+                serviceList += ("[" + service + " : " + ((!CollectionUtils.isEmpty(instances)) ? instances.size() : 0) + " instances ]");
+            }
+        }
+        return response.getBody().toString();
+    }
 
     @GetMapping("/pr/p")
     public String getPr() {
