@@ -36,9 +36,6 @@ public class HomeController {
     @Autowired
     private CatalogRepository catalogRepository;
 
-    @Autowired
-    private DiscoveryClient discoveryClient;
-
     @Value("${message:Hello default}")
     private String message;
 
@@ -58,17 +55,6 @@ public class HomeController {
         String resourceUrl = "http://product-service/na";
         ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
 
-        String serviceList = "";
-        if (discoveryClient != null) {
-            List<String> services = this.discoveryClient.getServices();
-
-            for (String service : services) {
-
-                List<ServiceInstance> instances = this.discoveryClient.getInstances(service);
-
-                serviceList += ("[" + service + " : " + ((!CollectionUtils.isEmpty(instances)) ? instances.size() : 0) + " instances ]");
-            }
-        }
         return response.getBody().toString();
     }
 
@@ -78,17 +64,6 @@ public class HomeController {
         String resourceUrl = "http://product-service:8080/na";
         ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
 
-        String serviceList = "";
-        if (discoveryClient != null) {
-            List<String> services = this.discoveryClient.getServices();
-
-            for (String service : services) {
-
-                List<ServiceInstance> instances = this.discoveryClient.getInstances(service);
-
-                serviceList += ("[" + service + " : " + ((!CollectionUtils.isEmpty(instances)) ? instances.size() : 0) + " instances ]");
-            }
-        }
         return response.getBody().toString();
     }
 
