@@ -7,11 +7,10 @@ spec:
     app: catalogse
   ports:
     - protocol: "TCP"
-      # Port accessible inside cluster
-      port: 8081
-      # Port to forward to inside the pod puerto real de la aplicacion
+      port: 8080
+      #puerto real de la aplicacion
       targetPort: 8080
-      # Port accessible outside cluster puerto exterior
+      #puerto exterior
       nodePort: 30006
   type: LoadBalancer
 
@@ -32,7 +31,7 @@ spec:
     spec:
       containers:
         - name: catalogse
-          image: scaredste/catalog-service:v1.3.0
+          image: scaredste/catalog-service:v1.2.9
           ports:
             - containerPort: 8080
 
