@@ -1,10 +1,10 @@
 prometheus:
-  url: http://prometheus-server.default.svc
-  port: 80
+  url: http://192.168.99.103
+  port: 30000
   path: ""
 
 rules:
-  default: true
+  default: false
   custom:
   - seriesQuery: '{__name__=~"^http_server_requests_seconds_.*"}'
     resources:
@@ -16,4 +16,6 @@ rules:
     name:
       matches: "^http_server_requests_seconds_count(.*)"
       as: "http_server_requests_seconds_count_sum"
-    metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>,uri=~"/persons.*"}) by (<<.GroupBy>>)
+    metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>,uri=~"/info.*"}) by (<<.GroupBy>>)
+    
+

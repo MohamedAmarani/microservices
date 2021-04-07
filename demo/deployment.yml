@@ -1,41 +1,47 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: demo-service
-spec:
-  selector:
-    app: demose
-  ports:
-    - protocol: "TCP"
-      port: 8080
-      #puerto real de la aplicacion
-      targetPort: 8080
-      #puerto exterior
-      nodePort: 30007
-  type: LoadBalancer
-
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app: demo-deployment
   name: demo-deployment
+  namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: demose
+      app: demo-deployment
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
   template:
     metadata:
-      annotations:
-         prometheus.io/path: /actuator/prometheus
-         prometheus.io/scrape: "true"
-         prometheus.io/port: "8080"
       labels:
-        app: demose
+        app: demo-deployment
     spec:
       containers:
-        - name: demose
-          image: scaredste/demo-service:v1.0.0
-          ports:
-            - containerPort: 8080
-
+      - image: scaredste/demo-service:v1.0.2
+        imagePullPolicy: Always
+        name: demo-deployment
+        resources:
+          requests:
+            cpu: 500m
+            memory: 64Mi
+        ports:
+        - containerPort: 80
+          protocol: TCP
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-deployment
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: demo-deployment
