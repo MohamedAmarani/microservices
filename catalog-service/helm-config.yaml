@@ -1,0 +1,21 @@
+prometheus:
+  url: http://192.168.99.103
+  port: 30000
+  path: ""
+
+rules:
+  default: false
+  custom:
+  - seriesQuery: '{__name__=~"^http_server_requests_seconds_.*"}'
+    resources:
+      overrides:
+        kubernetes_namespace:
+          resource: namespace
+        kubernetes_pod_name:
+          resource: pod
+    name:
+      matches: "^http_server_requests_seconds_count(.*)"
+      as: "http_server_requests_seconds_count_sum"
+    metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>,uri=~"/info.*"}) by (<<.GroupBy>>)
+    
+

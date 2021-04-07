@@ -1,0 +1,25 @@
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: demo-deployment
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: demo-deployment
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 50
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageValue: 100Mi
+  - type: Pods
+    pods:
+      metricName: cpu_system
+      targetAverageValue: 20m
