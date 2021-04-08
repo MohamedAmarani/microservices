@@ -1,0 +1,38 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: cart-service
+spec:
+  selector:
+    app: cartse
+  ports:
+    - protocol: "TCP"
+      # Port accessible inside cluster
+      port: 8080
+      # Port to forward to inside the pod
+      targetPort: 8080
+      # Port accessible outside cluster
+      nodePort: 30014
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cartse
+  template:
+    metadata:
+      labels:
+        app: cartse
+    spec:
+      containers:
+        - name: productse
+          image: scaredste/cart-service:v1.0.1
+          ports:
+            - containerPort: 8080
+
