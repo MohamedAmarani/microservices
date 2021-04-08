@@ -33,6 +33,9 @@ public class HomeController {
     @Autowired
     private CartRepository cartRepository;
 
+    @Value("${eureka.instance.instance-id}")
+    private String instanceId;
+
     @Value("${message:Hello default}")
     private String message;
 
@@ -48,7 +51,17 @@ public class HomeController {
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
         // We load balance among them, and display which instance received the request.
-        return "Hello from Cart Service running at port: " + env.getProperty("local.server.port");
+        return "Hello from Cart Service running at port: " + env.getProperty("local.server.port") +
+                " InstanceId " + instanceId;
+    }
+
+    @GetMapping("/do")
+    public String getPr() {
+        RestTemplate restTemplate = new RestTemplate();
+        String resourceUrl = "http://inventory-service:8080/do";
+        ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
+
+        return response.getBody().toString();
     }
 
     @GetMapping("")
