@@ -1,38 +1,38 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: product-service
+  name: mongo-service
 spec:
   selector:
-    app: productse
+    app: mongose
   ports:
     - protocol: "TCP"
       # Port accessible inside cluster
-      port: 8080
+      port: 27017
       # Port to forward to inside the pod
-      targetPort: 8080
+      targetPort: 27017
       # Port accessible outside cluster
-      nodePort: 30002
+      nodePort: 30022
   type: LoadBalancer
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: product-deployment
+  name: mongo-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: productse
+      app: mongose
   template:
     metadata:
       labels:
-        app: productse
+        app: mongose
     spec:
       containers:
-        - name: productse
-          image: scaredste/product-service:v1.3.0
+        - name: mongose
+          image: mongo:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 27017
 
