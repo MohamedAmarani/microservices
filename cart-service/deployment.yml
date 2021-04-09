@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
         - name: cartse
-          image: scaredste/cart-service:v1.0.1
+          image: scaredste/cart-service:v1.0.3
           ports:
             - containerPort: 8080
 
