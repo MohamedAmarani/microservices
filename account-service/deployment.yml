@@ -33,6 +33,6 @@ spec:
     spec:
       containers:
         - name: accountse
-          image: scaredste/account-service:v1.0.1
+          image: scaredste/account-service:v1.0.3
           ports:
             - containerPort: 8080

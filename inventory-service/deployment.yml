@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
         - name: inventoryse
-          image: scaredste/inventory-service:v1.0.1
+          image: scaredste/inventory-service:v1.0.3
           ports:
             - containerPort: 8080
 

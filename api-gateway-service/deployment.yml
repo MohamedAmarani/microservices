@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: product-service
+  name: apigateway-service
 spec:
   selector:
-    app: productse
+    app: apigatewayse
   ports:
     - protocol: "TCP"
       # Port accessible inside cluster
@@ -12,27 +12,27 @@ spec:
       # Port to forward to inside the pod
       targetPort: 8080
       # Port accessible outside cluster
-      nodePort: 30002
+      nodePort: 30018
   type: LoadBalancer
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: product-deployment
+  name: apigateway-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: productse
+      app: apigatewayse
   template:
     metadata:
       labels:
-        app: productse
+        app: apigatewayse
     spec:
       containers:
-        - name: productse
-          image: scaredste/product-service:v1.3.0
+        - name: apigatewayse
+          image: scaredste/apigateway-service:v1.0.1
           ports:
             - containerPort: 8080
 

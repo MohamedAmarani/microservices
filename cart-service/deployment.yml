@@ -31,7 +31,7 @@ spec:
         app: cartse
     spec:
       containers:
-        - name: productse
+        - name: cartse
           image: scaredste/cart-service:v1.0.1
           ports:
             - containerPort: 8080
