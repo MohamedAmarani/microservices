@@ -10,9 +10,7 @@ spec:
       port: 8080
       #puerto real de la aplicacion
       targetPort: 8080
-      #puerto exterior
-      nodePort: 30006
-  type: LoadBalancer
+  type: ClusterIP
 
 ---
 apiVersion: apps/v1
@@ -35,7 +33,7 @@ spec:
     spec:
       containers:
         - name: catalogse
-          image: scaredste/catalog-service:v1.5.1
+          image: scaredste/catalog-service:v1.5.3
           ports:
             - containerPort: 8080
 
