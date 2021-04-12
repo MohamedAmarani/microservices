@@ -31,6 +31,13 @@ spec:
       containers:
         - name: inventoryse
           image: scaredste/inventory-service:v1.0.4
-          ports:
-            - containerPort: 8080
+        name: demo-deployment
+        resources:
+          requests:
+            cpu: 500m
+            memory: 64Mi
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+      restartPolicy: Always
 

@@ -34,6 +34,13 @@ spec:
       containers:
         - name: catalogse
           image: scaredste/catalog-service:v1.5.3
-          ports:
-            - containerPort: 8080
+        name: demo-deployment
+        resources:
+          requests:
+            cpu: 500m
+            memory: 64Mi
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+      restartPolicy: Always
 
