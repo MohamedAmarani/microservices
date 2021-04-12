@@ -11,9 +11,7 @@ spec:
       port: 8080
       # Port to forward to inside the pod
       targetPort: 8080
-      # Port accessible outside cluster
-      nodePort: 30012
-  type: LoadBalancer
+  type: ClusterIP
 
 ---
 apiVersion: apps/v1
@@ -32,7 +30,14 @@ spec:
     spec:
       containers:
         - name: inventoryse
-          image: scaredste/inventory-service:v1.0.3
-          ports:
-            - containerPort: 8080
+          image: scaredste/inventory-service:v1.0.4
+        name: demo-deployment
+        resources:
+          requests:
+            cpu: 500m
+            memory: 64Mi
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+      restartPolicy: Always
 

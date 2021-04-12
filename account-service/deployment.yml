@@ -11,9 +11,7 @@ spec:
       port: 8082
       # Port to forward to inside the pod
       targetPort: 8080
-      # Port accessible outside cluster
-      nodePort: 30003
-  type: LoadBalancer
+  type: ClusterIP
 
 ---
 

@@ -90,7 +90,7 @@ public class HomeController {
         List<CatalogItem> ids = catalog.get().getProductIdentifiers();
         List<ProductDTO> products = new ArrayList<ProductDTO>();
         for (CatalogItem productIdentifier: ids) {
-            ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service/" + productIdentifier.getProductId(),
+            ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
                     HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                     });
             ProductDTO product = res.getBody();
@@ -116,7 +116,7 @@ public class HomeController {
     public ProductDTO addProductToCatalog(@PathVariable final String id, @RequestBody CatalogItem productIdentifier) {
         Optional<Catalog> catalog = catalogRepository.findById(id);
         catalog.get().addProductIdentifier(new CatalogItem(productIdentifier.getProductId()));
-        ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service/" + productIdentifier.getProductId(),
+        ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
                 HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                 });
         catalogRepository.save(catalog.get());
@@ -125,7 +125,7 @@ public class HomeController {
 
     @GetMapping("/na")
     public String getNa() {
-        ResponseEntity<String> res = restTemplate.exchange("http://product-service/na",
+        ResponseEntity<String> res = restTemplate.exchange("http://product-service:8080/na",
                 HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                 });
         return  res.getBody();
@@ -139,7 +139,7 @@ public class HomeController {
         List<ProductDTO> products = new ArrayList<ProductDTO>();
         for (CatalogItem productIdentifier: ids) {
             if (productIdentifier.getProductId().equals(productId)) {
-                ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service/" + productIdentifier.getProductId(),
+                ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
                 return res.getBody();

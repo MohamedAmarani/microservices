@@ -80,7 +80,7 @@ public class HomeController {
 
         //pasamos todos los InventoryItem a InventoryItemDTO
         for (InventoryItem inventoryItem: inventoryItems) {
-            final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service/" + inventory.get().getCatalogId()
+            final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.get().getCatalogId()
                             + "/products/" + inventoryItem.getProductId(),
                     HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                     });
@@ -114,7 +114,7 @@ public class HomeController {
                 //si es el item que buscamos
                 if (inventoryItem.getProductId().equals(productId)) {
                     //obtener los datos del product a partir del productId
-                    final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service/" + inventory.get().getCatalogId()
+                    final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.get().getCatalogId()
                                     + "/products/" + inventoryItem.getProductId(),
                             HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                             });
@@ -137,7 +137,7 @@ public class HomeController {
         Optional<Inventory> inventory = catalogRepository.findById(id);
         ResponseEntity<ProductDTO> res = null;
         try {
-            res = restTemplate.exchange("http://catalog-service/" + inventory.get().getCatalogId()
+            res = restTemplate.exchange("http://catalog-service:8080/" + inventory.get().getCatalogId()
                             + "/products/" + inventoryItem.getProductId(),
                     HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                     });
@@ -171,7 +171,7 @@ public class HomeController {
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())
             //si es el inventory item que buscamos
             if  (inventoryItem.getProductId().equals(productId)) {
-                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service/" + inventory.get().getCatalogId()
+                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.get().getCatalogId()
                                 + "/products/" + inventoryItem.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
@@ -180,7 +180,7 @@ public class HomeController {
                     //guardamos los cambios
                     catalogRepository.save(inventory.get());
                     //update carts
-                    restTemplate.exchange("http://cart-service/update",
+                    restTemplate.exchange("http://cart-service:8080/update",
                             HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {
                             });
                     return new InventoryItemDTO(res.getBody(), inventoryItem.getItems());
@@ -206,7 +206,7 @@ public class HomeController {
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())
             //si es el inventory item que buscamos
             if  (inventoryItem.getProductId().equals(productId)) {
-                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service/" + inventory.get().getCatalogId()
+                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.get().getCatalogId()
                                 + "/products/" + inventoryItem.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
@@ -215,7 +215,7 @@ public class HomeController {
                     //guardamos los cambios
                     catalogRepository.save(inventory.get());
                     //update carts
-                    restTemplate.exchange("http://cart-service/update",
+                    restTemplate.exchange("http://cart-service:8080/update",
                             HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {
                             });
                     return new InventoryItemDTO(res.getBody(), inventoryItem.getItems());
