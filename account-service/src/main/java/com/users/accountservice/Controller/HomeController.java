@@ -94,7 +94,7 @@ public class HomeController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
-        restTemplate.exchange("http://cart-service/",
+        restTemplate.exchange("http://cart-service:8080/",
                 HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
                 });
 
