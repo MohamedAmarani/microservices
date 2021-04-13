@@ -43,7 +43,7 @@ public class HomeController {
 
     public Object completePayment(String accountId, String paymentId, String PayerID){
         payPalClient.completePayment(paymentId, PayerID);
-        ResponseEntity<Object> res = restTemplate.exchange("http://cart-service/" + accountId + "/checkout2",
+        ResponseEntity<Object> res = restTemplate.exchange("http://cart-service:8080/" + accountId + "/checkout2",
                 HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {
                 });
         return res.getBody();

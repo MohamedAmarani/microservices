@@ -36,7 +36,7 @@ public class HomeController {
 
     @GetMapping("/fun")
     public ResponseEntity<String> getHellod() {
-        final ResponseEntity<String> res2 = restTemplate.exchange("http://account-service/" + "602a72269ae0650a89271487",
+        final ResponseEntity<String> res2 = restTemplate.exchange("http://account-service:8080/" + "602a72269ae0650a89271487",
                 HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                 });
         return new ResponseEntity<String>(res2.getBody().toString(), HttpStatus.OK);
@@ -66,7 +66,7 @@ public class HomeController {
 
         try {
         //obtener usuario
-        final ResponseEntity<AccountDTO> res2 = restTemplate.exchange("http://account-service/" + jo.getString("id"),
+        final ResponseEntity<AccountDTO> res2 = restTemplate.exchange("http://account-service:8080/" + jo.getString("id"),
                 HttpMethod.GET, null, new ParameterizedTypeReference<AccountDTO>() {
                 });
 
@@ -83,7 +83,7 @@ public class HomeController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
 
-        restTemplate.exchange("http://account-service/",
+        restTemplate.exchange("http://account-service:8080/",
                 HttpMethod.POST, entity, new ParameterizedTypeReference<AccountDTO>() {
                 });
         }
@@ -97,7 +97,7 @@ public class HomeController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
 
-        final ResponseEntity<String> res4 = restTemplate.exchange("http://auth-service/auth",
+        final ResponseEntity<String> res4 = restTemplate.exchange("http://auth-service:8080/auth",
                 HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
                 });
 
