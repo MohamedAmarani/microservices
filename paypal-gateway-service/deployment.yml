@@ -1,14 +1,15 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: catalog-service
+  name: paypal-gateway-service
 spec:
   selector:
-    app: catalogse
+    app: paypalgatewayse
   ports:
     - protocol: "TCP"
+      # Port accessible inside cluster
       port: 8080
-      #puerto real de la aplicacion
+      # Port to forward to inside the pod
       targetPort: 8080
   type: ClusterIP
 
@@ -16,20 +17,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: catalog-deployment
+  name: paypal-gateway-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: catalogse
+      app: paypalgatewayse
   template:
     metadata:
       labels:
-        app: catalogse
+        app: paypalgatewayse
     spec:
       containers:
-        - name: catalogse
-          image: scaredste/catalog-service:v1.5.3
+        - name: paypalgatewayse
+          image: scaredste/paypal-gateway-service:v1.0.2
           ports:
           - containerPort: 8080
             protocol: TCP

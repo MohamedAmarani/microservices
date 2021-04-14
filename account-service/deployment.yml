@@ -8,7 +8,7 @@ spec:
   ports:
     - protocol: "TCP"
       # Port accessible inside cluster
-      port: 8082
+      port: 8080
       # Port to forward to inside the pod
       targetPort: 8080
   type: ClusterIP
@@ -31,6 +31,6 @@ spec:
     spec:
       containers:
         - name: accountse
-          image: scaredste/account-service:v1.0.3
+          image: scaredste/account-service:v1.0.4
           ports:
             - containerPort: 8080
