@@ -1,14 +1,15 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: catalog-service
+  name: delivery-service
 spec:
   selector:
-    app: catalogse
+    app: deliveryse
   ports:
     - protocol: "TCP"
+      # Port accessible inside cluster
       port: 8080
-      #puerto real de la aplicacion
+      # Port to forward to inside the pod
       targetPort: 8080
   type: ClusterIP
 
@@ -16,20 +17,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: catalog-deployment
+  name: delivery-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: catalogse
+      app: deliveryse
   template:
     metadata:
       labels:
-        app: catalogse
+        app: deliveryse
     spec:
       containers:
-        - name: catalogse
-          image: scaredste/catalog-service:v1.5.3
+        - name: deliveryse
+          image: scaredste/delivery-service:v1.0.1
           ports:
           - containerPort: 8080
             protocol: TCP
+

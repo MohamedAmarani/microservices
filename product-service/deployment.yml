@@ -29,15 +29,14 @@ spec:
         app: productse
     spec:
       containers:
-        - name: productse
+        - name: googleauthse
           image: scaredste/product-service:v1.3.1
-        name: demo-deployment
-        resources:
-          requests:
-            cpu: 500m
-            memory: 64Mi
-        ports:
-        - containerPort: 8080
-          protocol: TCP
-      restartPolicy: Always
+          resources:
+            limits:
+              cpu: "1"
+            requests:
+              cpu: 500m
+          ports:
+          - containerPort: 8080
+            protocol: TCP
 
