@@ -11,10 +11,10 @@ spec:
       port: 8080
       # Port to forward to inside the pod
       targetPort: 8080
-  type: ClusterIP
+      nodePort: 30012
+  type: LoadBalancer
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
