@@ -1,6 +1,9 @@
 package com.ecommerce.productservice.model;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class Picture {
+    @ApiModelProperty(notes = "URL of the image of the product")
     String url;
 
     public Picture() {

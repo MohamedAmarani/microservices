@@ -1,7 +1,10 @@
 package com.ecommerce.productservice.model;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class Size
 {
+    @ApiModelProperty(notes = "Size of the product")
     Sizes sizeId;
 
     public Size() {

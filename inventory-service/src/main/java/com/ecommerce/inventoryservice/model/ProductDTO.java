@@ -1,14 +1,24 @@
 package com.ecommerce.inventoryservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@ApiModel(description = "Details obout a product")
 public class ProductDTO {
+    @ApiModelProperty(notes = "Unique id of the product")
     String id;
+    @ApiModelProperty(notes = "Name of the product")
     String name;
+    @ApiModelProperty(notes = "Description of the product")
     String description;
+    @ApiModelProperty(notes = "Pictures of the product")
     List<Picture> pictures = new ArrayList<>();
+    @ApiModelProperty(notes = "Price of the product")
     double price;
+    @ApiModelProperty(notes = "Size of the product")
     Size size;
 
     public ProductDTO() {

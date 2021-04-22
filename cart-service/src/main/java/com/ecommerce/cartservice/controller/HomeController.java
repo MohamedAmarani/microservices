@@ -3,6 +3,8 @@ package com.ecommerce.cartservice.controller;
 import com.ecommerce.cartservice.model.*;
 import com.ecommerce.cartservice.repository.CartRepository;
 import com.google.gson.Gson;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -47,6 +49,7 @@ public class HomeController {
     }
 
     @RequestMapping("/info")
+    @ApiOperation(value = "Get information from the cart-service instance", notes = "Retrieve information from a cart-service instance")
     public String home() {
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
@@ -65,6 +68,7 @@ public class HomeController {
     }
 
     @GetMapping("")
+    @ApiOperation(value = "Get all carts", notes = "Retrieve all carts from the Database and all their cart items")
     public List<CartDTO> getCarts() {
         List<CartDTO> result = new ArrayList<>();
         List<Cart> carts = cartRepository.findAll();
@@ -88,10 +92,11 @@ public class HomeController {
     }
 
     @HystrixCommand(fallbackMethod = "fallback")
-    @GetMapping("/{accountId}")
-    public CartDTO getCart(@PathVariable final String accountId) {
+    @GetMapping("/{cartId}")
+    @ApiOperation(value = "Get a cart", notes = "Provide an Id to retrieve a specific cart from the Database and all its cart items")
+    public CartDTO getCart(@ApiParam(value = "Id of the cart to get", required = true) @PathVariable final String cartId) {
         System.out.println("Starting " + env.getProperty("local.server.port"));
-        Optional<Cart> cart = cartRepository.findById(accountId);
+        Optional<Cart> cart = cartRepository.findById(cartId);
         List<CartItem> cartItems = cart.get().getCartItems();
 
         CartDTO cartDTO = new CartDTO(cart.get().getId(), cart.get().getInventoryId());
@@ -119,7 +124,8 @@ public class HomeController {
     }
 
     @PostMapping("")
-    public Cart createCart(@RequestBody Cart cart) {
+    @ApiOperation(value = "Create a cart", notes = "Provide information to create a cart")
+    public Cart createCart(@ApiParam(value = "Information of the cart to create", required = true) @RequestBody Cart cart) {
         return cartRepository.save(cart);
     }
 
@@ -129,9 +135,11 @@ public class HomeController {
     }
 
     //añadir producto a cart
-    @PutMapping("/{accountId}")
-    public Cart addProductToInventory(@PathVariable final String accountId, @RequestBody CartItem cartItem) {
-        Optional<Cart> cart = cartRepository.findById(accountId);
+    @PutMapping("/{cartId}")
+    @ApiOperation(value = "Add inventory product to cart", notes = "Add a product available in the inventory to a cart")
+    public Cart addProductToInventory(@ApiParam(value = "Id of the cart on which an inventory product has to be added", required = true) @PathVariable final String cartId,
+                                      @ApiParam(value = "Product Id and quantity of items available in the inventory to be added to the given cart", required = true) @RequestBody CartItem cartItem) {
+        Optional<Cart> cart = cartRepository.findById(cartId);
 
         JSONObject obj = new JSONObject();
         obj.put("numItems", cartItem.getItems());
@@ -177,10 +185,10 @@ public class HomeController {
         return cartRepository.save(cart.get());
     }
 
-    @RequestMapping(value = "/{accountId}/checkout", method = RequestMethod.PUT,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object doCheckoutPart1(@PathVariable final String accountId) {
-        Optional<Cart> cart = cartRepository.findById(accountId);
+    @RequestMapping(value = "/{cartId}/checkout", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Checkout a cart", notes = "Proceed to do the checkout of a given cart, paying with Paypal")
+    public Object doCheckoutPart1(@ApiParam(value = "Id of the cart for which the checkout has to be done", required = true) @PathVariable final String cartId) {
+        Optional<Cart> cart = cartRepository.findById(cartId);
         double totalPrice = 0.0;
 
         //obtener precio total
@@ -210,16 +218,16 @@ public class HomeController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
-        final ResponseEntity<String> res = restTemplate.exchange("http://paypal-gateway-service:8080/paypal/make/payment/" + accountId,
+        final ResponseEntity<String> res = restTemplate.exchange("http://paypal-gateway-service:8080/paypal/make/payment/" + cartId,
                 HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
                 });
         return res.getBody().toString();
     }
 
-    @RequestMapping(value = "/{accountId}/checkout2", method = RequestMethod.PUT,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object doCheckoutPart2(@PathVariable final String accountId) {
-        Optional<Cart> cart = cartRepository.findById(accountId);
+    @RequestMapping(value = "/{cartId}/checkout2", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Checkout a cart, 2nd part", notes = "Checkout logic to be executed after the payment has been made")
+    public Object doCheckoutPart2(@ApiParam(value = "Id of the cart for which the second part of the checkout has to be done", required = true) @PathVariable final String cartId) {
+        Optional<Cart> cart = cartRepository.findById(cartId);
                 /*final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://account-service/" + accountId + "/buy",
                 HttpMethod.PUT, entity, new ParameterizedTypeReference<ProductDTO>() {
                 });*/
@@ -281,6 +289,8 @@ public class HomeController {
     }
 
     @PutMapping("/update")
+    @ApiOperation(value = "Update the availability of the cart", notes = "Update all inventory products of the cart in function of " +
+            "the available items on the inventory")
     public void updateCartsAvailability() {
         updateAvailability();
     }

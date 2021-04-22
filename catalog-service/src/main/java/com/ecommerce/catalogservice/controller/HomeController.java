@@ -6,6 +6,8 @@ import com.ecommerce.catalogservice.model.ProductDTO;
 import com.ecommerce.catalogservice.model.CatalogItem;
 import com.ecommerce.catalogservice.repository.CatalogRepository;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -47,7 +49,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
-    @GetMapping("/pr/r")
+    /*@GetMapping("/pr/r")
     public String getPrr() {
         RestTemplate restTemplate = new RestTemplate();
         String resourceUrl = "http://product-service/na";
@@ -63,9 +65,10 @@ public class HomeController {
         ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
 
         return response.getBody().toString();
-    }
+    }*/
 
     @RequestMapping("/info")
+    @ApiOperation(value = "Get information from the catalog-service instance", notes = "Retrieve information from a catalog-service instance")
     public String home() {
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
@@ -75,6 +78,7 @@ public class HomeController {
     }
 
     @GetMapping("")
+    @ApiOperation(value = "Get all catalogs", notes = "Retrieve all catalogs from the Database")
     public List<Catalog> getCatalog() {
         return catalogRepository.findAll();
     }
@@ -82,7 +86,8 @@ public class HomeController {
     //@HystrixCommand(fallbackMethod = "fallback")
     //poner escalera de llamadas a todos los servicios
     @GetMapping("/{id}")
-    public CatalogDTO getCatalog(@PathVariable final String id) {
+    @ApiOperation(value = "Get a catalog", notes = "Provide an Id to retrieve a specific catalog from the Database")
+    public CatalogDTO getCatalog(@ApiParam(value = "Id of the catalog to get", required = true) @PathVariable final String id) {
         Optional<Catalog> catalog = catalogRepository.findById(id);
         CatalogDTO result = new CatalogDTO(catalog.get().getId());
         List<ProductDTO> productDTOs = new ArrayList<>();
@@ -101,6 +106,7 @@ public class HomeController {
     }
 
     @PostMapping("")
+    @ApiOperation(value = "Create a catalog", notes = "Provide information to create a catalog")
     public CatalogDTO createCatalog() {
         Catalog catalog = new Catalog();
         catalogRepository.save(catalog);
@@ -112,9 +118,11 @@ public class HomeController {
         return new CatalogDTO();
     }
 
-    @PutMapping("/{id}")
-    public ProductDTO addProductToCatalog(@PathVariable final String id, @RequestBody CatalogItem productIdentifier) {
-        Optional<Catalog> catalog = catalogRepository.findById(id);
+    @PutMapping("/{catalogId}")
+    @ApiOperation(value = "Add product to catalog", notes = "Add a product to a catalog")
+    public ProductDTO addProductToCatalog(@ApiParam(value = "Id of the catalog for which a product has to be added", required = true) @PathVariable final String catalogId,
+                                          @ApiParam(value = "Id of the product to add", required = true) @RequestBody CatalogItem productIdentifier) {
+        Optional<Catalog> catalog = catalogRepository.findById(catalogId);
         catalog.get().addProductIdentifier(new CatalogItem(productIdentifier.getProductId()));
         ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
                 HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
@@ -132,7 +140,9 @@ public class HomeController {
     }
 
     @GetMapping("/{catalogId}/products/{productId}")
-    public ProductDTO getCatalogProduct(@PathVariable final String catalogId, @PathVariable final String productId) {
+    @ApiOperation(value = "Get a product from a given catalog", notes = "Retrieve a product from a given catalog")
+    public ProductDTO getCatalogProduct(@ApiParam(value = "Id of the catalog for which a product has to be retrieved", required = true) @PathVariable final String catalogId,
+                                        @ApiParam(value = "Id of the product to retrieve from the catalog", required = true) @PathVariable final String productId) {
         Optional<Catalog> catalog = catalogRepository.findById(catalogId);
         List<CatalogItem> ids = catalog.get().getProductIdentifiers();
         System.out.println(catalogId);

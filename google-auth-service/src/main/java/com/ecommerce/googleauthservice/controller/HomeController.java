@@ -54,9 +54,9 @@ public class HomeController {
         ResponseEntity<String> res = restTemplate1.exchange(url,
                 HttpMethod.POST, null, new ParameterizedTypeReference<String>() {
                 });
-
         //obtener info del usuario loggeado con token
         JSONObject jo = new JSONObject(res.getBody());
+        System.out.println(jo.getString("access_token"));
         url = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + jo.getString("access_token");
         ResponseEntity<String> res1 = restTemplate1.exchange(url,
                 HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
