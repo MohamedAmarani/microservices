@@ -1,13 +1,18 @@
 package com.ecommerce.cartservice.model;
 
-import org.springframework.data.annotation.Id;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ApiModel(description = "Details of a cart item")
 public class CartDTO {
+    @ApiModelProperty(notes = "Unique id of the cart")
     String id;
+    @ApiModelProperty(notes = "Information of the cart items of the cart")
     List<CartItemDTO> cartItems = new ArrayList<>();
+    @ApiModelProperty(notes = "Unique id of the inventory attached to the cart")
     String inventoryId;
 
     public CartDTO() {

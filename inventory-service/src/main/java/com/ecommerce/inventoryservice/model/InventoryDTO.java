@@ -1,14 +1,20 @@
 package com.ecommerce.inventoryservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ApiModel(description = "Details obout an inventory")
 public class InventoryDTO {
+    @ApiModelProperty(notes = "Unique id of the product")
     String id;
+    @ApiModelProperty(notes = "Unique id of the inventory catalog")
     String catalogId;
+    @ApiModelProperty(notes = "Information of the items of the inventory")
     List<InventoryItemDTO> inventoryItems = new ArrayList<>();
 
     public InventoryDTO() {

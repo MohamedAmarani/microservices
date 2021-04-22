@@ -1,5 +1,7 @@
 package com.ecommerce.productservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,15 +11,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Document
+@ApiModel(description = "Details obout a product")
 public class Product {
+    @ApiModelProperty(notes = "Unique id of the product")
     @Id
     String id;
+    @ApiModelProperty(notes = "Name of the product")
     @Indexed(unique = true)
     String name;
+    @ApiModelProperty(notes = "Description of the product")
     String description;
+    @ApiModelProperty(notes = "Pictures of the product")
     @NotNull(message = "At least one picture is required")
     List<Picture> pictures = new ArrayList<>();
+    @ApiModelProperty(notes = "Price of the product")
     double price;
+    @ApiModelProperty(notes = "Size of the product")
     @NotNull(message = "At least one size is required")
     Size size;
 

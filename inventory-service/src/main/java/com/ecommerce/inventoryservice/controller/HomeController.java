@@ -3,6 +3,8 @@ package com.ecommerce.inventoryservice.controller;
 import com.ecommerce.inventoryservice.model.*;
 import com.ecommerce.inventoryservice.repository.InventoryRepository;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -46,6 +48,7 @@ public class HomeController {
     }
 
     @RequestMapping("/info")
+    @ApiOperation(value = "Get information from the inventory-service instance", notes = "Retrieve information from a inventory-service instance")
     public String home() {
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
@@ -64,13 +67,15 @@ public class HomeController {
     }
 
     @GetMapping("")
+    @ApiOperation(value = "Get all inventories", notes = "Retrieve all inventory from the Database")
     public List<Inventory> getInventories() {
         return catalogRepository.findAll();
     }
 
     @HystrixCommand(fallbackMethod = "fallback")
+    @ApiOperation(value = "Get an inventory", notes = "Provide an Id to retrieve a specific inventory from the Database")
     @GetMapping("/{id}")
-    public InventoryDTO getInventory(@PathVariable final String id) {
+    public InventoryDTO getInventory(@ApiParam(value = "Id of the inventory to get", required = true) @PathVariable final String id) {
         Optional<Inventory> inventory = catalogRepository.findById(id);
         //la respuesta inicialiada con dos paramatros
         InventoryDTO response = new InventoryDTO(inventory.get().getId(), inventory.get().getCatalogId());
@@ -92,7 +97,8 @@ public class HomeController {
     }
 
     @PostMapping("")
-    public Inventory createInventory(@RequestBody Inventory inventory) {
+    @ApiOperation(value = "Create an inventory", notes = "Provide information to create an inventory")
+    public Inventory createInventory(@ApiParam(value = "Information of the inventory to create", required = true) @RequestBody Inventory inventory) {
         return catalogRepository.save(inventory);
     }
 
@@ -104,7 +110,9 @@ public class HomeController {
     //@HystrixCommand(fallbackMethod = "fallback")
     //obtener un producto de un inventario
     @GetMapping("/{inventoryId}/products/{productId}")
-    public InventoryItemDTO getInventory(@PathVariable final String inventoryId, @PathVariable final String productId) {
+    @ApiOperation(value = "Get a product from an inventory", notes = "Provide information of a product from an inventory")
+    public InventoryItemDTO getInventory(@ApiParam(value = "Id of the inventory for which we a product has to be retrieved", required = true) @PathVariable final String inventoryId,
+                                         @ApiParam(value = "Id of the product of the inventory to get", required = true) @PathVariable final String productId) {
         System.out.println("hola");
         Optional<Inventory> inventory = catalogRepository.findById(inventoryId);
         List<InventoryItem> inventoryItems = inventory.get().getInventoryItems();
@@ -132,8 +140,10 @@ public class HomeController {
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "Add a product to an inventory", notes = "Insert a product to an existing inventory")
     //añadir un producto a un inventario
-    public InventoryItemDTO addProductToInventory(@PathVariable final String id, @RequestBody InventoryItem inventoryItem) {
+    public InventoryItemDTO addProductToInventory(@ApiParam(value = "Id of the inventory for which a product has to be inserted", required = true) @PathVariable final String id,
+                                                  @ApiParam(value = "Information of the product to insert into the inventory", required = true) @RequestBody InventoryItem inventoryItem) {
         Optional<Inventory> inventory = catalogRepository.findById(id);
         ResponseEntity<ProductDTO> res = null;
         try {
@@ -164,8 +174,10 @@ public class HomeController {
     //decrement items
     //HAY QUE LLAMAR A UPDATEAVAILABILITY
     @PutMapping("/{id}/products/{productId}/reduceStock")
-    public InventoryItemDTO addProductToCart(@PathVariable final String id, @PathVariable final String productId,
-                                                 @RequestBody Map<String, Integer> myJsonRequest) {
+    @ApiOperation(value = "Reduce stock of a product of an inventory", notes = "Reduce product stock from an inventory")
+    public InventoryItemDTO addProductToCart(@ApiParam(value = "Id of the inventory for which a product stock has to be decremented", required = true) @PathVariable final String id,
+                                             @ApiParam(value = "Id of the inventory product for which the stock has to be decremented", required = true) @PathVariable final String productId,
+                                             @ApiParam(value = "Quantity of items to reduce from the inventory stock", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
         Optional<Inventory> inventory = catalogRepository.findById(id);
         int num = myJsonRequest.get("numItems");
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())
@@ -199,8 +211,10 @@ public class HomeController {
     //add stock
     //HAY QUE LLAMAR A UPDATEAVAILABILITY
     @PutMapping("/{id}/products/{productId}/addStock")
-    public InventoryItemDTO addStock(@PathVariable final String id, @PathVariable final String productId,
-                                             @RequestBody Map<String, Integer> myJsonRequest) {
+    @ApiOperation(value = "Increment stock of a product of an inventory", notes = "Reduce product stock from an inventory")
+    public InventoryItemDTO addStock(@ApiParam(value = "Id of the inventory for which a product stock has to be incremented", required = true) @PathVariable final String id,
+                                     @ApiParam(value = "Id of the inventory product for which the stock has to be incremented", required = true) @PathVariable final String productId,
+                                     @ApiParam(value = "Quantity of items to increment to the inventory stock", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
         Optional<Inventory> inventory = catalogRepository.findById(id);
         int num = myJsonRequest.get("numItems");
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())

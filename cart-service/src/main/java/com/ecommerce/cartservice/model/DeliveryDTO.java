@@ -1,13 +1,22 @@
 package com.ecommerce.cartservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Calendar;
 import java.util.Date;
 
+@ApiModel(description = "Details of a delivery")
 public class DeliveryDTO {
+    @ApiModelProperty(notes = "Unique id of the delivery")
     String id;
+    @ApiModelProperty(notes = "Unique id of the order to deliver")
     String orderId;
+    @ApiModelProperty(notes = "State of the delivery")
     DeliveryState deliveryState;
+    @ApiModelProperty(notes = "Company in charge of the delivery")
     DeliveryCompany deliveryCompany;
+    @ApiModelProperty(notes = "Estimated date of the delivery arrival")
     Date estimatedDateOfArrival;
 
     public DeliveryDTO() {
@@ -64,10 +73,12 @@ public class DeliveryDTO {
     }
 }
 
+@ApiModel(description = "Details of a delivery state")
 enum DeliveryState {
     pendingToSend, alreadySent, arrived, finished
 }
 
+@ApiModel(description = "Details of a delivery company")
 enum DeliveryCompany {
     MRW, SEUR, DHL
 }

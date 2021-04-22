@@ -1,8 +1,15 @@
 package com.ecommerce.cartservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(description = "Details of a cart item")
 public class CartItem {
+    @ApiModelProperty(notes = "Information of the cart item product")
     String productId;
+    @ApiModelProperty(notes = "Quantity of items of the product in the cart")
     int items;
+    @ApiModelProperty(notes = "Availability of the cart item")
     boolean available;
 
     public CartItem() {

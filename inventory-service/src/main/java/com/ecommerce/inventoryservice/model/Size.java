@@ -1,7 +1,12 @@
 package com.ecommerce.inventoryservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(description = "Details obout a product size")
 public class Size
 {
+    @ApiModelProperty(notes = "Size of the product")
     Sizes sizeId;
 
     public Size() {
