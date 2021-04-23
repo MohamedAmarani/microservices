@@ -2,7 +2,9 @@ package com.ecommerce.cartservice.controller;
 
 import com.ecommerce.cartservice.model.*;
 import com.ecommerce.cartservice.repository.CartRepository;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.google.gson.Gson;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.json.JSONArray;
@@ -18,10 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import javax.annotation.PostConstruct;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("/")
@@ -41,8 +42,56 @@ public class HomeController {
     @Value("${message:Hello default}")
     private String message;
 
+    private AtomicDouble ref;
+
+    private Map<String, Integer> requestsLastMinute = new HashMap<>();
+
+    public HomeController(MeterRegistry registry) {
+        ref = registry.gauge("requests_per_second", new AtomicDouble(0.0f));
+    }
+
+    @PostConstruct
+    public void getSetup() {
+        //inicializar las 60 posiciones con 0s
+        for (int i = 0; i < 60; ++i) {
+            String key = Integer.toString(i);
+            requestsLastMinute.put(key.length() < 2 ? "0" + key : key, 0);
+        }
+        //actualizando campos de los segundos cada segundo
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //borrar el segundo que viene
+                String timeStamp = new SimpleDateFormat("ss").format(Calendar.getInstance().getTime());
+                requestsLastMinute.put(Integer.parseInt(timeStamp) + 1 < 60 ?
+                        Integer.toString(Integer.parseInt(timeStamp) + 1) : "00", 0);
+            }
+        }, 0, 1000);
+
+        //actualizando el valor de micrometer cada 3 segundos
+        Timer t1 = new Timer();
+        t1.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //calcular las requests por segundo en el ultimo minuto
+                int counter = 0;
+                for (String key: requestsLastMinute.keySet()) {
+                    counter += requestsLastMinute.get(key);
+                }
+                ref.set(counter / (double) 60);
+            }
+        }, 0, 3000);
+    };
+
+    private synchronized void incrementCounter() {
+        String timeStamp = new SimpleDateFormat("ss").format(Calendar.getInstance().getTime());
+        requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
+        incrementCounter();
         System.out.println(message);
         System.out.println(env.getProperty("message"));
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
@@ -51,6 +100,7 @@ public class HomeController {
     @RequestMapping("/info")
     @ApiOperation(value = "Get information from the cart-service instance", notes = "Retrieve information from a cart-service instance")
     public String home() {
+        incrementCounter();
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
         // We load balance among them, and display which instance received the request.
@@ -60,6 +110,7 @@ public class HomeController {
 
     @GetMapping("/do")
     public String getPr() {
+        incrementCounter();
         RestTemplate restTemplate = new RestTemplate();
         String resourceUrl = "http://inventory-service:8080/do";
         ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
@@ -70,6 +121,7 @@ public class HomeController {
     @GetMapping("")
     @ApiOperation(value = "Get all carts", notes = "Retrieve all carts from the Database and all their cart items")
     public List<CartDTO> getCarts() {
+        incrementCounter();
         List<CartDTO> result = new ArrayList<>();
         List<Cart> carts = cartRepository.findAll();
         for (Cart cart: carts) {
@@ -95,10 +147,17 @@ public class HomeController {
     @GetMapping("/{cartId}")
     @ApiOperation(value = "Get a cart", notes = "Provide an Id to retrieve a specific cart from the Database and all its cart items")
     public CartDTO getCart(@ApiParam(value = "Id of the cart to get", required = true) @PathVariable final String cartId) {
+        incrementCounter();
         System.out.println("Starting " + env.getProperty("local.server.port"));
         Optional<Cart> cart = cartRepository.findById(cartId);
-        List<CartItem> cartItems = cart.get().getCartItems();
-
+        List<CartItem> cartItems = null;
+        try {
+            cartItems = cart.get().getCartItems();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Cart not found"
+            );
+        }
         CartDTO cartDTO = new CartDTO(cart.get().getId(), cart.get().getInventoryId());
         List<CartItemDTO> cartItemDTOs = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
@@ -126,6 +185,7 @@ public class HomeController {
     @PostMapping("")
     @ApiOperation(value = "Create a cart", notes = "Provide information to create a cart")
     public Cart createCart(@ApiParam(value = "Information of the cart to create", required = true) @RequestBody Cart cart) {
+        incrementCounter();
         return cartRepository.save(cart);
     }
 
@@ -139,6 +199,7 @@ public class HomeController {
     @ApiOperation(value = "Add inventory product to cart", notes = "Add a product available in the inventory to a cart")
     public Cart addProductToInventory(@ApiParam(value = "Id of the cart on which an inventory product has to be added", required = true) @PathVariable final String cartId,
                                       @ApiParam(value = "Product Id and quantity of items available in the inventory to be added to the given cart", required = true) @RequestBody CartItem cartItem) {
+        incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
 
         JSONObject obj = new JSONObject();
@@ -188,6 +249,7 @@ public class HomeController {
     @RequestMapping(value = "/{cartId}/checkout", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Checkout a cart", notes = "Proceed to do the checkout of a given cart, paying with Paypal")
     public Object doCheckoutPart1(@ApiParam(value = "Id of the cart for which the checkout has to be done", required = true) @PathVariable final String cartId) {
+        incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
         double totalPrice = 0.0;
 
@@ -227,6 +289,7 @@ public class HomeController {
     @RequestMapping(value = "/{cartId}/checkout2", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Checkout a cart, 2nd part", notes = "Checkout logic to be executed after the payment has been made")
     public Object doCheckoutPart2(@ApiParam(value = "Id of the cart for which the second part of the checkout has to be done", required = true) @PathVariable final String cartId) {
+        incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
                 /*final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://account-service/" + accountId + "/buy",
                 HttpMethod.PUT, entity, new ParameterizedTypeReference<ProductDTO>() {
@@ -292,6 +355,7 @@ public class HomeController {
     @ApiOperation(value = "Update the availability of the cart", notes = "Update all inventory products of the cart in function of " +
             "the available items on the inventory")
     public void updateCartsAvailability() {
+        incrementCounter();
         updateAvailability();
     }
 
@@ -321,6 +385,7 @@ public class HomeController {
     // We'll add the logic of role based auth later
     @RequestMapping("/admin")
     public String homeAdmin() {
+        incrementCounter();
         return "This is the admin area of Cart service running at port: " + env.getProperty("local.server.port");
     }
 }

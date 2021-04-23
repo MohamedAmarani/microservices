@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
@@ -45,7 +46,7 @@ public class HomeController {
 
     @Autowired
     private DiscoveryClient discoveryClient;
-    
+
     private AtomicDouble ref;
 
     private Map<String, Integer> requestsLastMinute = new HashMap<>();
@@ -135,11 +136,14 @@ public class HomeController {
     @ApiOperation(value = "Get a product", notes = "Provide an Id to retrieve a specific product from the Database")
     public Product getProduct(@ApiParam(value = "Id of the product to get", required = true) @PathVariable final String id) throws Exception {
         Product product = null;
+        //si no existe ningun producto con ese id retornamos null
         try {
             //throw new Exception("Images can't be fetched");
             product = productRepository.findById(id).get();
         } catch (Exception e) {
-            return null;
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found in catalog"
+            );
         }
         incrementCounter();
         return product;

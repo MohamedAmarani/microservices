@@ -1,7 +1,10 @@
 package com.users.accountservice.Controller;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import com.users.accountservice.Model.Account;
 import com.users.accountservice.repository.UserRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.swagger.annotations.ApiOperation;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,11 +25,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("/")
@@ -50,15 +53,65 @@ public class HomeController {
     @Value("${message:Hello default}")
     private String message;
 
+    private AtomicDouble ref;
+
+    private Map<String, Integer> requestsLastMinute = new HashMap<>();
+
+    public HomeController(MeterRegistry registry) {
+        ref = registry.gauge("requests_per_second", new AtomicDouble(0.0f));
+    }
+
+    @PostConstruct
+    public void getSetup() {
+        //inicializar las 60 posiciones con 0s
+        for (int i = 0; i < 60; ++i) {
+            String key = Integer.toString(i);
+            requestsLastMinute.put(key.length() < 2 ? "0" + key : key, 0);
+        }
+        //actualizando campos de los segundos cada segundo
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //borrar el segundo que viene
+                String timeStamp = new SimpleDateFormat("ss").format(Calendar.getInstance().getTime());
+                requestsLastMinute.put(Integer.parseInt(timeStamp) + 1 < 60 ?
+                        Integer.toString(Integer.parseInt(timeStamp) + 1) : "00", 0);
+            }
+        }, 0, 1000);
+
+        //actualizando el valor de micrometer cada 3 segundos
+        Timer t1 = new Timer();
+        t1.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //calcular las requests por segundo en el ultimo minuto
+                int counter = 0;
+                for (String key: requestsLastMinute.keySet()) {
+                    counter += requestsLastMinute.get(key);
+                }
+                ref.set(counter / (double) 60);
+            }
+        }, 0, 3000);
+    };
+
+    private synchronized void incrementCounter() {
+        String timeStamp = new SimpleDateFormat("ss").format(Calendar.getInstance().getTime());
+        requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
+        incrementCounter();
         System.out.println(message);
         System.out.println(env.getProperty("message"));
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
     @RequestMapping("/info")
+    @ApiOperation(value = "Get information from the account-service instance", notes = "Retrieve information from a account-service instance")
     public String home() {
+        incrementCounter();
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
         // We load balance among them, and display which instance received the request.
@@ -67,21 +120,31 @@ public class HomeController {
     }
 
     @GetMapping("")
+    @ApiOperation(value = "Get all accounts", notes = "Retrieve a specific account from the Database")
     public List<Account> getAccounts() {
+        incrementCounter();
         List<Account> accounts = userRepository.findAll();
         return accounts;
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
     public Account getAccount(@PathVariable final String id) {
+        incrementCounter();
         Optional<Account> account = userRepository.findById(id);
-        System.out.println("hhh");
-        return account.get();
+        try {
+            return account.get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Account not found"
+            );
+        }
     }
 
     @PostMapping("")
+    @ApiOperation(value = "Create an account", notes = "Provide information to create an account")
     public Account postAccount(@RequestBody Account account) throws MessagingException {
-
+        incrementCounter();
         //encriptar contraseña
         account.setPassword(new BCryptPasswordEncoder().encode(account.getPassword()));
         Account account1 = userRepository.save(account);
@@ -105,6 +168,7 @@ public class HomeController {
 
     @PatchMapping("/{accountId}/deliveryAddress")
     public Account changeDeliveryAddress(@PathVariable final String accountId, @RequestBody Map<String, String> myJsonRequest) {
+        incrementCounter();
         Optional<Account> account = userRepository.findById(accountId);
         try {
             account.get().setDeliveryAddress(myJsonRequest.get("deliveryAddress"));
@@ -118,6 +182,7 @@ public class HomeController {
 
     @PatchMapping("/{accountId}/deposit")
     public Account depositCredit(@PathVariable final String accountId, @RequestBody Map<String, Integer> myJsonRequest) {
+        incrementCounter();
         Optional<Account> account = userRepository.findById(accountId);
         try {
             account.get().incrementCredit(myJsonRequest.get("credit"));
@@ -131,6 +196,7 @@ public class HomeController {
 
     @PutMapping("/{accountId}/buy")
     public Account makeBuy(@PathVariable final String accountId, @RequestBody Map<String, Integer> myJsonRequest) {
+        incrementCounter();
         Optional<Account> account = userRepository.findById(accountId);
         try {
             account.get().decrementCredit(myJsonRequest.get("totalPrice"));
@@ -490,6 +556,7 @@ public class HomeController {
     //@PreAuthorize("hasRole('GOOGLE')")
     @RequestMapping("/admin")
     public String homeAdmin() {
+        incrementCounter();
         return "This is the admin area of Gallery service running at port: " + env.getProperty("local.server.port");
     }
 }

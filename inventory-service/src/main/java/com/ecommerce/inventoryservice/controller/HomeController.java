@@ -2,7 +2,9 @@ package com.ecommerce.inventoryservice.controller;
 
 import com.ecommerce.inventoryservice.model.*;
 import com.ecommerce.inventoryservice.repository.InventoryRepository;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import javax.annotation.PostConstruct;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("/")
@@ -40,8 +41,56 @@ public class HomeController {
     @Value("${message:Hello default}")
     private String message;
 
+    private AtomicDouble ref;
+
+    private Map<String, Integer> requestsLastMinute = new HashMap<>();
+
+    public HomeController(MeterRegistry registry) {
+        ref = registry.gauge("requests_per_second", new AtomicDouble(0.0f));
+    }
+
+    @PostConstruct
+    public void getSetup() {
+        //inicializar las 60 posiciones con 0s
+        for (int i = 0; i < 60; ++i) {
+            String key = Integer.toString(i);
+            requestsLastMinute.put(key.length() < 2 ? "0" + key : key, 0);
+        }
+        //actualizando campos de los segundos cada segundo
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //borrar el segundo que viene
+                String timeStamp = new SimpleDateFormat("ss").format(Calendar.getInstance().getTime());
+                requestsLastMinute.put(Integer.parseInt(timeStamp) + 1 < 60 ?
+                        Integer.toString(Integer.parseInt(timeStamp) + 1) : "00", 0);
+            }
+        }, 0, 1000);
+
+        //actualizando el valor de micrometer cada 3 segundos
+        Timer t1 = new Timer();
+        t1.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //calcular las requests por segundo en el ultimo minuto
+                int counter = 0;
+                for (String key: requestsLastMinute.keySet()) {
+                    counter += requestsLastMinute.get(key);
+                }
+                ref.set(counter / (double) 60);
+            }
+        }, 0, 3000);
+    };
+
+    private synchronized void incrementCounter() {
+        String timeStamp = new SimpleDateFormat("ss").format(Calendar.getInstance().getTime());
+        requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
+        incrementCounter();
         System.out.println(message);
         System.out.println(env.getProperty("message"));
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
@@ -50,6 +99,7 @@ public class HomeController {
     @RequestMapping("/info")
     @ApiOperation(value = "Get information from the inventory-service instance", notes = "Retrieve information from a inventory-service instance")
     public String home() {
+        incrementCounter();
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
         // We load balance among them, and display which instance received the request.
@@ -59,6 +109,7 @@ public class HomeController {
 
     @GetMapping("/do")
     public String getPr() {
+        incrementCounter();
         RestTemplate restTemplate = new RestTemplate();
         String resourceUrl = "http://catalog-service:8080/pr/p";
         ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
@@ -69,6 +120,7 @@ public class HomeController {
     @GetMapping("")
     @ApiOperation(value = "Get all inventories", notes = "Retrieve all inventory from the Database")
     public List<Inventory> getInventories() {
+        incrementCounter();
         return catalogRepository.findAll();
     }
 
@@ -76,10 +128,18 @@ public class HomeController {
     @ApiOperation(value = "Get an inventory", notes = "Provide an Id to retrieve a specific inventory from the Database")
     @GetMapping("/{id}")
     public InventoryDTO getInventory(@ApiParam(value = "Id of the inventory to get", required = true) @PathVariable final String id) {
+        incrementCounter();
         Optional<Inventory> inventory = catalogRepository.findById(id);
         //la respuesta inicialiada con dos paramatros
-        InventoryDTO response = new InventoryDTO(inventory.get().getId(), inventory.get().getCatalogId());
-
+        InventoryDTO response = null;
+        try {
+            response = new InventoryDTO(inventory.get().getId(), inventory.get().getCatalogId());
+        }
+        catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found in catalog"
+            );
+        }
         List<InventoryItemDTO> inventoryItemDTOs = new ArrayList<>();
         List<InventoryItem> inventoryItems = inventory.get().getInventoryItems();
 
@@ -99,6 +159,7 @@ public class HomeController {
     @PostMapping("")
     @ApiOperation(value = "Create an inventory", notes = "Provide information to create an inventory")
     public Inventory createInventory(@ApiParam(value = "Information of the inventory to create", required = true) @RequestBody Inventory inventory) {
+        incrementCounter();
         return catalogRepository.save(inventory);
     }
 
@@ -113,6 +174,7 @@ public class HomeController {
     @ApiOperation(value = "Get a product from an inventory", notes = "Provide information of a product from an inventory")
     public InventoryItemDTO getInventory(@ApiParam(value = "Id of the inventory for which we a product has to be retrieved", required = true) @PathVariable final String inventoryId,
                                          @ApiParam(value = "Id of the product of the inventory to get", required = true) @PathVariable final String productId) {
+        incrementCounter();
         System.out.println("hola");
         Optional<Inventory> inventory = catalogRepository.findById(inventoryId);
         List<InventoryItem> inventoryItems = inventory.get().getInventoryItems();
@@ -144,6 +206,7 @@ public class HomeController {
     //añadir un producto a un inventario
     public InventoryItemDTO addProductToInventory(@ApiParam(value = "Id of the inventory for which a product has to be inserted", required = true) @PathVariable final String id,
                                                   @ApiParam(value = "Information of the product to insert into the inventory", required = true) @RequestBody InventoryItem inventoryItem) {
+        incrementCounter();
         Optional<Inventory> inventory = catalogRepository.findById(id);
         ResponseEntity<ProductDTO> res = null;
         try {
@@ -153,7 +216,7 @@ public class HomeController {
                     });
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Product not found in catalog"
+                    HttpStatus.NOT_FOUND, "Inventory not found in catalog"
             );
         }
         boolean alreadyExists = false;
@@ -178,6 +241,7 @@ public class HomeController {
     public InventoryItemDTO addProductToCart(@ApiParam(value = "Id of the inventory for which a product stock has to be decremented", required = true) @PathVariable final String id,
                                              @ApiParam(value = "Id of the inventory product for which the stock has to be decremented", required = true) @PathVariable final String productId,
                                              @ApiParam(value = "Quantity of items to reduce from the inventory stock", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
+        incrementCounter();
         Optional<Inventory> inventory = catalogRepository.findById(id);
         int num = myJsonRequest.get("numItems");
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())
@@ -215,6 +279,7 @@ public class HomeController {
     public InventoryItemDTO addStock(@ApiParam(value = "Id of the inventory for which a product stock has to be incremented", required = true) @PathVariable final String id,
                                      @ApiParam(value = "Id of the inventory product for which the stock has to be incremented", required = true) @PathVariable final String productId,
                                      @ApiParam(value = "Quantity of items to increment to the inventory stock", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
+        incrementCounter();
         Optional<Inventory> inventory = catalogRepository.findById(id);
         int num = myJsonRequest.get("numItems");
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())
@@ -250,6 +315,7 @@ public class HomeController {
     // We'll add the logic of role based auth later
     @RequestMapping("/admin")
     public String homeAdmin() {
+        incrementCounter();
         return "This is the admin area of Inventory service running at port: " + env.getProperty("local.server.port");
     }
 }
