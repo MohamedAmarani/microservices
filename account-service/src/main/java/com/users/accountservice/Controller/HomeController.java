@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import com.users.accountservice.Model.Account;
 import com.users.accountservice.repository.UserRepository;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.swagger.annotations.ApiOperation;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
