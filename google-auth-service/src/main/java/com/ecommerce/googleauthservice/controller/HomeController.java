@@ -1,6 +1,9 @@
 package com.ecommerce.googleauthservice.controller;
 
 import com.ecommerce.googleauthservice.model.AccountDTO;
+import com.google.common.util.concurrent.AtomicDouble;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.swagger.annotations.ApiOperation;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,10 @@ import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.PostConstruct;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("/")
@@ -24,18 +31,83 @@ public class HomeController {
     @Autowired
     private RestTemplate restTemplate1;
 
+    @Value("${eureka.instance.instance-id}")
+    private String instanceId;
+
     @Value("${message:Hello default}")
     private String message;
 
-    @GetMapping("/hellom")
+    private AtomicDouble ref;
+
+    private Map<String, Integer> requestsLastMinute = new HashMap<>();
+
+    public HomeController(MeterRegistry registry) {
+        ref = registry.gauge("requests_per_second", new AtomicDouble(0.0f));
+    }
+
+    @PostConstruct
+    public void getSetup() {
+        //inicializar las 60 posiciones con 0s
+        for (int i = 0; i < 60; ++i) {
+            String key = Integer.toString(i);
+            requestsLastMinute.put(key.length() < 2 ? "0" + key : key, 0);
+        }
+        //actualizando campos de los segundos cada segundo
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //borrar el segundo que viene
+                String timeStamp = new SimpleDateFormat("ss").format(Calendar.getInstance().getTime());
+                String timeStampIncremented = Integer.toString(Integer.parseInt(timeStamp) + 1);
+                requestsLastMinute.put(Integer.parseInt(timeStamp) + 1 < 60 ?
+                        (timeStampIncremented.length() < 2 ? "0" + timeStampIncremented : timeStampIncremented) : "00", 0);
+            }
+        }, 0, 1000);
+
+        //actualizando el valor de micrometer cada 3 segundos
+        Timer t1 = new Timer();
+        t1.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //calcular las requests por segundo en el ultimo minuto
+                int counter = 0;
+                for (String key: requestsLastMinute.keySet()) {
+                    counter += requestsLastMinute.get(key);
+                    //System.out.println(key);
+                }
+                ref.set(counter / (double) 60);
+            }
+        }, 0, 3000);
+    };
+
+    private synchronized void incrementCounter() {
+        String timeStamp = new SimpleDateFormat("ss").format(Calendar.getInstance().getTime());
+        requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
+    }
+
+    @GetMapping("/hello1")
     public ResponseEntity<String> getHello() {
+        incrementCounter();
         System.out.println(message);
         System.out.println(env.getProperty("message"));
-        return new ResponseEntity<String>(env.getProperty("message"), HttpStatus.OK);
+        return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
+    }
+
+    @RequestMapping("/info")
+    @ApiOperation(value = "Get information from the account-service instance", notes = "Retrieve information from a account-service instance")
+    public String home() {
+        incrementCounter();
+        // This is useful for debugging
+        // When having multiple instance of gallery service running at different ports.
+        // We load balance among them, and display which instance received the request.
+        return "Hello from Account Service running at port: " + env.getProperty("local.server.port") +
+                " InstanceId " + instanceId;
     }
 
     @GetMapping("/fun")
     public ResponseEntity<String> getHellod() {
+        incrementCounter();
         final ResponseEntity<String> res2 = restTemplate.exchange("http://account-service:8080/" + "602a72269ae0650a89271487",
                 HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                 });
@@ -44,6 +116,7 @@ public class HomeController {
 
     @GetMapping("/hello")
     public String hello(@RequestParam("code") final String code) {
+        incrementCounter();
         //obtener token a partir de authorization code
         String url = "https://www.googleapis.com/oauth2/v4/token?code=" + code +
                 "&client_id=18414052942-t2sumb9e4q6otlc1gvrcblgu9r1p2mdg.apps.googleusercontent.com&" +
@@ -106,8 +179,9 @@ public class HomeController {
     }
 
     @PreAuthorize("hasRole('GOOGLE')")
-    @RequestMapping("/info")
-    public String home() {
+    @RequestMapping("/info1")
+    public String homes() {
+        incrementCounter();
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
         // We load balance among them, and display which instance received the request.
