@@ -1,7 +1,13 @@
 package com.ecommerce.orderservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(description = "Details obout a cart item")
 public class CartItem {
+    @ApiModelProperty(notes = "Id of the cart item product")
     String productId;
+    @ApiModelProperty(notes = "Quantity of items of the ordered cart item")
     int items;
 
     public CartItem() {

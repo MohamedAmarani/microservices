@@ -5,6 +5,8 @@ import com.ecommerce.orderservice.model.Order;
 import com.ecommerce.orderservice.repository.OrderRepository;
 import com.google.common.util.concurrent.AtomicDouble;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -19,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/")
 public class HomeController {
     @Autowired
     private Environment env;
@@ -89,6 +91,7 @@ public class HomeController {
     }
 
     @RequestMapping("/info")
+    @ApiOperation(value = "Get information from the cart-service instance", notes = "Retrieve information from a cart-service instance")
     public String home() {
         incrementCounter();
         // This is useful for debugging
@@ -98,6 +101,7 @@ public class HomeController {
     }
 
     @GetMapping("")
+    @ApiOperation(value = "Get all carts", notes = "Retrieve all carts from the Database and all their cart items")
     public List<Order> getDeliveries()    {
         incrementCounter();
         return orderRepository.findAll();
@@ -105,7 +109,8 @@ public class HomeController {
 
     //@HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{id}")
-    public Order getDelivery(@PathVariable final String id) {
+    @ApiOperation(value = "Get an order", notes = "Provide an Id to retrieve a specific order from the Database")
+    public Order getDelivery(@ApiParam(value = "Id of the order to get", required = true) @PathVariable final String id) {
         incrementCounter();
         try {
             return orderRepository.findById(id).get();
@@ -117,15 +122,19 @@ public class HomeController {
     }
 
     @PostMapping("/")
+    @ApiOperation(value = "Create an order", notes = "Provide information to create an order")
     public Order createInventory(@RequestBody Cart cart) {
         incrementCounter();
         return orderRepository.save(new Order(cart));
     }
 
-    @PutMapping("/{id}/deliveryId")
-    public Order setDeliveryId(@PathVariable final String id, @RequestBody Map<String, String> myJsonRequest) {
+    //set delivery id
+    @PutMapping("/{orderId}/deliveryId")
+    @ApiOperation(value = "Add deliveryId to the order", notes = "Link the order to a delivery by giving a deliveryId")
+    public Order setDeliveryId(@ApiParam(value = "Id of the order for which the delivery has to be linked", required = true) @PathVariable final String orderId,
+                               @ApiParam(value = "Id of the delivery that has to be linked to the order", required = true) @RequestBody Map<String, String> myJsonRequest) {
         incrementCounter();
-        Order order = orderRepository.findById(id).get();
+        Order order = orderRepository.findById(orderId).get();
         order.setDeliveryId(myJsonRequest.get("deliveryId").toString());
         return orderRepository.save(order);
     }

@@ -6,6 +6,8 @@ import com.ecommerce.deliveryservice.repository.DeliveryRepository;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/")
 public class HomeController {
     @Autowired
     private Environment env;
@@ -90,6 +92,7 @@ public class HomeController {
     }
 
     @RequestMapping("/info")
+    @ApiOperation(value = "Get information from the delivery-service instance", notes = "Retrieve information from a delivery-service instance")
     public String home() {
         incrementCounter();
         // This is useful for debugging
@@ -99,6 +102,7 @@ public class HomeController {
     }
 
     @GetMapping("")
+    @ApiOperation(value = "Get all deliveries", notes = "Retrieve all deliveries from the Database")
     public List<Delivery> getDeliveries()    {
         incrementCounter();
         return deliveryRepository.findAll();
@@ -106,7 +110,8 @@ public class HomeController {
 
     //@HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{id}")
-    public Delivery getDelivery(@PathVariable final String id) {
+    @ApiOperation(value = "Get a delivery", notes = "Provide an Id to retrieve a specific delivery from the Database")
+    public Delivery getDelivery(@ApiParam(value = "Id of the delivery to get", required = true) @PathVariable final String id) {
         incrementCounter();
         try {
             return deliveryRepository.findById(id).get();

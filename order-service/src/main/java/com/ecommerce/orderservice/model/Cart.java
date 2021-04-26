@@ -1,11 +1,18 @@
 package com.ecommerce.orderservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@ApiModel(description = "Details obout a cart")
 public class Cart {
+    @ApiModelProperty(notes = "Unique id of the cart")
     String id;
+    @ApiModelProperty(notes = "Information about the ordered cart items")
     List<CartItem> orderCartItems = new ArrayList<>();
+    @ApiModelProperty(notes = "Unique id of the order")
     String inventoryId;
 
     public Cart() {
