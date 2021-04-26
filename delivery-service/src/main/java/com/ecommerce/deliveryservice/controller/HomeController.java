@@ -58,8 +58,9 @@ public class HomeController {
             public void run() {
                 //borrar el segundo que viene
                 String timeStamp = new SimpleDateFormat("ss").format(Calendar.getInstance().getTime());
+                String timeStampIncremented = Integer.toString(Integer.parseInt(timeStamp) + 1);
                 requestsLastMinute.put(Integer.parseInt(timeStamp) + 1 < 60 ?
-                        Integer.toString(Integer.parseInt(timeStamp) + 1) : "00", 0);
+                        (timeStampIncremented.length() < 2 ? "0" + timeStampIncremented : timeStampIncremented) : "00", 0);
             }
         }, 0, 1000);
 
