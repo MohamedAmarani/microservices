@@ -96,7 +96,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
-    @RequestMapping("/info")
+    @GetMapping("/info")
     @ApiOperation(value = "Get information from the paypal-gateway-service instance", notes = "Retrieve information from a paypal-gateway-service instance")
     public String home() {
         incrementCounter();
@@ -107,14 +107,18 @@ public class HomeController {
                 " InstanceId " + instanceId;
     }
 
-    @GetMapping("/{accountId}")
+    @GetMapping(value = "/{accountId}", params = {
+            "PayerID"
+    })
     @ApiOperation(value = "Confirm a payment", notes = "Provide the Id of the cart to checkout and the paymentId and PayerID")
     public Object confirmPayment(@ApiParam(value = "Id of the order to get", required = true) @PathVariable final String accountId,
                                  @ApiParam(value = "Id of the payment", required = true) @RequestParam("paymentId") String paymentId,
                                  @ApiParam(value = "Id of the payer", required = true) @RequestParam("PayerID") String PayerID) throws PayPalRESTException {
+        System.out.println("hola");
         incrementCounter();
         Object obj;
         try {
+            //comprovar que no va a info o cancel
             obj = completePayment(accountId, paymentId, PayerID);
         } catch (Exception e) {
             throw new ResponseStatusException(
