@@ -1,9 +1,10 @@
-package com.ecommerce.paypalgatewayservice.paypalgatewayservice;
+package com.ecommerce.paypalgatewayservice;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import com.paypal.base.rest.PayPalRESTException;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -16,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -31,6 +31,9 @@ public class HomeController {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Value("${eureka.instance.instance-id}")
+    private String instanceId;
+
     @Value("${message:Hello default}")
     private String message;
 
@@ -38,7 +41,9 @@ public class HomeController {
 
     private Map<String, Integer> requestsLastMinute = new HashMap<>();
 
-    public HomeController(MeterRegistry registry) {
+    @Autowired
+    public HomeController(PayPalClient payPalClient, MeterRegistry registry) {
+        this.payPalClient = payPalClient;
         ref = registry.gauge("requests_per_second", new AtomicDouble(0.0f));
     }
 
@@ -83,7 +88,7 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
-    @GetMapping("/hello")
+    @GetMapping("/hello1")
     public ResponseEntity<String> getHello() {
         incrementCounter();
         System.out.println(message);
@@ -92,43 +97,47 @@ public class HomeController {
     }
 
     @RequestMapping("/info")
-    @ApiOperation(value = "Get information from the cart-service instance", notes = "Retrieve information from a cart-service instance")
+    @ApiOperation(value = "Get information from the paypal-gateway-service instance", notes = "Retrieve information from a paypal-gateway-service instance")
     public String home() {
         incrementCounter();
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
         // We load balance among them, and display which instance received the request.
-        return "Hello from Order Service running at port: " + env.getProperty("local.server.port");
-    }
-
-    @Autowired
-    public HomeController(PayPalClient payPalClient){
-        this.payPalClient = payPalClient;
+        return "Hello from PayPal Gateway Service running at port: " + env.getProperty("local.server.port") +
+                " InstanceId " + instanceId;
     }
 
     @GetMapping("/{accountId}")
-    public Object confirmPayment(@PathVariable final String accountId, @RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String PayerID) throws PayPalRESTException {
+    @ApiOperation(value = "Confirm a payment", notes = "Provide the Id of the cart to checkout and the paymentId and PayerID")
+    public Object confirmPayment(@ApiParam(value = "Id of the order to get", required = true) @PathVariable final String accountId,
+                                 @ApiParam(value = "Id of the payment", required = true) @RequestParam("paymentId") String paymentId,
+                                 @ApiParam(value = "Id of the payer", required = true) @RequestParam("PayerID") String PayerID) throws PayPalRESTException {
         incrementCounter();
         Object obj;
         try {
             obj = completePayment(accountId, paymentId, PayerID);
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Account not found"
+                    HttpStatus.NOT_FOUND, "Cart not found"
             );
         }
         return obj;
     }
 
     @GetMapping("/cancel")
-    public String cancelPayment(@PathVariable final String accountId, @RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String PayerID) throws PayPalRESTException {
+    @ApiOperation(value = "Manage error in payment", notes = "If the payment goes wrong the user will be redirected here.")
+    public String cancelPayment(@ApiParam(value = "Id of the cart that tried to be checked out", required = true) @PathVariable final String accountId,
+                                @ApiParam(value = "Id of the payment", required = true) @RequestParam("paymentId") String paymentId,
+                                @ApiParam(value = "Id of the payer", required = true) @RequestParam("PayerID") String PayerID) throws PayPalRESTException {
         incrementCounter();
         completePayment(accountId, paymentId, PayerID);
         return "Algo no ha ido como debía.";
     }
 
     @PostMapping(value = "/paypal/make/payment/{accountId}")
-    public Map<String, Object> makePayment(@PathVariable final String accountId, @RequestBody Map<String, Double> myJsonRequest) throws PayPalRESTException {
+    @ApiOperation(value = "Create payment", notes = "A payment will be created and its amount of money will be passed as a parameter.")
+    public Map<String, Object> makePayment(@ApiParam(value = "Id of the client that wants to check out", required = true) @PathVariable final String accountId,
+                                           @ApiParam(value = "Amount of money to be payed, in Euros.", required = true) @RequestBody Map<String, Double> myJsonRequest) throws PayPalRESTException {
         incrementCounter();
         return payPalClient.createPayment(accountId, myJsonRequest.get("totalPrice").toString());
     }
@@ -142,3 +151,4 @@ public class HomeController {
         return res.getBody();
     }
 }
+

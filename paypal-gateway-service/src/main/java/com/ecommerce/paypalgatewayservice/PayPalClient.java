@@ -1,4 +1,4 @@
-package com.ecommerce.paypalgatewayservice.paypalgatewayservice;
+package com.ecommerce.paypalgatewayservice;
 
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
@@ -87,3 +87,4 @@ public class PayPalClient {
         return response;
     }
 }
+

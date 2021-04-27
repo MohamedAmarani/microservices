@@ -93,7 +93,7 @@ public class HomeController {
     }
 
     @RequestMapping("/info")
-    @ApiOperation(value = "Get information from the cart-service instance", notes = "Retrieve information from a cart-service instance")
+    @ApiOperation(value = "Get information from the order-service instance", notes = "Retrieve information from a order-service instance")
     public String home() {
         incrementCounter();
         // This is useful for debugging
@@ -103,7 +103,7 @@ public class HomeController {
     }
 
     @GetMapping("")
-    @ApiOperation(value = "Get all carts", notes = "Retrieve all carts from the Database and all their cart items")
+    @ApiOperation(value = "Get all orders", notes = "Retrieve all orders from the Database")
     public List<Order> getDeliveries()    {
         incrementCounter();
         return orderRepository.findAll();

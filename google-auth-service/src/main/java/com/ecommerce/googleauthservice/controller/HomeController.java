@@ -4,6 +4,7 @@ import com.ecommerce.googleauthservice.model.AccountDTO;
 import com.google.common.util.concurrent.AtomicDouble;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +96,7 @@ public class HomeController {
     }
 
     @RequestMapping("/info")
-    @ApiOperation(value = "Get information from the account-service instance", notes = "Retrieve information from a account-service instance")
+    @ApiOperation(value = "Get information from the google-auth-service instance", notes = "Retrieve information from a google-auth-service instance")
     public String home() {
         incrementCounter();
         // This is useful for debugging
@@ -115,7 +116,10 @@ public class HomeController {
     }
 
     @GetMapping("/hello")
-    public String hello(@RequestParam("code") final String code) {
+    @ApiOperation(value = "Retrieve a Google access token out of the authorization code and generate own JWT access token for the user",
+            notes = "If the user does not exist in the system, they will be added. At the end, a JWT access token will be returned for the user for which" +
+                    "the authorization code was created.")
+    public String hello(@ApiParam(value = "Authorization code of the user requesting access to the system", required = true) @RequestParam("code") final String code) {
         incrementCounter();
         //obtener token a partir de authorization code
         String url = "https://www.googleapis.com/oauth2/v4/token?code=" + code +
@@ -142,7 +146,6 @@ public class HomeController {
         final ResponseEntity<AccountDTO> res2 = restTemplate.exchange("http://account-service:8080/" + jo.getString("id"),
                 HttpMethod.GET, null, new ParameterizedTypeReference<AccountDTO>() {
                 });
-
         } catch (Exception e) {
         //si no existe el usuario, crearlo
         JSONObject obj = new JSONObject();
@@ -156,6 +159,7 @@ public class HomeController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
 
+        //crear cuenta
         restTemplate.exchange("http://account-service:8080/",
                 HttpMethod.POST, entity, new ParameterizedTypeReference<AccountDTO>() {
                 });
@@ -170,6 +174,7 @@ public class HomeController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
 
+        //get JWT token for the logged in or registered user
         final ResponseEntity<String> res4 = restTemplate.exchange("http://auth-service:8080/auth",
                 HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
                 });

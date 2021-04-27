@@ -1,5 +1,7 @@
 package com.ecommerce.deliveryservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,12 +9,18 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Document
+@ApiModel(description = "Details obout a product")
 public class Delivery {
+    @ApiModelProperty(notes = "Unique id of the delivery")
     @Id
     String id;
+    @ApiModelProperty(notes = "Unique id of the order that has to be delivered")
     String orderId;
+    @ApiModelProperty(notes = "State of the delivery")
     DeliveryState deliveryState;
+    @ApiModelProperty(notes = "Company in charge of the delivery")
     DeliveryCompany deliveryCompany;
+    @ApiModelProperty(notes = "Estimated date on which the delivery will be carried out")
     Date estimatedDateOfArrival;
 
     public Delivery(String orderId) {
@@ -77,10 +85,12 @@ public class Delivery {
     }
 }
 
+@ApiModel(description = "States of the delivery")
 enum DeliveryState {
     pendingToSend, alreadySent, arrived, finished
 }
 
+@ApiModel(description = "Delivery companies")
 enum DeliveryCompany {
     MRW, SEUR, DHL
 }

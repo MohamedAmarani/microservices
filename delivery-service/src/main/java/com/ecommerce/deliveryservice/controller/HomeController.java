@@ -124,13 +124,25 @@ public class HomeController {
     }
 
     @PostMapping("")
-    public Delivery createInventory(@RequestBody Map<String, String> myJsonRequest) {
+    @ApiOperation(value = "Create a delivery", notes = "Provide information to create a delivery")
+    public Delivery createInventory(@ApiParam(value = "Delivery to create", required = true) @RequestBody Map<String, String> myJsonRequest) {
         incrementCounter();
         return deliveryRepository.save(new Delivery(myJsonRequest.get("orderId").toString()));
     }
 
     @PutMapping("/{id}/nextEvent")
-    public Delivery continueProcess(@PathVariable final String id) {
+    @ApiOperation(value = "Update the delivery state", notes = "Proceed to get to the next stage of the delivery")
+    public Delivery continueProcess(@ApiParam(value = "Id of the delivery for which the state has to be updated", required = true) @PathVariable final String id) {
+        incrementCounter();
+        Delivery delivery = deliveryRepository.findById(id).get();
+        delivery.setNextDeliveryEvent();
+        return deliveryRepository.save(delivery);
+    }
+
+    //hace falta llamar a este endpoint o se puede enseçar la address en la delivery directamente?
+    @PutMapping("/{id}/showOrderAddress")
+    @ApiOperation(value = "Update the delivery state", notes = "Proceed to get to the next stage of the delivery")
+    public Delivery shareDeliveryAddressToTheDeliveryCompany(@ApiParam(value = "Id of the delivery for which the state has to be updated", required = true) @PathVariable final String id) {
         incrementCounter();
         Delivery delivery = deliveryRepository.findById(id).get();
         delivery.setNextDeliveryEvent();
