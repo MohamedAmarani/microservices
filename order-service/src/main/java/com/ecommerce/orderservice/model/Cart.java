@@ -12,7 +12,7 @@ public class Cart {
     String id;
     @ApiModelProperty(notes = "Information about the ordered cart items")
     List<CartItem> orderCartItems = new ArrayList<>();
-    @ApiModelProperty(notes = "Unique id of the order")
+    @ApiModelProperty(notes = "Unique id of the inventory on which the cart is linked")
     String inventoryId;
 
     public Cart() {
