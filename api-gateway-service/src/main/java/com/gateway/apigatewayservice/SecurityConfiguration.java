@@ -34,6 +34,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //.oauth2Login().permitAll()
                 // allow all who are accessing "auth" service
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
+                // allow GET info
+                .antMatchers(HttpMethod.GET, "/info").permitAll()
+                // allow GET metrics
+                .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                 // must be an admin if trying to access admin area (authentication is also required here)
                 .antMatchers("/group" + "/admin/**").hasRole("ADMIN")
                 // Any other request must be authenticated
