@@ -65,7 +65,6 @@ public class CredentialValidator extends UsernamePasswordAuthenticationFilter   
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-System.out.println(auth.getName());
         Long now = System.currentTimeMillis();
         String token = Jwts.builder()
                 .setSubject(auth.getName())
