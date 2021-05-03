@@ -125,7 +125,7 @@ public class HomeController {
 
     @PostMapping("/")
     @ApiOperation(value = "Create an order", notes = "Provide information to create an order")
-    public Order createInventory(@RequestBody Cart cart) {
+    public Order createInventory(@ApiParam(value = "Information of the order to create", required = true) @RequestBody Cart cart) {
         incrementCounter();
         return orderRepository.save(new Order(cart));
     }

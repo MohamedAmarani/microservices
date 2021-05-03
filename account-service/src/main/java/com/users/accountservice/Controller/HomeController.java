@@ -5,6 +5,7 @@ import com.users.accountservice.Model.Account;
 import com.users.accountservice.repository.UserRepository;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -131,7 +132,7 @@ public class HomeController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
-    public Account getAccount(@PathVariable final String id) {
+    public Account getAccount(@ApiParam(value = "Id of the account to get", required = true) @PathVariable final String id) {
         incrementCounter();
         Optional<Account> account = userRepository.findById(id);
         try {
@@ -145,7 +146,7 @@ public class HomeController {
 
     @PostMapping("")
     @ApiOperation(value = "Create an account", notes = "Provide information to create an account")
-    public Account postAccount(@RequestBody Account account) throws MessagingException {
+    public Account postAccount(@ApiParam(value = "Information of the account to create", required = true) @RequestBody Account account) throws MessagingException {
         incrementCounter();
         //encriptar contraseña
         account.setPassword(new BCryptPasswordEncoder().encode(account.getPassword()));

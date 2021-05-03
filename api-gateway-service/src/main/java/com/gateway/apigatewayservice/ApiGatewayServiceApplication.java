@@ -23,8 +23,6 @@ public class ApiGatewayServiceApplication {
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(ApiGatewayServiceApplication.class, args);
-		MyComponent myComponent = context.getBean(MyComponent.class);
-		CustomInterceptor customInterceptor = context.getBean(CustomInterceptor.class);
 	}
 
 }

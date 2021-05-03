@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/deliveries")
 public class HomeController {
     @Autowired
     private Environment env;
