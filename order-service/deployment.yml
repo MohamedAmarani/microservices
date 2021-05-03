@@ -11,7 +11,8 @@ spec:
       port: 8080
       # Port to forward to inside the pod
       targetPort: 8080
-  type: ClusterIP
+      nodePort: 30030
+  type: LoadBalancer
 
 ---
 apiVersion: apps/v1
@@ -27,10 +28,13 @@ spec:
     metadata:
       labels:
         app: orderse
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: 'actuator/prometheus'
     spec:
       containers:
         - name: orderse
-          image: scaredste/order-service:v1.0.1
+          image: scaredste/order-service:v2.0.2
           ports:
           - containerPort: 8080
             protocol: TCP

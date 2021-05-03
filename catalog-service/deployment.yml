@@ -10,7 +10,8 @@ spec:
       port: 8080
       #puerto real de la aplicacion
       targetPort: 8080
-  type: ClusterIP
+      nodePort: 30034
+  type: LoadBalancer
 
 ---
 apiVersion: apps/v1
@@ -26,10 +27,13 @@ spec:
     metadata:
       labels:
         app: catalogse
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: 'actuator/prometheus'
     spec:
       containers:
         - name: catalogse
-          image: scaredste/catalog-service:v1.5.3
+          image: scaredste/catalog-service:v2.0.2
           ports:
           - containerPort: 8080
             protocol: TCP

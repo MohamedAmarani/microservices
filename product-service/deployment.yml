@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: googleauthse
-          image: scaredste/product-service:v2.0.1
+          image: scaredste/product-service:v3.0.2
           resources:
             limits:
               cpu: "1"
