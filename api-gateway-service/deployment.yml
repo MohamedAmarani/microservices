@@ -11,8 +11,7 @@ spec:
       port: 8080
       # Port to forward to inside the pod
       targetPort: 8080
-      nodePort: 30111
-  type: LoadBalancer
+  type: ClusterIP
 
 ---
 apiVersion: apps/v1
@@ -28,9 +27,12 @@ spec:
     metadata:
       labels:
         app: apigatewayse
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: 'actuator/prometheus'
     spec:
       containers:
         - name: apigatewayse
-          image: scaredste/apigateway-service:v2.0.0
+          image: scaredste/apigateway-service:v4.0.2
           ports:
             - containerPort: 8080

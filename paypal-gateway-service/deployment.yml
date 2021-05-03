@@ -1,40 +1,40 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: cart-service
+  name: paypal-gateway-service
 spec:
   selector:
-    app: cartse
+    app: paypalgatewayse
   ports:
     - protocol: "TCP"
       # Port accessible inside cluster
       port: 8080
       # Port to forward to inside the pod
       targetPort: 8080
-      nodePort: 30036
-  type: NodePort
+      nodePort: 30053
+  type: LoadBalancer
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cart-deployment
+  name: paypal-gateway-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cartse
+      app: paypalgatewayse
   template:
     metadata:
       labels:
-        app: cartse
+        app: paypalgatewayse
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/path: 'actuator/prometheus'
     spec:
       containers:
-        - name: cartse
-          image: scaredste/cart-service:v2.0.2
+        - name: paypalgatewayse
+          image: scaredste/paypal-gateway-service:v2.0.3
           ports:
           - containerPort: 8080
             protocol: TCP

@@ -11,8 +11,8 @@ spec:
       port: 8080
       # Port to forward to inside the pod
       targetPort: 8080
-      nodePort: 30012
-  type: LoadBalancer
+      nodePort: 30038
+  type: NodePort
 
 ---
 apiVersion: apps/v1
@@ -28,9 +28,12 @@ spec:
     metadata:
       labels:
         app: accountse
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: 'actuator/prometheus'
     spec:
       containers:
         - name: accountse
-          image: scaredste/account-service:v1.0.4
+          image: scaredste/account-service:v2.0.2
           ports:
             - containerPort: 8080

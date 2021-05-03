@@ -11,7 +11,8 @@ spec:
       port: 8080
       # Port to forward to inside the pod
       targetPort: 8080
-  type: ClusterIP
+      nodePort: 30050
+  type: LoadBalancer
 
 ---
 apiVersion: apps/v1
@@ -27,10 +28,13 @@ spec:
     metadata:
       labels:
         app: googleauthse
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: 'actuator/prometheus'
     spec:
       containers:
         - name: googleauthse
-          image: scaredste/google-auth-service:v1.0.2
+          image: scaredste/google-auth-service:v2.0.1
           ports:
           - containerPort: 8080
             protocol: TCP
