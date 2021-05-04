@@ -170,7 +170,9 @@ public class HomeController {
     }
 
     @PatchMapping("/{accountId}/deliveryAddress")
-    public Account changeDeliveryAddress(@PathVariable final String accountId, @RequestBody Map<String, String> myJsonRequest) {
+    @ApiOperation(value = "Change the delivery address of an account", notes = "Provide the new delivery address")
+    public Account changeDeliveryAddress(@ApiParam(value = "Id of the account for which the delivery address has to be changed", required = true) @PathVariable final String accountId,
+                                         @ApiParam(value = "New delivery address", required = true) @RequestBody Map<String, String> myJsonRequest) {
         incrementCounter();
         Optional<Account> account = userRepository.findById(accountId);
         try {
@@ -184,7 +186,9 @@ public class HomeController {
     }
 
     @PatchMapping("/{accountId}/deposit")
-    public Account depositCredit(@PathVariable final String accountId, @RequestBody Map<String, Integer> myJsonRequest) {
+    @ApiOperation(value = "Add credit to an account", notes = "Provide the quantity of credit to add")
+    public Account depositCredit(@ApiParam(value = "Id of the account for which a deposit of credit has to be done", required = true) @PathVariable final String accountId,
+                                 @ApiParam(value = "Quantity of credit to add to the given account", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
         incrementCounter();
         Optional<Account> account = userRepository.findById(accountId);
         try {
@@ -198,7 +202,9 @@ public class HomeController {
     }
 
     @PutMapping("/{accountId}/buy")
-    public Account makeBuy(@PathVariable final String accountId, @RequestBody Map<String, Integer> myJsonRequest) {
+    @ApiOperation(value = "Decrease credit after a purchase", notes = "Provide the quantity of credits to subtract from the account")
+    public Account makeBuy(@ApiParam(value = "Id of the account for which credits have to be subtracted", required = true) @PathVariable final String accountId,
+                           @ApiParam(value = "Quantity of credits to subtract", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
         incrementCounter();
         Optional<Account> account = userRepository.findById(accountId);
         try {

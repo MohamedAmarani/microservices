@@ -1,17 +1,27 @@
 package com.users.accountservice.Model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
+@ApiModel(description = "Details of an account")
 public class Account {
+    @ApiModelProperty(notes = "Unique id of the account")
     @Id
     String id;
+    @ApiModelProperty(notes = "Username of the user", required = true)
     String username;
+    @ApiModelProperty(notes = "Email of the user", required = true)
     String email;
+    @ApiModelProperty(notes = "Password of the user", required = true)
     String password;
+    @ApiModelProperty(notes = "Role of the user in the system", required = true)
     String role;
+    @ApiModelProperty(notes = "Delivery address of the user")
     String deliveryAddress;
+    @ApiModelProperty(notes = "Available credit of the user")
     double credit;
 
     public Account(String username, String email, String password, String role, String deliveryAddress, double credit) {

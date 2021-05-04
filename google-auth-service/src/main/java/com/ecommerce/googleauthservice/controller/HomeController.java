@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/googleAuth")
 public class HomeController {
     @Autowired
     private Environment env;
@@ -87,7 +87,7 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
-    @GetMapping("/hello1")
+    @GetMapping("/instanceInfo")
     public ResponseEntity<String> getHello() {
         incrementCounter();
         System.out.println(message);
@@ -102,7 +102,7 @@ public class HomeController {
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
         // We load balance among them, and display which instance received the request.
-        return "Hello from Account Service running at port: " + env.getProperty("local.server.port") +
+        return "Hello from Google Auth Service running at port: " + env.getProperty("local.server.port") +
                 " InstanceId " + instanceId;
     }
 
