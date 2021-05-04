@@ -33,13 +33,13 @@ spec:
         prometheus.io/path: 'actuator/prometheus'
     spec:
       containers:
-        - name: googleauthse
-          image: scaredste/product-service:v3.0.2
-          resources:
-            limits:
-              cpu: "1"
-            requests:
-              cpu: 200m
+        - name: productse
+          image: scaredste/product-service:v4.0.4
+        #  resources:
+         #   limits:
+          #    cpu: "1"
+           # requests:
+            #  cpu: 200m
           ports:
           - containerPort: 8080
             protocol: TCP
