@@ -34,6 +34,6 @@ spec:
     spec:
       containers:
         - name: accountse
-          image: scaredste/account-service:v2.0.2
+          image: scaredste/account-service:v2.0.5
           ports:
             - containerPort: 8080

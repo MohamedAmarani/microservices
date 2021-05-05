@@ -11,7 +11,8 @@ spec:
       port: 8080
       # Port to forward to inside the pod
       targetPort: 8080
-  type: ClusterIP
+      nodePort: 30087
+  type: NodePort
 
 ---
 apiVersion: apps/v1
@@ -33,6 +34,6 @@ spec:
     spec:
       containers:
         - name: apigatewayse
-          image: scaredste/apigateway-service:v4.0.2
+          image: scaredste/apigateway-service:v4.0.3
           ports:
             - containerPort: 8080
