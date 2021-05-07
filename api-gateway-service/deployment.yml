@@ -34,6 +34,6 @@ spec:
     spec:
       containers:
         - name: apigatewayse
-          image: scaredste/apigateway-service:v4.0.3
+          image: scaredste/apigateway-service:v4.0.4
           ports:
             - containerPort: 8080
