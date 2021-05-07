@@ -563,7 +563,7 @@ public class HomeController {
     // This method should only be accessed by users with role of 'admin'
     // We'll add the logic of role based auth later
     //@PreAuthorize("hasRole('GOOGLE')")
-    @RequestMapping("/admin")
+    @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
         return "This is the admin area of Gallery service running at port: " + env.getProperty("local.server.port");

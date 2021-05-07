@@ -328,6 +328,11 @@ public class HomeController {
         // set headers
         JSONObject obj = new JSONObject();
         obj.put("orderId", res1.getBody().getId());
+        //obtener direccion de entrega del usuario
+        final ResponseEntity<AccountDTO> res4 = restTemplate.exchange("http://delivery-service:8080",
+                HttpMethod.POST, null, new ParameterizedTypeReference<AccountDTO>() {
+                });
+        obj.put("deliveryAddress", res4.getBody().getDeliveryAddress());
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
@@ -385,7 +390,7 @@ public class HomeController {
     // -------- Admin Area --------
     // This method should only be accessed by users with role of 'admin'
     // We'll add the logic of role based auth later
-    @RequestMapping("/admin")
+    @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
         return "This is the admin area of Cart service running at port: " + env.getProperty("local.server.port");

@@ -88,7 +88,7 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
-    @GetMapping("/hello1")
+    @GetMapping("/helloMessage")
     public ResponseEntity<String> getHello() {
         incrementCounter();
         System.out.println(message);
@@ -111,10 +111,9 @@ public class HomeController {
             "PayerID"
     })
     @ApiOperation(value = "Confirm a payment", notes = "Provide the Id of the cart to checkout and the paymentId and PayerID")
-    public Object confirmPayment(@ApiParam(value = "Id of the order to get", required = true) @PathVariable final String accountId,
+    public Object confirmPayment(@ApiParam(value = "Id of the cart for which a payment has to be done", required = true) @PathVariable final String accountId,
                                  @ApiParam(value = "Id of the payment", required = true) @RequestParam("paymentId") String paymentId,
                                  @ApiParam(value = "Id of the payer", required = true) @RequestParam("PayerID") String PayerID) throws PayPalRESTException {
-        System.out.println("hola");
         incrementCounter();
         Object obj;
         try {

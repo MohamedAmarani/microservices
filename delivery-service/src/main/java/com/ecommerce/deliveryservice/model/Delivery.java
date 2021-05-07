@@ -16,6 +16,8 @@ public class Delivery {
     String id;
     @ApiModelProperty(notes = "Unique id of the order that has to be delivered")
     String orderId;
+    @ApiModelProperty(notes = "Address where the order has to be delivered")
+    String deliveryAddress;
     @ApiModelProperty(notes = "State of the delivery")
     DeliveryState deliveryState;
     @ApiModelProperty(notes = "Company in charge of the delivery")
@@ -23,10 +25,11 @@ public class Delivery {
     @ApiModelProperty(notes = "Estimated date on which the delivery will be carried out")
     Date estimatedDateOfArrival;
 
-    public Delivery(String orderId) {
+    public Delivery(String orderId, String deliveryAddress) {
         this.orderId = orderId;
         this.deliveryState = DeliveryState.pendingToSend;
         this.deliveryCompany = DeliveryCompany.DHL;
+        this.deliveryAddress = deliveryAddress;
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         cal.add(Calendar.DAY_OF_YEAR, 7);
@@ -71,6 +74,14 @@ public class Delivery {
 
     public void setEstimatedDateOfArrival(Date estimatedDateOfArrival) {
         this.estimatedDateOfArrival = estimatedDateOfArrival;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
     }
 
     public void setNextDeliveryEvent()
