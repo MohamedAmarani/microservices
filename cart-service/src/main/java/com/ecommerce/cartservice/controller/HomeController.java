@@ -163,7 +163,8 @@ public class HomeController {
         CartDTO cartDTO = new CartDTO(cart.get().getId(), cart.get().getInventoryId());
         List<CartItemDTO> cartItemDTOs = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        //headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Content-Type", "application/json");
         HttpEntity<String> entity = new HttpEntity<String>(null, headers);
 
         for (CartItem cartItem: cartItems) {
@@ -208,7 +209,7 @@ public class HomeController {
         obj.put("numItems", cartItem.getItems());
         // set headers
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Content-Type", "application/json");
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
         // send request and parse result
         //añadir al carrito si hay numero suficiente de items del producto en el inventario y no existe ya en el carrito (si ya existe se suman items)
@@ -280,7 +281,7 @@ public class HomeController {
         obj.put("totalPrice", totalPrice);
         // set headers
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Content-Type", "application/json");
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
         final ResponseEntity<String> res = restTemplate.exchange("http://paypal-gateway-service:8080/paypal/make/payment/" + cartId,
                 HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
@@ -313,7 +314,7 @@ public class HomeController {
 
         //crear pedido (order)
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Content-Type", "application/json");
         HttpEntity<Cart> orderEntity = new HttpEntity<Cart>(cart.get(), headers);
         final ResponseEntity<OrderDTO> res1 = restTemplate.exchange("http://order-service:8080/",
                 HttpMethod.POST, orderEntity, new ParameterizedTypeReference<OrderDTO>() {
@@ -334,7 +335,7 @@ public class HomeController {
                 });
         obj.put("deliveryAddress", res4.getBody().getDeliveryAddress());
         headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Content-Type", "application/json");
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
         final ResponseEntity<DeliveryDTO> res2 = restTemplate.exchange("http://delivery-service:8080",
                 HttpMethod.POST, entity, new ParameterizedTypeReference<DeliveryDTO>() {
@@ -344,7 +345,7 @@ public class HomeController {
         obj = new JSONObject();
         obj.put("deliveryId", res2.getBody().getId());
         headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Content-Type", "application/json");
         entity = new HttpEntity<String>(obj.toString(), headers);
         final ResponseEntity<DeliveryDTO> res3 = restTemplate.exchange("http://order-service:8080/" + res1.getBody().getId() + "/deliveryId",
                 HttpMethod.PUT, entity, new ParameterizedTypeReference<DeliveryDTO>() {
