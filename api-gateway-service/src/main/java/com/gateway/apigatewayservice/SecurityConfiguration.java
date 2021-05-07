@@ -38,6 +38,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/info").permitAll()
                 // allow GET metrics
                 .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/paypal/success/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/paypal/cancel/**").permitAll()
                 // must be an admin if trying to access admin area (authentication is also required here)
                 .antMatchers("/group" + "/admin/**").hasRole("ADMIN")
                 // Any other request must be authenticated
