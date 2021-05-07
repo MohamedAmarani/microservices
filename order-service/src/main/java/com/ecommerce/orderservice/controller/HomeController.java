@@ -123,7 +123,7 @@ public class HomeController {
         }
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     @ApiOperation(value = "Create an order", notes = "Provide information to create an order")
     public Order createInventory(@ApiParam(value = "Information of the order to create", required = true) @RequestBody Cart cart) {
         incrementCounter();
@@ -150,7 +150,7 @@ public class HomeController {
     // -------- Admin Area --------
     // This method should only be accessed by users with role of 'admin'
     // We'll add the logic of role based auth later
-    @RequestMapping("/admin")
+    @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
         return "This is the admin area of Order service running at port: " + env.getProperty("local.server.port");

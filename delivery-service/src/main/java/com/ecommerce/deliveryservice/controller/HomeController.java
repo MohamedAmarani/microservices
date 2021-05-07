@@ -1,10 +1,8 @@
 package com.ecommerce.deliveryservice.controller;
 
-import com.ecommerce.deliveryservice.model.Cart;
 import com.ecommerce.deliveryservice.model.Delivery;
 import com.ecommerce.deliveryservice.repository.DeliveryRepository;
 import com.google.common.util.concurrent.AtomicDouble;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -127,22 +125,12 @@ public class HomeController {
     @ApiOperation(value = "Create a delivery", notes = "Provide information to create a delivery")
     public Delivery createInventory(@ApiParam(value = "Delivery to create", required = true) @RequestBody Map<String, String> myJsonRequest) {
         incrementCounter();
-        return deliveryRepository.save(new Delivery(myJsonRequest.get("orderId").toString()));
+        return deliveryRepository.save(new Delivery(myJsonRequest.get("orderId").toString(), myJsonRequest.get("deliveryAddress").toString()));
     }
 
     @PutMapping("/{id}/nextEvent")
     @ApiOperation(value = "Update the delivery state", notes = "Proceed to get to the next stage of the delivery")
     public Delivery continueProcess(@ApiParam(value = "Id of the delivery for which the state has to be updated", required = true) @PathVariable final String id) {
-        incrementCounter();
-        Delivery delivery = deliveryRepository.findById(id).get();
-        delivery.setNextDeliveryEvent();
-        return deliveryRepository.save(delivery);
-    }
-
-    //hace falta llamar a este endpoint o se puede enseçar la address en la delivery directamente?
-    @PutMapping("/{id}/showOrderAddress")
-    @ApiOperation(value = "Update the delivery state", notes = "Proceed to get to the next stage of the delivery")
-    public Delivery shareDeliveryAddressToTheDeliveryCompany(@ApiParam(value = "Id of the delivery for which the state has to be updated", required = true) @PathVariable final String id) {
         incrementCounter();
         Delivery delivery = deliveryRepository.findById(id).get();
         delivery.setNextDeliveryEvent();
@@ -157,7 +145,7 @@ public class HomeController {
     // -------- Admin Area --------
     // This method should only be accessed by users with role of 'admin'
     // We'll add the logic of role based auth later
-    @RequestMapping("/admin")
+    @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
         return "This is the admin area of Delivery service running at port: " + env.getProperty("local.server.port");

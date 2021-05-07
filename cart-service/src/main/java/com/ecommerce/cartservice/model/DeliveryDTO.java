@@ -2,27 +2,31 @@ package com.ecommerce.cartservice.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.data.annotation.Id;
 
 import java.util.Calendar;
 import java.util.Date;
 
-@ApiModel(description = "Details of a delivery")
+@ApiModel(description = "Details obout a product")
 public class DeliveryDTO {
     @ApiModelProperty(notes = "Unique id of the delivery")
+    @Id
     String id;
-    @ApiModelProperty(notes = "Unique id of the order to deliver")
+    @ApiModelProperty(notes = "Unique id of the order that has to be delivered")
     String orderId;
+    @ApiModelProperty(notes = "Address where the order has to be delivered")
+    String deliveryAddress;
     @ApiModelProperty(notes = "State of the delivery")
     DeliveryState deliveryState;
     @ApiModelProperty(notes = "Company in charge of the delivery")
     DeliveryCompany deliveryCompany;
-    @ApiModelProperty(notes = "Estimated date of the delivery arrival")
+    @ApiModelProperty(notes = "Estimated date on which the delivery will be carried out")
     Date estimatedDateOfArrival;
 
     public DeliveryDTO() {
     }
 
-    public DeliveryDTO(String orderId) {
+    public DeliveryDTO(String orderId, String deliveryAddress) {
         this.orderId = orderId;
         this.deliveryState = DeliveryState.pendingToSend;
         this.deliveryCompany = DeliveryCompany.DHL;
@@ -71,14 +75,33 @@ public class DeliveryDTO {
     public void setEstimatedDateOfArrival(Date estimatedDateOfArrival) {
         this.estimatedDateOfArrival = estimatedDateOfArrival;
     }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public void setNextDeliveryEvent()
+    {
+        int index = deliveryState.ordinal();
+        if (index != DeliveryState.values().length - 1) {
+            int nextIndex = index + 1;
+            DeliveryState[] deliveryStates = DeliveryState.values();
+            nextIndex %= deliveryStates.length;
+            deliveryState = deliveryStates[nextIndex];
+        }
+    }
 }
 
-@ApiModel(description = "Details of a delivery state")
+@ApiModel(description = "States of the delivery")
 enum DeliveryState {
     pendingToSend, alreadySent, arrived, finished
 }
 
-@ApiModel(description = "Details of a delivery company")
+@ApiModel(description = "Delivery companies")
 enum DeliveryCompany {
     MRW, SEUR, DHL
 }
