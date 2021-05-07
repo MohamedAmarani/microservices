@@ -41,8 +41,8 @@ public class PayPalClient {
         payment.setTransactions(transactions);
 
         RedirectUrls redirectUrls = new RedirectUrls();
-        redirectUrls.setCancelUrl("http://localhost:" + environment.getProperty("local.server.port") + "/cancel/" + accountId);
-        redirectUrls.setReturnUrl("http://localhost:" + environment.getProperty("local.server.port") + "/" + accountId);
+        redirectUrls.setCancelUrl("http://ec2-15-237-24-182.eu-west-3.compute.amazonaws.com/api/v1/paypal/cancel" + accountId);
+        redirectUrls.setReturnUrl("http://ec2-15-237-24-182.eu-west-3.compute.amazonaws.com/api/v1/paypal/success/" + accountId);
         payment.setRedirectUrls(redirectUrls);
 
         Payment createdPayment;
