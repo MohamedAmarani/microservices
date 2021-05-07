@@ -7,13 +7,13 @@ metadata:
   name: apigateway-ingress
 spec:
   rules:
-    - host: ecommercesaas.com
+    - host: ec2-15-237-24-182.eu-west-3.compute.amazonaws.com
       http:
         paths:
-          - path: /info
+          - path: /api/v1
             pathType: Prefix
             backend:
               service:
-                name: product-service
+                name: apigateway-service
                 port:
                   number: 8080
