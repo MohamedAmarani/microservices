@@ -329,7 +329,7 @@ public class HomeController {
         JSONObject obj = new JSONObject();
         obj.put("orderId", res1.getBody().getId());
         //obtener direccion de entrega del usuario
-        final ResponseEntity<String> res4 = restTemplate.exchange("http://account-service:8080",
+        final ResponseEntity<String> res4 = restTemplate.exchange("http://account-service:8080/" + cartId,
                 HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                 });
         Gson gson = new Gson();
