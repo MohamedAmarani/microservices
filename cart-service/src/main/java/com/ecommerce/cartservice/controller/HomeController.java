@@ -332,6 +332,7 @@ public class HomeController {
         final ResponseEntity<String> res4 = restTemplate.exchange("http://account-service:8080/" + cartId,
                 HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                 });
+        System.out.println(res4.toString());
         Gson gson = new Gson();
         AccountDTO accountDTO = gson.fromJson(res4.getBody(), AccountDTO.class);
         obj.put("deliveryAddress", accountDTO.getDeliveryAddress());
