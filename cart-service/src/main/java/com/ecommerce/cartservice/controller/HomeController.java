@@ -313,7 +313,7 @@ public class HomeController {
 
         //crear pedido (order)
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Cart> orderEntity = new HttpEntity<Cart>(cart.get(), headers);
         final ResponseEntity<OrderDTO> res1 = restTemplate.exchange("http://order-service:8080",
                 HttpMethod.POST, orderEntity, new ParameterizedTypeReference<OrderDTO>() {
@@ -335,7 +335,7 @@ public class HomeController {
         obj.put("deliveryAddress", res4.getBody().getDeliveryAddress());
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity entity = new HttpEntity<String>(obj.toString(), headers);
+        HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
         final ResponseEntity<DeliveryDTO> res2 = restTemplate.exchange("http://delivery-service:8080",
                 HttpMethod.POST, entity, new ParameterizedTypeReference<DeliveryDTO>() {
                 });
