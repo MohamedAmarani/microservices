@@ -335,6 +335,8 @@ public class HomeController {
         Gson gson = new Gson();
         AccountDTO accountDTO = gson.fromJson(res4.getBody(), AccountDTO.class);
         obj.put("deliveryAddress", accountDTO.getDeliveryAddress());
+        System.out.println(res1.getBody().getId());
+        System.out.println(accountDTO.getDeliveryAddress());
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);

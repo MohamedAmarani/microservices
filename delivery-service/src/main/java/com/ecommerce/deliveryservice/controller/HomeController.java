@@ -123,7 +123,7 @@ public class HomeController {
 
     @PostMapping("")
     @ApiOperation(value = "Create a delivery", notes = "Provide information to create a delivery")
-    public Delivery createInventory(@ApiParam(value = "Delivery to create", required = true) @RequestBody Map<String, String> myJsonRequest) {
+    public Delivery createDelivery(@ApiParam(value = "Delivery to create", required = true) @RequestBody Map<String, String> myJsonRequest) {
         incrementCounter();
         return deliveryRepository.save(new Delivery(myJsonRequest.get("orderId").toString(), myJsonRequest.get("deliveryAddress").toString()));
     }
