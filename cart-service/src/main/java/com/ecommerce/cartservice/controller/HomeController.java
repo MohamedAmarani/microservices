@@ -329,13 +329,15 @@ public class HomeController {
         JSONObject obj = new JSONObject();
         obj.put("orderId", res1.getBody().getId());
         //obtener direccion de entrega del usuario
-        final ResponseEntity<AccountDTO> res4 = restTemplate.exchange("http://account-service:8080",
-                HttpMethod.GET, null, new ParameterizedTypeReference<AccountDTO>() {
+        final ResponseEntity<String> res4 = restTemplate.exchange("http://account-service:8080",
+                HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                 });
-        obj.put("deliveryAddress", res4.getBody().getDeliveryAddress());
+        Gson gson = new Gson();
+        AccountDTO accountDTO = gson.fromJson(res4.getBody(), AccountDTO.class);
+        obj.put("deliveryAddress", accountDTO.getDeliveryAddress());
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity entity = new HttpEntity<String>(obj.toString(), headers);
+        HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
         final ResponseEntity<DeliveryDTO> res2 = restTemplate.exchange("http://delivery-service:8080",
                 HttpMethod.POST, entity, new ParameterizedTypeReference<DeliveryDTO>() {
                 });
