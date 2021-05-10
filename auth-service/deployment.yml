@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: authse
-          image: scaredste/auth-service:v2.0.4
+          image: scaredste/auth-service:v3.0.6
           ports:
             - containerPort: 8080
               protocol: TCP

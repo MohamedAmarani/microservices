@@ -24,6 +24,7 @@ class RestTemplateConfig {
 
 	// Create a bean for restTemplate to call services
 	@Bean
+	@LoadBalanced
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
