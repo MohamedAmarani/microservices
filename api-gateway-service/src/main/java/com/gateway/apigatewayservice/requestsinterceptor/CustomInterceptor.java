@@ -1,11 +1,8 @@
-package com.gateway.apigatewayservice;
+package com.gateway.apigatewayservice.requestsinterceptor;
 
-import com.google.common.util.concurrent.AtomicDouble;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import com.gateway.apigatewayservice.requestsinterceptor.MyComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
