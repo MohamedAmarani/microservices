@@ -121,9 +121,29 @@ public class HomeController {
 
     @GetMapping("")
     @ApiOperation(value = "Get all inventories", notes = "Retrieve all inventory from the Database")
-    public List<Inventory> getInventories() {
+    public List<InventoryDTO> getInventories() {
         incrementCounter();
-        return inventoryRepository.findAll();
+        List<InventoryDTO> inventoryDTOs = new ArrayList<>();
+        for (Inventory inventory: inventoryRepository.findAll()) {
+            //la respuesta inicialiada con dos paramatros
+            InventoryDTO inventoryDTO = null;
+            inventoryDTO = new InventoryDTO(inventory.getId(), inventory.getCatalogId());
+            List<InventoryItemDTO> inventoryItemDTOs = new ArrayList<>();
+            List<InventoryItem> inventoryItems = inventory.getInventoryItems();
+
+            //pasamos todos los InventoryItem a InventoryItemDTO
+            for (InventoryItem inventoryItem: inventoryItems) {
+                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.getCatalogId()
+                                + "/products/" + inventoryItem.getProductId(),
+                        HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
+                        });
+                ProductDTO product = res.getBody();
+                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getItems()));
+            }
+            inventoryDTO.setInventoryItems(inventoryItemDTOs);
+            inventoryDTOs.add(inventoryDTO);
+        }
+        return inventoryDTOs;
     }
 
     @HystrixCommand(fallbackMethod = "fallback")

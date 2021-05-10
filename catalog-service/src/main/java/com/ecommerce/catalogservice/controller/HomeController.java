@@ -132,9 +132,25 @@ public class HomeController {
 
     @GetMapping("")
     @ApiOperation(value = "Get all catalogs", notes = "Retrieve all catalogs from the Database")
-    public List<Catalog> getCatalog() {
+    public List<CatalogDTO> getCatalog() {
         incrementCounter();
-        return catalogRepository.findAll();
+        List<CatalogDTO> catalogDTOs = new ArrayList<>();
+        for (Catalog catalog: catalogRepository.findAll()) {
+            List<ProductDTO> productDTOs = new ArrayList<>();
+            CatalogDTO catalogDTO = new CatalogDTO(catalog.getId());
+            List<CatalogItem> ids = catalog.getProductIdentifiers();
+            List<ProductDTO> products = new ArrayList<ProductDTO>();
+            for (CatalogItem productIdentifier : ids) {
+                ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
+                        HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
+                        });
+                ProductDTO product = res.getBody();
+                productDTOs.add(product);
+            }
+            catalogDTO.setProductDTOs(productDTOs);
+            catalogDTOs.add(catalogDTO);
+        }
+        return catalogDTOs;
     }
 
     //@HystrixCommand(fallbackMethod = "fallback")
