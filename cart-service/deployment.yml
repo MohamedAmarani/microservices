@@ -12,7 +12,7 @@ spec:
       # Port to forward to inside the pod
       targetPort: 8080
       nodePort: 30036
-  type: NodePort
+  type: LoadBalancer
 
 ---
 apiVersion: apps/v1
@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: cartse
-          image: scaredste/cart-service:v2.0.14
+          image: scaredste/cart-service:v3.0.1
           ports:
           - containerPort: 8080
             protocol: TCP

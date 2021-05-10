@@ -12,7 +12,7 @@ spec:
       # Port to forward to inside the pod
       targetPort: 8080
       nodePort: 30087
-  type: NodePort
+  type: LoadBalancer
 
 ---
 apiVersion: apps/v1
