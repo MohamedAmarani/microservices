@@ -151,6 +151,24 @@ public class HomeController {
         return product;
     }
 
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "Get a product", notes = "Provide an Id to delete a specific product from the Database")
+    public Product deleteProduct(@ApiParam(value = "Id of the product to delete", required = true) @PathVariable final String id) throws Exception {
+        Product product = null;
+        //si no existe ningun producto con ese id retornamos null
+        try {
+            //throw new Exception("Images can't be fetched");
+            product = productRepository.findById(id).get();
+            productRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found in catalog"
+            );
+        }
+        incrementCounter();
+        return product;
+    }
+
     @GetMapping("/na")
     public String getNa() {
         incrementCounter();

@@ -112,13 +112,28 @@ public class HomeController {
     //@HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{id}")
     @ApiOperation(value = "Get an order", notes = "Provide an Id to retrieve a specific order from the Database")
-    public Order getDelivery(@ApiParam(value = "Id of the order to get", required = true) @PathVariable final String id) {
+    public Order getOrder(@ApiParam(value = "Id of the order to get", required = true) @PathVariable final String id) {
         incrementCounter();
         try {
             return orderRepository.findById(id).get();
         } catch (Exception e) {
             throw new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Order not found"
+            );
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delete an order", notes = "Provide an Id to delete a specific order from the Database")
+    public Order deleteOrder(@ApiParam(value = "Id of the order to delete", required = true) @PathVariable final String id) {
+        incrementCounter();
+        try {
+            Order order = orderRepository.findById(id).get();
+            orderRepository.deleteById(id);
+            return order;
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Order not found"
             );
         }
     }

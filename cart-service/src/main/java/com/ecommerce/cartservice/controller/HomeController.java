@@ -184,6 +184,87 @@ public class HomeController {
         return cartDTO;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
+    @DeleteMapping("/{cartId}")
+    @ApiOperation(value = "Delete a cart", notes = "Provide an Id to delete a specific cart from the Database")
+    public CartDTO deleteCart(@ApiParam(value = "Id of the cart to delete", required = true) @PathVariable final String cartId) {
+        incrementCounter();
+
+        Optional<Cart> cart = cartRepository.findById(cartId);
+        List<CartItem> cartItems = null;
+        try {
+            cartItems = cart.get().getCartItems();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Cart not found"
+            );
+        }
+        CartDTO cartDTO = new CartDTO(cart.get().getId(), cart.get().getInventoryId());
+        List<CartItemDTO> cartItemDTOs = new ArrayList<>();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+
+        for (CartItem cartItem: cartItems) {
+            CartItemDTO cartItemDTO = new CartItemDTO();
+
+            final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cart.get().getInventoryId() +
+                            "/products/" + cartItem.getProductId(),
+                    HttpMethod.GET, entity, new ParameterizedTypeReference<String>() {
+                    });
+
+            Gson gson = new Gson();
+            InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
+
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProductDTO(), cartItem.getItems(), cartItem.isAvailable());
+
+            cartDTO.addCartItemDTOs(cartItemDTO);
+        }
+        cartRepository.deleteById(cartId);
+        return cartDTO;
+    }
+
+    @PatchMapping("/{accountId}/inventoryId")
+    @ApiOperation(value = "Change the delivery address of an account", notes = "Provide the new delivery address")
+    public CartDTO changeInventoryId(@ApiParam(value = "Id of the account for which the delivery address has to be changed", required = true) @PathVariable final String cartId,
+                                         @ApiParam(value = "New delivery address", required = true) @RequestBody Map<String, String> myJsonRequest) {
+        incrementCounter();
+        Optional<Cart> cart = cartRepository.findById(cartId);
+        cart.get().setInventoryId("inventoryId");
+        List<CartItem> cartItems = null;
+        try {
+            cartItems = cart.get().getCartItems();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Cart not found"
+            );
+        }
+        CartDTO cartDTO = new CartDTO(cart.get().getId(), cart.get().getInventoryId());
+        List<CartItemDTO> cartItemDTOs = new ArrayList<>();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+
+        for (CartItem cartItem: cartItems) {
+            CartItemDTO cartItemDTO = new CartItemDTO();
+
+            final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cart.get().getInventoryId() +
+                            "/products/" + cartItem.getProductId(),
+                    HttpMethod.GET, entity, new ParameterizedTypeReference<String>() {
+                    });
+
+            Gson gson = new Gson();
+            InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
+
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProductDTO(), cartItem.getItems(), cartItem.isAvailable());
+
+            cartDTO.addCartItemDTOs(cartItemDTO);
+        }
+        cartRepository.save(cart.get());
+        return cartDTO;
+    }
+
+
     @PostMapping("")
     @ApiOperation(value = "Create a cart", notes = "Provide information to create a cart")
     public Cart createCart(@ApiParam(value = "Information of the cart to create", required = true) @RequestBody Cart cart) {

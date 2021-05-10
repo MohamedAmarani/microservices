@@ -144,6 +144,22 @@ public class HomeController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delete an account", notes = "Provide an Id to delete a specific account from the Database")
+    public Account deleteAccount(@ApiParam(value = "Id of the account to delete", required = true) @PathVariable final String id) {
+        incrementCounter();
+        Optional<Account> account = userRepository.findById(id);
+        try {
+            Account account1 = account.get();
+            userRepository.deleteById(id);
+            return account1;
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Account not found"
+            );
+        }
+    }
+
     @PostMapping("")
     @ApiOperation(value = "Create an account", notes = "Provide information to create an account")
     public Account postAccount(@ApiParam(value = "Information of the account to create", required = true) @RequestBody Account account) throws MessagingException {
@@ -155,7 +171,7 @@ public class HomeController {
         JSONObject obj = new JSONObject();
         obj.put("id", account1.getId());
         //nventario por defecto
-        obj.put("inventoryId", "602a579546e2bb4b088f721c");
+        obj.put("inventoryId", "60991dba2ba67f7350df05c6");
         // set headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

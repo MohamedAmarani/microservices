@@ -33,7 +33,7 @@ public class HomeController {
     private RestTemplate restTemplate;
 
     @Autowired
-    private InventoryRepository catalogRepository;
+    private InventoryRepository inventoryRepository;
 
     @Value("${eureka.instance.instance-id}")
     private String instanceId;
@@ -123,7 +123,7 @@ public class HomeController {
     @ApiOperation(value = "Get all inventories", notes = "Retrieve all inventory from the Database")
     public List<Inventory> getInventories() {
         incrementCounter();
-        return catalogRepository.findAll();
+        return inventoryRepository.findAll();
     }
 
     @HystrixCommand(fallbackMethod = "fallback")
@@ -131,7 +131,7 @@ public class HomeController {
     @GetMapping("/{id}")
     public InventoryDTO getInventory(@ApiParam(value = "Id of the inventory to get", required = true) @PathVariable final String id) {
         incrementCounter();
-        Optional<Inventory> inventory = catalogRepository.findById(id);
+        Optional<Inventory> inventory = inventoryRepository.findById(id);
         //la respuesta inicialiada con dos paramatros
         InventoryDTO response = null;
         try {
@@ -158,11 +158,54 @@ public class HomeController {
         return response;
     }
 
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delete an inventory", notes = "Provide an Id to delete a specific inventory from the Database")
+    public InventoryDTO deleteInventory(@ApiParam(value = "Id of the inventory to delete", required = true) @PathVariable final String id) throws Exception {
+        Inventory inventory = null;
+        //si no existe ningun producto con ese id retornamos null
+        InventoryDTO response = null;
+        try {
+            //throw new Exception("Images can't be fetched");
+            inventory = inventoryRepository.findById(id).get();
+            //la respuesta inicialiada con dos paramatros (pasar inventory a inventorydto)
+            response = new InventoryDTO(inventory.getId(), inventory.getCatalogId());
+            List<InventoryItemDTO> inventoryItemDTOs = new ArrayList<>();
+            List<InventoryItem> inventoryItems = inventory.getInventoryItems();
+
+            //pasamos todos los InventoryItem a InventoryItemDTO
+            for (InventoryItem inventoryItem: inventoryItems) {
+                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.getCatalogId()
+                                + "/products/" + inventoryItem.getProductId(),
+                        HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
+                        });
+                ProductDTO product = res.getBody();
+                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getItems()));
+            }
+            response.setInventoryItems(inventoryItemDTOs);
+            inventoryRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Inventory not found in catalog"
+            );
+        }
+        incrementCounter();
+        return response;
+    }
+
     @PostMapping("")
     @ApiOperation(value = "Create an inventory", notes = "Provide information to create an inventory")
     public Inventory createInventory(@ApiParam(value = "Information of the inventory to create", required = true) @RequestBody Inventory inventory) {
         incrementCounter();
-        return catalogRepository.save(inventory);
+        try {
+            restTemplate.exchange("http://catalog-service:8080/" + inventory.getCatalogId(),
+                    HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
+                    });
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Inventory not found"
+            );
+        }
+        return inventoryRepository.save(inventory);
     }
 
     // a fallback method to be called if failure happened
@@ -178,7 +221,7 @@ public class HomeController {
                                          @ApiParam(value = "Id of the product of the inventory to get", required = true) @PathVariable final String productId) {
         incrementCounter();
         System.out.println("hola");
-        Optional<Inventory> inventory = catalogRepository.findById(inventoryId);
+        Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
         List<InventoryItem> inventoryItems = inventory.get().getInventoryItems();
 
         try {
@@ -209,7 +252,7 @@ public class HomeController {
     public InventoryItemDTO addProductToInventory(@ApiParam(value = "Id of the inventory for which a product has to be inserted", required = true) @PathVariable final String id,
                                                   @ApiParam(value = "Information of the product to insert into the inventory", required = true) @RequestBody InventoryItem inventoryItem) {
         incrementCounter();
-        Optional<Inventory> inventory = catalogRepository.findById(id);
+        Optional<Inventory> inventory = inventoryRepository.findById(id);
         ResponseEntity<ProductDTO> res = null;
         try {
             res = restTemplate.exchange("http://catalog-service:8080/" + inventory.get().getCatalogId()
@@ -232,7 +275,7 @@ public class HomeController {
         }
         if (!alreadyExists)
             inventory.get().addInventoryItems(inventoryItem);
-        catalogRepository.save(inventory.get());
+        inventoryRepository.save(inventory.get());
         return new InventoryItemDTO(res.getBody(), inventoryItem.getItems());
     }
 
@@ -244,7 +287,7 @@ public class HomeController {
                                              @ApiParam(value = "Id of the inventory product for which the stock has to be decremented", required = true) @PathVariable final String productId,
                                              @ApiParam(value = "Quantity of items to reduce from the inventory stock", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
         incrementCounter();
-        Optional<Inventory> inventory = catalogRepository.findById(id);
+        Optional<Inventory> inventory = inventoryRepository.findById(id);
         int num = myJsonRequest.get("numItems");
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())
             //si es el inventory item que buscamos
@@ -256,7 +299,7 @@ public class HomeController {
                 try {
                     inventoryItem.decrementItems(num);
                     //guardamos los cambios
-                    catalogRepository.save(inventory.get());
+                    inventoryRepository.save(inventory.get());
                     //update carts
                     restTemplate.exchange("http://cart-service:8080/update",
                             HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {
@@ -282,7 +325,7 @@ public class HomeController {
                                      @ApiParam(value = "Id of the inventory product for which the stock has to be incremented", required = true) @PathVariable final String productId,
                                      @ApiParam(value = "Quantity of items to increment to the inventory stock", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
         incrementCounter();
-        Optional<Inventory> inventory = catalogRepository.findById(id);
+        Optional<Inventory> inventory = inventoryRepository.findById(id);
         int num = myJsonRequest.get("numItems");
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())
             //si es el inventory item que buscamos
@@ -294,7 +337,7 @@ public class HomeController {
                 try {
                     inventoryItem.incrementItems(num);
                     //guardamos los cambios
-                    catalogRepository.save(inventory.get());
+                    inventoryRepository.save(inventory.get());
                     //update carts
                     restTemplate.exchange("http://cart-service:8080/update",
                             HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {

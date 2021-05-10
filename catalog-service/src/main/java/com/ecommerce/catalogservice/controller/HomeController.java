@@ -152,6 +152,35 @@ public class HomeController {
             result = new CatalogDTO(catalog.get().getId());
         } catch (Exception e){
             throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Catalog not found"
+            );
+        }
+        List<CatalogItem> ids = catalog.get().getProductIdentifiers();
+        List<ProductDTO> products = new ArrayList<ProductDTO>();
+        for (CatalogItem productIdentifier: ids) {
+            ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
+                    HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
+                    });
+            ProductDTO product = res.getBody();
+            productDTOs.add(product);
+        }
+        result.setProductDTOs(productDTOs);
+        return result;
+    }
+
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delete a catalog", notes = "Provide an Id to delete a specific catalog from the Database")
+    public CatalogDTO deleteCatalog(@ApiParam(value = "Id of the catalog to delete", required = true) @PathVariable final String id) throws Exception {
+        incrementCounter();
+        //si no existe ningun catalogo con ese id retornamos null
+        Optional<Catalog> catalog = null;
+        List<ProductDTO> productDTOs = new ArrayList<>();
+        CatalogDTO result = null;
+        try {
+            catalog = catalogRepository.findById(id);
+            result = new CatalogDTO(catalog.get().getId());
+        } catch (Exception e){
+            throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Catalog not found in catalog"
             );
         }
@@ -164,6 +193,7 @@ public class HomeController {
             ProductDTO product = res.getBody();
             productDTOs.add(product);
         }
+        catalogRepository.deleteById(id);
         result.setProductDTOs(productDTOs);
         return result;
     }
