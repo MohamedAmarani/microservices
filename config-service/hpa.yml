@@ -1,13 +1,13 @@
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: product-deployment-hpa
+  name: config-deployment-hpa
   namespace: default
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: product-deployment
+    name: config-deployment
   minReplicas: 1
   maxReplicas: 10
   metrics:

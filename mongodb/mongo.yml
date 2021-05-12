@@ -1,6 +1,0 @@
-usePassword: true
-mongodbRootPassword: ""
-mongodbEnableIPv6: false
-resources:
-  requests:
-    cpu: 500m
