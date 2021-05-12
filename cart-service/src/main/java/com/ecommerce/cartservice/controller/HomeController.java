@@ -432,8 +432,8 @@ public class HomeController {
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         entity = new HttpEntity<String>(obj.toString(), headers);
-        final ResponseEntity<DeliveryDTO> res3 = restTemplate.exchange("http://order-service:8080/" + res1.getBody().getId() + "/deliveryId",
-                HttpMethod.PUT, entity, new ParameterizedTypeReference<DeliveryDTO>() {
+        final ResponseEntity<OrderDTO> res3 = restTemplate.exchange("http://order-service:8080/" + res1.getBody().getId() + "/deliveryId",
+                HttpMethod.PUT, entity, new ParameterizedTypeReference<OrderDTO>() {
                 });
 
         //devolver envio
