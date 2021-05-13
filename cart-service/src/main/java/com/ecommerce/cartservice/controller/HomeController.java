@@ -137,7 +137,7 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getItems(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.isAvailable());
                 cartDTO.addItems(cartItemDTO);
             }
             result.add(cartDTO);
@@ -177,7 +177,7 @@ public class HomeController {
             Gson gson = new Gson();
             InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
 
-            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getItems(), cartItem.isAvailable());
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.isAvailable());
 
             cartDTO.addItems(cartItemDTO);
         }
@@ -216,7 +216,7 @@ public class HomeController {
             Gson gson = new Gson();
             InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
 
-            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getItems(), cartItem.isAvailable());
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.isAvailable());
 
             cartDTO.addItems(cartItemDTO);
         }
@@ -256,7 +256,7 @@ public class HomeController {
             Gson gson = new Gson();
             InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
 
-            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getItems(), cartItem.isAvailable());
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.isAvailable());
 
             cartDTO.addItems(cartItemDTO);
         }
@@ -286,7 +286,7 @@ public class HomeController {
         Optional<Cart> cart = cartRepository.findById(cartId);
 
         JSONObject obj = new JSONObject();
-        obj.put("numItems", cartItem.getItems());
+        obj.put("numItems", cartItem.getQuantity());
         // set headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -302,14 +302,14 @@ public class HomeController {
         InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
 
         //comprovar si hay stock disponible antes de añadir
-        if (inventoryItemDTO.getQuantity() >= cartItem.getItems()) {
+        if (inventoryItemDTO.getQuantity() >= cartItem.getQuantity()) {
             //comprovar si ya existe y hay stock disponible antes de añadir
             boolean alreadyExists = false;
             for (CartItem cartItem1: cart.get().getCartItems()) {
                 if (cartItem1.getProductId().equals(cartItem.getProductId())) {
                     alreadyExists = true;
-                    if (inventoryItemDTO.getQuantity() >= (cartItem.getItems() + cartItem1.getItems())) {
-                        cartItem1.setItems(cartItem.getItems() + cartItem1.getItems());
+                    if (inventoryItemDTO.getQuantity() >= (cartItem.getQuantity() + cartItem1.getQuantity())) {
+                        cartItem1.setQuantity(cartItem.getQuantity() + cartItem1.getQuantity());
                     }
                     else
                         throw new ResponseStatusException(
@@ -353,7 +353,7 @@ public class HomeController {
             Gson gson = new Gson();
             InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
 
-            totalPrice += inventoryItemDTO.getProduct().getPrice() * (double) cartItem.getItems();
+            totalPrice += inventoryItemDTO.getProduct().getPrice() * (double) cartItem.getQuantity();
 
         }
         //realizar el pago
@@ -463,7 +463,7 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                if (inventoryItemDTO.getQuantity() >= cartItem.getItems())
+                if (inventoryItemDTO.getQuantity() >= cartItem.getQuantity())
                     cartItem.setAvailable(true);
                 else {
                     cartItem.setAvailable(false);

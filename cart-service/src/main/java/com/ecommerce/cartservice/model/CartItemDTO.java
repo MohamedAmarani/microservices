@@ -7,17 +7,17 @@ import io.swagger.annotations.ApiModelProperty;
 public class CartItemDTO {
     @ApiModelProperty(notes = "Information of the cart item product")
     ProductDTO product;
-    @ApiModelProperty(notes = "Quantity of items of the product in the cart")
-    int items;
+    @ApiModelProperty(notes = "Quantity of the given product in the cart")
+    int quantity;
     @ApiModelProperty(notes = "Availability of the cart item")
     boolean available = true;
 
     public CartItemDTO() {
     }
 
-    public CartItemDTO(ProductDTO productDTO, int items, boolean available) {
+    public CartItemDTO(ProductDTO productDTO, int quantity, boolean available) {
         this.product = productDTO;
-        this.items = items;
+        this.quantity = quantity;
         this.available = available;
     }
 
@@ -30,11 +30,11 @@ public class CartItemDTO {
     }
 
     public int getItems() {
-        return items;
+        return quantity;
     }
 
-    public void setItems(int items) {
-        this.items = items;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public boolean isAvailable() {
