@@ -39,7 +39,7 @@ public class InventoryDTO {
         this.id = id;
     }
 
-    public List<InventoryItemDTO> getInventoryItems() {
+    public List<InventoryItemDTO> getItems() {
         return items;
     }
 
