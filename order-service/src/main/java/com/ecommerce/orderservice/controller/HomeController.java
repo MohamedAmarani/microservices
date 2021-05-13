@@ -123,7 +123,7 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProductDTO(), cartItem.getItems(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getItems(), cartItem.isAvailable());
                 cartDTO.addItems(cartItemDTO);
             }
             orderDTO.setCart(cartDTO);
@@ -150,7 +150,7 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProductDTO(), cartItem.getItems(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getItems(), cartItem.isAvailable());
                 cartDTO.addItems(cartItemDTO);
             }
             orderDTO.setCart(cartDTO);
@@ -179,7 +179,7 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProductDTO(), cartItem.getItems(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getItems(), cartItem.isAvailable());
                 cartDTO.addItems(cartItemDTO);
             }
             orderDTO.setCart(cartDTO);
@@ -209,7 +209,7 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProductDTO(), cartItem.getItems(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getItems(), cartItem.isAvailable());
                 cartDTO.addItems(cartItemDTO);
             }
             orderDTO.setCart(cartDTO);
@@ -242,7 +242,7 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProductDTO(), cartItem.getItems(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getItems(), cartItem.isAvailable());
                 cartDTO.addItems(cartItemDTO);
             }
             orderDTO.setCart(cartDTO);
