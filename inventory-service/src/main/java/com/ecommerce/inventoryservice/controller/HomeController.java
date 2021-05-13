@@ -140,7 +140,7 @@ public class HomeController {
                 ProductDTO product = res.getBody();
                 inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getItems()));
             }
-            inventoryDTO.setInventoryItems(inventoryItemDTOs);
+            inventoryDTO.setItems(inventoryItemDTOs);
             inventoryDTOs.add(inventoryDTO);
         }
         return inventoryDTOs;
@@ -174,7 +174,7 @@ public class HomeController {
             ProductDTO product = res.getBody();
             inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getItems()));
         }
-        response.setInventoryItems(inventoryItemDTOs);
+        response.setItems(inventoryItemDTOs);
         return response;
     }
 
@@ -201,7 +201,7 @@ public class HomeController {
                 ProductDTO product = res.getBody();
                 inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getItems()));
             }
-            response.setInventoryItems(inventoryItemDTOs);
+            response.setItems(inventoryItemDTOs);
             inventoryRepository.deleteById(id);
         } catch (Exception e) {
             throw new ResponseStatusException(
