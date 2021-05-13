@@ -230,7 +230,7 @@ public class HomeController {
                                          @ApiParam(value = "New inventoryId", required = true) @RequestBody Map<String, String> myJsonRequest) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
-        cart.get().setInventoryId("inventoryId");
+        cart.get().setInventoryId(myJsonRequest.get("inventoryId").toString());
         List<CartItem> cartItems = null;
         try {
             cartItems = cart.get().getCartItems();
