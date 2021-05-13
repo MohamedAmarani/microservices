@@ -6,17 +6,17 @@ public class InventoryItemDTO {
     @ApiModelProperty(notes = "Unique id of the inventory product")
     ProductDTO product;
     @ApiModelProperty(notes = "Quantity of items of the inventory product")
-    int items;
+    int quantity;
 
     public InventoryItemDTO() {
     }
 
     public InventoryItemDTO(ProductDTO product, int items) {
         this.product = product;
-        this.items = items;
+        this.quantity = items;
     }
 
-    public ProductDTO getProductDTO() {
+    public ProductDTO getProduct() {
         return product;
     }
 
@@ -24,12 +24,13 @@ public class InventoryItemDTO {
         this.product = product;
     }
 
-    public int getItems() {
-        return items;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setItems(int items) {
-        this.items = items;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }
+
 

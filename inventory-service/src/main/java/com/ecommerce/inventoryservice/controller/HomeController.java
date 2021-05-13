@@ -138,7 +138,7 @@ public class HomeController {
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
                 ProductDTO product = res.getBody();
-                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getItems()));
+                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getQuantity()));
             }
             inventoryDTO.setItems(inventoryItemDTOs);
             inventoryDTOs.add(inventoryDTO);
@@ -172,7 +172,7 @@ public class HomeController {
                     HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                     });
             ProductDTO product = res.getBody();
-            inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getItems()));
+            inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getQuantity()));
         }
         response.setItems(inventoryItemDTOs);
         return response;
@@ -199,7 +199,7 @@ public class HomeController {
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
                 ProductDTO product = res.getBody();
-                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getItems()));
+                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getQuantity()));
             }
             response.setItems(inventoryItemDTOs);
             inventoryRepository.deleteById(id);
@@ -253,7 +253,7 @@ public class HomeController {
                                     + "/products/" + inventoryItem.getProductId(),
                             HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                             });
-                    return new InventoryItemDTO(res.getBody(), inventoryItem.getItems());
+                    return new InventoryItemDTO(res.getBody(), inventoryItem.getQuantity());
                 }
             }
         } catch (Exception e) {
@@ -288,15 +288,15 @@ public class HomeController {
         for (InventoryItem inventoryItem1: inventory.get().getInventoryItems()) {
             if (inventoryItem1.getProductId().equals(inventoryItem.getProductId())) {
                 alreadyExists = true;
-                inventoryItem1.setItems(inventoryItem1.getItems() + inventoryItem.getItems());
+                inventoryItem1.setQuantity(inventoryItem1.getQuantity() + inventoryItem.getQuantity());
                 //para el return solamente
-                inventoryItem.setItems(inventoryItem1.getItems() + inventoryItem.getItems());
+                inventoryItem.setQuantity(inventoryItem1.getQuantity() + inventoryItem.getQuantity());
             }
         }
         if (!alreadyExists)
             inventory.get().addInventoryItems(inventoryItem);
         inventoryRepository.save(inventory.get());
-        return new InventoryItemDTO(res.getBody(), inventoryItem.getItems());
+        return new InventoryItemDTO(res.getBody(), inventoryItem.getQuantity());
     }
 
     //decrement items
@@ -324,7 +324,7 @@ public class HomeController {
                     restTemplate.exchange("http://cart-service:8080/update",
                             HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {
                             });
-                    return new InventoryItemDTO(res.getBody(), inventoryItem.getItems());
+                    return new InventoryItemDTO(res.getBody(), inventoryItem.getQuantity());
 
                 } catch (Exception e) {
                     throw new ResponseStatusException(
@@ -362,7 +362,7 @@ public class HomeController {
                     restTemplate.exchange("http://cart-service:8080/update",
                             HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {
                             });
-                    return new InventoryItemDTO(res.getBody(), inventoryItem.getItems());
+                    return new InventoryItemDTO(res.getBody(), inventoryItem.getQuantity());
 
                 } catch (Exception e) {
                     throw new ResponseStatusException(
