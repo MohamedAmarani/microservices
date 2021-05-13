@@ -224,10 +224,10 @@ public class HomeController {
         return cartDTO;
     }
 
-    @PatchMapping("/{accountId}/inventoryId")
-    @ApiOperation(value = "Change the delivery address of an account", notes = "Provide the new delivery address")
-    public CartDTO changeInventoryId(@ApiParam(value = "Id of the account for which the delivery address has to be changed", required = true) @PathVariable final String cartId,
-                                         @ApiParam(value = "New delivery address", required = true) @RequestBody Map<String, String> myJsonRequest) {
+    @PatchMapping("/{cartId}/inventoryId")
+    @ApiOperation(value = "Change the inventoryId of a cart", notes = "Provide the new inventory id")
+    public CartDTO changeInventoryId(@ApiParam(value = "Id of the inventory for which the inventoryId has to be changed", required = true) @PathVariable final String cartId,
+                                         @ApiParam(value = "New inventoryId", required = true) @RequestBody Map<String, String> myJsonRequest) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
         cart.get().setInventoryId("inventoryId");
