@@ -147,7 +147,7 @@ public class HomeController {
                 ProductDTO product = res.getBody();
                 productDTOs.add(product);
             }
-            catalogDTO.setProductDTOs(productDTOs);
+            catalogDTO.setProducts(productDTOs);
             catalogDTOs.add(catalogDTO);
         }
         return catalogDTOs;
@@ -180,7 +180,7 @@ public class HomeController {
             ProductDTO product = res.getBody();
             productDTOs.add(product);
         }
-        result.setProductDTOs(productDTOs);
+        result.setProducts(productDTOs);
         return result;
     }
 
@@ -210,7 +210,7 @@ public class HomeController {
             productDTOs.add(product);
         }
         catalogRepository.deleteById(id);
-        result.setProductDTOs(productDTOs);
+        result.setProducts(productDTOs);
         return result;
     }
 

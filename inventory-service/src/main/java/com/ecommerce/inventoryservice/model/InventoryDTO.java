@@ -15,7 +15,7 @@ public class InventoryDTO {
     @ApiModelProperty(notes = "Unique id of the inventory catalog")
     String catalogId;
     @ApiModelProperty(notes = "Information of the items of the inventory")
-    List<InventoryItemDTO> inventoryItems = new ArrayList<>();
+    List<InventoryItemDTO> items = new ArrayList<>();
 
     public InventoryDTO() {
     }
@@ -25,10 +25,10 @@ public class InventoryDTO {
         this.catalogId = catalogId;
     }
 
-    public InventoryDTO(String id, String catalogId, List<InventoryItemDTO> inventoryItems) {
+    public InventoryDTO(String id, String catalogId, List<InventoryItemDTO> items) {
         this.id = id;
         this.catalogId = catalogId;
-        this.inventoryItems = inventoryItems;
+        this.items = items;
     }
 
     public String getId() {
@@ -40,15 +40,15 @@ public class InventoryDTO {
     }
 
     public List<InventoryItemDTO> getInventoryItems() {
-        return inventoryItems;
+        return items;
     }
 
-    public void setInventoryItems(List<InventoryItemDTO> inventoryItems) {
-        this.inventoryItems = inventoryItems;
+    public void setItems(List<InventoryItemDTO> items) {
+        this.items = items;
     }
 
-    public void addInventoryItems(InventoryItemDTO inventoryItems) {
-        this.inventoryItems.add(inventoryItems);
+    public void addItems(InventoryItemDTO items) {
+        this.items.add(items);
     }
 
     public String getCatalogId() {

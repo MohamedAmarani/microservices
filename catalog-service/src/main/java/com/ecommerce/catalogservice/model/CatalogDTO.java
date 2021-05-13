@@ -2,7 +2,6 @@ package com.ecommerce.catalogservice.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,16 +32,16 @@ public class CatalogDTO {
         this.id = id;
     }
 
-    public List<ProductDTO> getProductDTOs() {
+    public List<ProductDTO> getProducts() {
         return products;
     }
 
-    public void setProductDTOs(List<ProductDTO> productDTOs) {
-        this.products = productDTOs;
+    public void setProducts(List<ProductDTO> products) {
+        this.products = products;
     }
 
-    public void addProductDTO(ProductDTO productDTOs) {
-        this.products.add(productDTOs);
+    public void addProducts(ProductDTO product) {
+        this.products.add(product);
     }
 }
 

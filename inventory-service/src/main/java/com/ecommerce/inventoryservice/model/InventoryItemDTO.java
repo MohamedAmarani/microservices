@@ -3,27 +3,26 @@ package com.ecommerce.inventoryservice.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Details obout an inventory item")
 public class InventoryItemDTO {
     @ApiModelProperty(notes = "Unique id of the inventory product")
-    ProductDTO productDTO;
+    ProductDTO product;
     @ApiModelProperty(notes = "Quantity of items of the inventory product")
     int items;
 
     public InventoryItemDTO() {
     }
 
-    public InventoryItemDTO(ProductDTO productDTO, int items) {
-        this.productDTO = productDTO;
+    public InventoryItemDTO(ProductDTO product, int items) {
+        this.product = product;
         this.items = items;
     }
 
     public ProductDTO getProductDTO() {
-        return productDTO;
+        return product;
     }
 
-    public void setProductDTO(String id) {
-        this.productDTO = productDTO;
+    public void setProduct(ProductDTO product) {
+        this.product = product;
     }
 
     public int getItems() {

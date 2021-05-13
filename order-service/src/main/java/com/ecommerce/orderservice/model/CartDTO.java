@@ -11,7 +11,7 @@ public class CartDTO {
     @ApiModelProperty(notes = "Unique id of the cart")
     String id;
     @ApiModelProperty(notes = "Information of the cart items of the cart")
-    List<CartItemDTO> cartItems = new ArrayList<>();
+    List<CartItemDTO> items = new ArrayList<>();
     @ApiModelProperty(notes = "Unique id of the inventory attached to the cart")
     String inventoryId;
 
@@ -20,7 +20,7 @@ public class CartDTO {
 
     public CartDTO(String id, String inventoryId) {
         this.id = id;
-        this.cartItems = new ArrayList<>();
+        this.items = new ArrayList<>();
         this.inventoryId = inventoryId;
     }
 
@@ -32,16 +32,16 @@ public class CartDTO {
         this.id = id;
     }
 
-    public List<CartItemDTO> getCartItemDTOs() {
-        return cartItems;
+    public List<CartItemDTO> getItems() {
+        return items;
     }
 
-    public void setCartItemDTOs(List<CartItemDTO> cartItemDTOs) {
-        this.cartItems = cartItemDTOs;
+    public void setItems(List<CartItemDTO> items) {
+        this.items = items;
     }
 
-    public void addCartItemDTOs(CartItemDTO cartItemDTO) {
-        this.cartItems.add(cartItemDTO);
+    public void addItems(CartItemDTO item) {
+        this.items.add(item);
     }
 
     public String getInventoryId() {
