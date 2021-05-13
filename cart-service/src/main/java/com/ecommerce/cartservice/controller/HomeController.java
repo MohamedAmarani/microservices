@@ -280,7 +280,7 @@ public class HomeController {
     //añadir producto a cart
     @PutMapping("/{cartId}")
     @ApiOperation(value = "Add inventory product to cart", notes = "Add a product available in the inventory to a cart")
-    public Cart addProductToInventory(@ApiParam(value = "Id of the cart on which an inventory product has to be added", required = true) @PathVariable final String cartId,
+    public CartDTO addProductToInventory(@ApiParam(value = "Id of the cart on which an inventory product has to be added", required = true) @PathVariable final String cartId,
                                       @ApiParam(value = "Product Id and quantity of items available in the inventory to be added to the given cart", required = true) @RequestBody CartItem cartItem) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
@@ -325,8 +325,31 @@ public class HomeController {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, "Not enough stock"
             );
+        //pasar cart a cartDTO
+        Cart cart1 = cartRepository.save(cart.get());
 
-        return cartRepository.save(cart.get());
+        CartDTO cartDTO = new CartDTO(cart1.getId(), cart1.getInventoryId());
+        List<CartItemDTO> cartItemDTOs = new ArrayList<>();
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        entity = new HttpEntity<String>(null, headers);
+
+        for (CartItem cartItem1: cart1.getCartItems()) {
+            CartItemDTO cartItemDTO = new CartItemDTO();
+
+            final ResponseEntity<String> res1 = restTemplate.exchange("http://inventory-service:8080/" + cart1.getInventoryId() +
+                            "/products/" + cartItem1.getProductId(),
+                    HttpMethod.GET, entity, new ParameterizedTypeReference<String>() {
+                    });
+
+            gson = new Gson();
+            inventoryItemDTO = gson.fromJson(res1.getBody(), InventoryItemDTO.class);
+
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem1.getQuantity(), cartItem1.isAvailable());
+
+            cartDTO.addItems(cartItemDTO);
+        }
+        return cartDTO;
     }
 
     @RequestMapping(value = "/{cartId}/checkout", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
