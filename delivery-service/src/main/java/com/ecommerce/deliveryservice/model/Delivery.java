@@ -76,6 +76,13 @@ public class Delivery {
         this.estimatedDateOfArrival = estimatedDateOfArrival;
     }
 
+    public void updateEstimatedDateOfArrival(int offsetDays) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(this.estimatedDateOfArrival);
+        cal.add(Calendar.DAY_OF_YEAR, offsetDays);
+        this.estimatedDateOfArrival = cal.getTime();
+    }
+
     public String getDeliveryAddress() {
         return deliveryAddress;
     }

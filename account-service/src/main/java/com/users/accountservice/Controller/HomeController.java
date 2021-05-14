@@ -252,6 +252,14 @@ public class HomeController {
             emailDeliveryDelivered(userRepository.findById(accountId).get(), deliveryDTO);
     }
 
+    @PostMapping("/{accountId}/deliveryDateUpdateEmail")
+    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
+    public void sendDeliveryDateUpdateEmail(@ApiParam(value = "Id of the account for which a delivery date update email has to be sent", required = true) @PathVariable final String accountId,
+                                        @ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DeliveryDTO deliveryDTO) throws MessagingException {
+        incrementCounter();
+        emailDeliveryDateUpdate(userRepository.findById(accountId).get(), deliveryDTO);
+    }
+
     public String emailDeliveryUpdate(Account receiver, DeliveryDTO deliveryDTO) throws MessagingException {
         MimeMessage msg = javaMailSender.createMimeMessage();
 
@@ -260,8 +268,8 @@ public class HomeController {
         helper.setTo(receiver.getEmail());
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
         String text = "<h2>Hi " + receiver.getUsername() + ", a delivery status has been updated!</h2>\n" +
-                "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
-                "and you will receive it in the " + deliveryDTO.getEstimatedDateOfArrival() + ". We will keep you updated of any new event.</p>\n" +
+                "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() + " is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
+                "and you will receive it at "+ deliveryDTO.getDeliveryAddress() + ", the " + deliveryDTO.getEstimatedDateOfArrival() + ". We will keep you updated of any new event.</p>\n" +
                 "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ". " +
                 "The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
                 "<table class=\"editorDemoTable\">\n" +
@@ -302,8 +310,9 @@ public class HomeController {
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
-        String text = "<h2>Hi " + receiver.getUsername() + ", a delivery has been successfully delivered!</h2>\n" +
-                "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " is now is now delivered at the given address, " +
+        String text = "<h2>Hi " + receiver.getUsername() + ", a delivery has successfully arrived at its destination!</h2>\n" +
+                "<p style=\"font-size: 1.5em;\">" + "The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() +
+                " has now arrived at " + deliveryDTO.getDeliveryAddress() + ".\n" +
                 "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ". " +
                 "The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
                 "<table class=\"editorDemoTable\">\n" +
@@ -330,6 +339,49 @@ public class HomeController {
         text += "</tbody>\n" +
                 "</table>\n" +
                 "Thank you for the purchase, enjoy it!\n" +
+                "<p>Regards.</p>\n";
+
+        helper.setText(text,true);
+        //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
+        javaMailSender.send(msg);
+        return msg.getSubject();
+    }
+
+    public String emailDeliveryDateUpdate(Account receiver, DeliveryDTO deliveryDTO) throws MessagingException {
+        MimeMessage msg = javaMailSender.createMimeMessage();
+
+        // true = multipart message
+        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+        helper.setTo(receiver.getEmail());
+        helper.setSubject("News on the delivery " + deliveryDTO.getId());
+        String text = "<h2>Hi " + receiver.getUsername() + ", a delivery date has been updated!</h2>\n" +
+                "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() + " in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state " +
+                "has changed its delivery date to " + deliveryDTO.getEstimatedDateOfArrival() + ". Remember that you will receive it at " + deliveryDTO.getDeliveryAddress() + ". We will keep you updated of any new event.</p>\n" +
+                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ". " +
+                "The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
+                "<table class=\"editorDemoTable\">\n" +
+                "<tbody>\n" +
+                "<tr>\n" +
+                "<td><strong>Product name</strong></td>\n" +
+                "<td><strong>Price</strong></td>\n" +
+                "<td><strong>Quantity</strong></td>\n" +
+                "</tr>\n";
+        //obtener order
+        final ResponseEntity<String> res4 = restTemplate.exchange("http://order-service:8080/" + deliveryDTO.getOrderId(),
+                HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
+                });
+        Gson gson = new Gson();
+        OrderDTO orderDTO = gson.fromJson(res4.getBody(), OrderDTO.class);
+        //iterar sobre todos los elementos del cart del order
+        for (CartItemDTO cartItemDTO : orderDTO.getCart().getItems()) {
+            text += "<tr>\n" +
+                    "<td>" + cartItemDTO.getProduct().getName() + "</td>\n" +
+                    "<td>" + cartItemDTO.getProduct().getPrice() + "</td>\n" +
+                    "<td>" + cartItemDTO.getQuantity() + "</td>\n" +
+                    "</tr>\n";
+        }
+        text += "</tbody>\n" +
+                "</table>\n" +
                 "<p>Regards.</p>\n";
 
         helper.setText(text,true);

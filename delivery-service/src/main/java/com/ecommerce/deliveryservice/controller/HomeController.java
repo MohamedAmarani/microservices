@@ -130,7 +130,7 @@ public class HomeController {
         return deliveryRepository.save(new Delivery(myJsonRequest.get("orderId").toString(), myJsonRequest.get("deliveryAddress").toString()));
     }
 
-    @PutMapping("/{id}/nextEvent")
+    @PatchMapping("/{id}/nextEvent")
     @ApiOperation(value = "Update the delivery state", notes = "Proceed to get to the next stage of the delivery")
     public Delivery continueProcess(@ApiParam(value = "Id of the delivery for which the state has to be updated", required = true) @PathVariable final String id) {
         incrementCounter();
@@ -148,6 +148,31 @@ public class HomeController {
         HttpEntity<Delivery> deliveryEntity = new HttpEntity<Delivery>(delivery, headers);
         //enviar mail de update
         final ResponseEntity<String> res1 = restTemplate.exchange("http://account-service:8080/" + orderDTO.getCart().getId() + "/deliveryUpdateEmail",
+                HttpMethod.POST, deliveryEntity, new ParameterizedTypeReference<String>() {
+                });
+        return delivery;
+    }
+
+    @PatchMapping("/{id}/estimatedDateOfArrival")
+    @ApiOperation(value = "Update the delivery state", notes = "Proceed to get to the next stage of the delivery")
+    public Delivery updateEstimatedDateOfArrival(@ApiParam(value = "Id of the delivery for which the state has to be updated", required = true) @PathVariable final String id,
+                                                 @ApiParam(value = "New date based out of offset days of the estimated date of arrival", required = true) @RequestBody Map<String, String> myJsonRequest) {
+        incrementCounter();
+        Delivery delivery = deliveryRepository.findById(id).get();
+        int offsetDays = Integer.parseInt(myJsonRequest.get("offsetDays"));
+        delivery.updateEstimatedDateOfArrival(offsetDays);
+        delivery = deliveryRepository.save(delivery);
+        //obtener accountId de la cuenta que ha hecho el pedido
+        final ResponseEntity<String> res4 = restTemplate.exchange("http://order-service:8080/" + delivery.getOrderId(),
+                HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
+                });
+        Gson gson = new Gson();
+        OrderDTO orderDTO = gson.fromJson(res4.getBody(), OrderDTO.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Delivery> deliveryEntity = new HttpEntity<Delivery>(delivery, headers);
+        //enviar mail de update
+        final ResponseEntity<String> res1 = restTemplate.exchange("http://account-service:8080/" + orderDTO.getCart().getId() + "/deliveryDateUpdateEmail",
                 HttpMethod.POST, deliveryEntity, new ParameterizedTypeReference<String>() {
                 });
         return delivery;
