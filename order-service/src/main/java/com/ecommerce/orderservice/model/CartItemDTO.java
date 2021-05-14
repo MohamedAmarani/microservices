@@ -21,11 +21,11 @@ public class CartItemDTO {
         this.available = available;
     }
 
-    public ProductDTO getProductDTO() {
+    public ProductDTO getProduct() {
         return product;
     }
 
-    public void setProductDTO(ProductDTO id) {
+    public void setProduct(ProductDTO id) {
         this.product = product;
     }
 

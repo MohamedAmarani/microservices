@@ -14,7 +14,7 @@ public class OrderDTO {
     @ApiModelProperty(notes = "Unique id of the delivery linked to the order")
     String deliveryId;
     @ApiModelProperty(notes = "Information about the ordered cart")
-    CartDTO orderCart;
+    CartDTO cart;
 
     public OrderDTO() {
     }
@@ -25,7 +25,7 @@ public class OrderDTO {
     }
 
     public OrderDTO(CartDTO orderCart) {
-        this.orderCart = orderCart;
+        this.cart = orderCart;
     }
 
     public String getId() {
@@ -37,11 +37,11 @@ public class OrderDTO {
     }
 
     public CartDTO getCart() {
-        return orderCart;
+        return cart;
     }
 
     public void setCart(CartDTO orderCart) {
-        this.orderCart = orderCart;
+        this.cart = orderCart;
     }
 
     public String getDeliveryId() {
