@@ -382,6 +382,7 @@ public class HomeController {
         //realizar el pago
         JSONObject obj = new JSONObject();
         obj.put("totalPrice", totalPrice);
+        System.out.println(obj.get("totalPrice"));
         // set headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
