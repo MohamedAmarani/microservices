@@ -276,6 +276,7 @@ public class HomeController {
         Gson gson = new Gson();
         OrderDTO orderDTO = gson.fromJson(res4.getBody(), OrderDTO.class);
         System.out.println(orderDTO.toString());
+        System.out.println(orderDTO.getId());
         System.out.println(orderDTO.getCart().toString());
         System.out.println(orderDTO.getCart().getItems().toString());
         System.out.println(orderDTO.getCart().toString());
