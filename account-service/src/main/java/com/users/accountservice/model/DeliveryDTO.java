@@ -92,6 +92,13 @@ public class DeliveryDTO {
             deliveryState = deliveryStates[nextIndex];
         }
     }
+
+    public boolean isInLastState() {
+        int index = deliveryState.ordinal();
+        if (index == DeliveryState.values().length - 1)
+            return true;
+        return false;
+    }
 }
 
 @ApiModel(description = "States of the delivery")
