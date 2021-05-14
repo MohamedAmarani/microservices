@@ -285,11 +285,11 @@ public class HomeController {
         //iterar sobre todos los elementos del cart del order
         for (CartItemDTO cartItemDTO : orderDTO.getCart().getItems()) {
             text += "<tr>\n" +
-                    "<td>" + cartItemDTO.getProductDTO().getName() + "</td>\n" +
-                    "<td>" + cartItemDTO.getProductDTO().getPrice() + "</td>\n" +
+                    "<td>" + cartItemDTO.getProduct().getName() + "</td>\n" +
+                    "<td>" + cartItemDTO.getProduct().getPrice() + "</td>\n" +
                     "<td>" + cartItemDTO.getQuantity() + "</td>\n" +
                     "</tr>\n";
-            totalPrice += cartItemDTO.getProductDTO().getPrice() * (double) cartItemDTO.getQuantity();
+            totalPrice += cartItemDTO.getProduct().getPrice() * (double) cartItemDTO.getQuantity();
         }
         text += "</tbody>\n" +
                 "</table>\n" +
