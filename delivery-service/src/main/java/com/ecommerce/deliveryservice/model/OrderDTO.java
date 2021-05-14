@@ -1,10 +1,11 @@
-package com.ecommerce.cartservice.model;
+package com.ecommerce.deliveryservice.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@ApiModel(description = "Details of an order")
+@ApiModel(description = "Details obout an order")
 public class OrderDTO {
     @ApiModelProperty(notes = "Unique id of the order")
     String id;
@@ -16,8 +17,13 @@ public class OrderDTO {
     public OrderDTO() {
     }
 
-    public OrderDTO(CartDTO cart) {
-        this.cart = cart;
+    public OrderDTO(String id, String deliveryId) {
+        this.id = id;
+        this.deliveryId = deliveryId;
+    }
+
+    public OrderDTO(CartDTO orderCart) {
+        this.cart = orderCart;
     }
 
     public String getId() {
@@ -32,7 +38,15 @@ public class OrderDTO {
         return cart;
     }
 
-    public void setCart(CartDTO cart) {
-        this.cart = cart;
+    public void setCart(CartDTO orderCart) {
+        this.cart = orderCart;
+    }
+
+    public String getDeliveryId() {
+        return deliveryId;
+    }
+
+    public void setDeliveryId(String deliveryId) {
+        this.deliveryId = deliveryId;
     }
 }

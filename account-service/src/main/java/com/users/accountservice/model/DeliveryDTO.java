@@ -8,11 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Calendar;
 import java.util.Date;
 
-@Document
 @ApiModel(description = "Details obout a product")
 public class DeliveryDTO {
     @ApiModelProperty(notes = "Unique id of the delivery")
-    @Id
     String id;
     @ApiModelProperty(notes = "Unique id of the order that has to be delivered")
     String orderId;

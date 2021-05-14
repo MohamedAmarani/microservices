@@ -1,8 +1,10 @@
 package com.ecommerce.deliveryservice.controller;
 
 import com.ecommerce.deliveryservice.model.Delivery;
+import com.ecommerce.deliveryservice.model.OrderDTO;
 import com.ecommerce.deliveryservice.repository.DeliveryRepository;
 import com.google.common.util.concurrent.AtomicDouble;
+import com.google.gson.Gson;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -134,7 +136,21 @@ public class HomeController {
         incrementCounter();
         Delivery delivery = deliveryRepository.findById(id).get();
         delivery.setNextDeliveryEvent();
-        return deliveryRepository.save(delivery);
+        delivery = deliveryRepository.save(delivery);
+        //obtener accountId de la cuenta que ha hecho el pedido
+        final ResponseEntity<String> res4 = restTemplate.exchange("http://order-service:8080/" + delivery.getOrderId(),
+                HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
+                });
+        Gson gson = new Gson();
+        OrderDTO orderDTO = gson.fromJson(res4.getBody(), OrderDTO.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Delivery> deliveryEntity = new HttpEntity<Delivery>(delivery, headers);
+        //enviar mail de update
+        final ResponseEntity<String> res1 = restTemplate.exchange("http://delivery-service:8080" + orderDTO.getCart().getId() + "/deliveryUpdateEmail",
+                HttpMethod.POST, deliveryEntity, new ParameterizedTypeReference<String>() {
+                });
+        return delivery;
     }
 
     // a fallback method to be called if failure happened
