@@ -1,4 +1,4 @@
-package com.ecommerce.cartservice.model;
+package com.users.accountservice.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

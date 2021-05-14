@@ -1,7 +1,11 @@
 package com.users.accountservice.Controller;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import com.users.accountservice.Model.Account;
+import com.google.gson.Gson;
+import com.users.accountservice.model.Account;
+import com.users.accountservice.model.CartItemDTO;
+import com.users.accountservice.model.DeliveryDTO;
+import com.users.accountservice.model.OrderDTO;
 import com.users.accountservice.repository.UserRepository;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
@@ -9,18 +13,12 @@ import io.swagger.annotations.ApiParam;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.http.*;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -29,8 +27,10 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -53,6 +53,15 @@ public class HomeController {
 
     @Value("${message:Hello default}")
     private String message;
+
+    @Value("${htmlWelcomeText:Hello default}")
+    private String htmlWelcomeText;
+
+    @Value("${htmlOrderCompletedText:Hello default}")
+    private String htmlOrderCompletedText;
+
+    @Value("${htmlDeliveryUpdateText:Hello default}")
+    private String htmlDeliveryUpdateText;
 
     private AtomicDouble ref;
 
@@ -180,7 +189,7 @@ public class HomeController {
                 HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
                 });
 
-        email(account.getEmail());
+        emailWelcome(account.getEmail());
 
         return account1;
     }
@@ -233,7 +242,100 @@ public class HomeController {
         return userRepository.save(account.get());
     }
 
-    public String email(String receiver) throws MessagingException {
+    @PostMapping("/deliveryUpdateEmail")
+    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
+    public void sendDeliveryUpdateEmail(@ApiParam(value = "Information of the account to create", required = true) @RequestBody DeliveryDTO deliveryDTO) throws MessagingException {
+        incrementCounter();
+        emailOrderCompleted("e", deliveryDTO);
+    }
+
+    public String emailOrderCompleted(String receiver, DeliveryDTO deliveryDTO) throws MessagingException {
+        MimeMessage msg = javaMailSender.createMimeMessage();
+
+        // true = multipart message
+        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+        helper.setTo("scndaccounx@gmail.com");
+        String text = "<h2>Your delivery status has been updated!</h2>\n" +
+                "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
+                "and you will receive it in the " + deliveryDTO.getEstimatedDateOfArrival() + ". We will keep you updated of any new event.</p>\n" +
+                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ". " +
+                "The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
+                "<table class=\"editorDemoTable\">\n" +
+                "<tbody>\n" +
+                "<tr>\n" +
+                "<td><strong>Product name</strong></td>\n" +
+                "<td><strong>Price</strong></td>\n" +
+                "<td><strong>Quantity</strong></td>\n" +
+                "</tr>\n";
+        //obtener order
+        final ResponseEntity<String> res4 = restTemplate.exchange("http://order-service:8080/" + deliveryDTO.getOrderId(),
+                HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
+                });
+        System.out.println(res4.toString());
+        Gson gson = new Gson();
+        OrderDTO orderDTO = gson.fromJson(res4.getBody(), OrderDTO.class);
+
+        double totalPrice = 0.0;
+        //iterar sobre todos los elementos del cart del order
+        for (CartItemDTO cartItemDTO : orderDTO.getCart().getItems()) {
+            text += "<tr>\n" +
+                    "<td>" + cartItemDTO.getProductDTO().getName() + "</td>\n" +
+                    "<td>" + cartItemDTO.getProductDTO().getPrice() + "</td>\n" +
+                    "<td>" + cartItemDTO.getQuantity() + "</td>\n" +
+                    "</tr>\n";
+            totalPrice += cartItemDTO.getProductDTO().getPrice() * (double) cartItemDTO.getQuantity();
+        }
+        text += "</tbody>\n" +
+                "</table>\n" +
+                "<p>The total price is " + totalPrice + " euros.</p>\n" +
+                "<p>Regards.</p>\n";
+
+        helper.setText(text,true);
+        //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
+        javaMailSender.send(msg);
+        return msg.getSubject();
+    }
+
+    public String emailDeliveryUpdate(String receiver) throws MessagingException {
+        MimeMessage msg = javaMailSender.createMimeMessage();
+
+        // true = multipart message
+        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+        helper.setTo(receiver);
+        helper.setText( "<h2>Your delivery status has been updated!</h2>\n" +
+                "<p style=\"font-size: 1.5em;\">The delivery 'id' is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">type your text</strong> status. We will keep you updated of any new event.</p>\n" +
+                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order 'id'.The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
+                "<table class=\"editorDemoTable\" style=\"height: 88px;\" width=\"167\">\n" +
+                "<tbody>\n" +
+                "<tr>\n" +
+                "<td style=\"width: 58px;\"><strong>Product name</strong></td>\n" +
+                "<td style=\"width: 70px;\"><strong>Price</strong></td>\n" +
+                "<td style=\"width: 30px;\"><strong>Quantity</strong></td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td style=\"width: 58px;\">Camisetita guapa</td>\n" +
+                "<td style=\"width: 70px;\">Chicago</td>\n" +
+                "<td style=\"width: 30px;\">23</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td style=\"width: 58px;\">Lucy</td>\n" +
+                "<td style=\"width: 70px;\">Wisconsin</td>\n" +
+                "<td style=\"width: 30px;\">19</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td style=\"width: 58px;\">Amanda</td>\n" +
+                "<td style=\"width: 70px;\">Madison</td>\n" +
+                "<td style=\"width: 30px;\">22</td>\n" +
+                "</tr>\n" +
+                "</tbody>\n" +
+                "</table>\n" +
+                "<p>Regards.</p>",true);
+        //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
+        javaMailSender.send(msg);
+        return msg.getSubject();
+    }
+
+    public String emailWelcome(String receiver) throws MessagingException {
         MimeMessage msg = javaMailSender.createMimeMessage();
 
         // true = multipart message

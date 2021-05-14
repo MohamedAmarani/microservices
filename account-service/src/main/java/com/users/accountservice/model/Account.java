@@ -1,4 +1,4 @@
-package com.users.accountservice.Model;
+package com.users.accountservice.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -1,7 +1,6 @@
 package com.users.accountservice.repository;
 
-import com.users.accountservice.Model.Account;
-import org.springframework.context.annotation.Bean;
+import com.users.accountservice.model.Account;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
