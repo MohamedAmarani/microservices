@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -381,6 +382,8 @@ public class HomeController {
         }
         //realizar el pago
         JSONObject obj = new JSONObject();
+        DecimalFormat df = new DecimalFormat("#.##");
+        totalPrice = Double.valueOf(df.format(totalPrice));
         obj.put("totalPrice", totalPrice);
         System.out.println(obj.get("totalPrice"));
         // set headers
