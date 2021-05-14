@@ -273,10 +273,10 @@ public class HomeController {
         final ResponseEntity<String> res4 = restTemplate.exchange("http://order-service:8080/" + deliveryDTO.getOrderId(),
                 HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                 });
-        System.out.println(res4.toString());
         Gson gson = new Gson();
         OrderDTO orderDTO = gson.fromJson(res4.getBody(), OrderDTO.class);
-
+        System.out.println(orderDTO.toString());
+        System.out.println(orderDTO.getCart().getItems().toString());
         double totalPrice = 0.0;
         //iterar sobre todos los elementos del cart del order
         for (CartItemDTO cartItemDTO : orderDTO.getCart().getItems()) {
