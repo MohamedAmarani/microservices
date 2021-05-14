@@ -276,7 +276,10 @@ public class HomeController {
         Gson gson = new Gson();
         OrderDTO orderDTO = gson.fromJson(res4.getBody(), OrderDTO.class);
         System.out.println(orderDTO.toString());
+        System.out.println(orderDTO.getCart().toString());
         System.out.println(orderDTO.getCart().getItems().toString());
+        System.out.println(orderDTO.getCart().toString());
+        System.out.println(orderDTO.getCart().getId().toString());
         double totalPrice = 0.0;
         //iterar sobre todos los elementos del cart del order
         for (CartItemDTO cartItemDTO : orderDTO.getCart().getItems()) {
