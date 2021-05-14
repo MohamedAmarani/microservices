@@ -7,6 +7,7 @@ import com.users.accountservice.model.CartItemDTO;
 import com.users.accountservice.model.DeliveryDTO;
 import com.users.accountservice.model.OrderDTO;
 import com.users.accountservice.repository.UserRepository;
+import io.fabric8.kubernetes.model.util.Helper;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -255,6 +256,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo("scndaccounx@gmail.com");
+        helper.setSubject("New on the delivery " + deliveryDTO.getId());
         String text = "<h2>Your delivery status has been updated!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
                 "and you will receive it in the " + deliveryDTO.getEstimatedDateOfArrival() + ". We will keep you updated of any new event.</p>\n" +
@@ -302,6 +304,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver);
+        helper.setSubject("Te has registrado correctamente");
         helper.setText( "<h2>Your delivery status has been updated!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The delivery 'id' is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">type your text</strong> status. We will keep you updated of any new event.</p>\n" +
                 "<p style=\"font-size: 1.5em;\">Below you can find the details of your order 'id'.The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
