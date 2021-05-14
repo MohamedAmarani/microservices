@@ -154,12 +154,12 @@ public class HomeController {
     }
 
     @PatchMapping("/{id}/estimatedDateOfArrival")
-    @ApiOperation(value = "Update the delivery state", notes = "Proceed to get to the next stage of the delivery")
-    public Delivery updateEstimatedDateOfArrival(@ApiParam(value = "Id of the delivery for which the state has to be updated", required = true) @PathVariable final String id,
-                                                 @ApiParam(value = "New date based out of offset days of the estimated date of arrival", required = true) @RequestBody Map<String, String> myJsonRequest) {
+    @ApiOperation(value = "Update the delivery estiamted date of arrival", notes = "Proceed to update the date of the delivery")
+    public Delivery updateEstimatedDateOfArrival(@ApiParam(value = "Id of the delivery for which the date has to be updated", required = true) @PathVariable final String id,
+                                                 @ApiParam(value = "New date based out of offset days of the estimated date of arrival", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
         incrementCounter();
         Delivery delivery = deliveryRepository.findById(id).get();
-        int offsetDays = Integer.parseInt(myJsonRequest.get("offsetDays"));
+        int offsetDays = myJsonRequest.get("offsetDays");
         delivery.updateEstimatedDateOfArrival(offsetDays);
         delivery = deliveryRepository.save(delivery);
         //obtener accountId de la cuenta que ha hecho el pedido
