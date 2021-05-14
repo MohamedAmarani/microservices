@@ -249,10 +249,10 @@ public class HomeController {
                                         @ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DeliveryDTO deliveryDTO) throws MessagingException {
         incrementCounter();
         //obtener el email del usuario
-        emailOrderCompleted(userRepository.findById(accountId).get(), deliveryDTO);
+        emaildeliveryUpdate(userRepository.findById(accountId).get(), deliveryDTO);
     }
 
-    public String emailOrderCompleted(Account receiver, DeliveryDTO deliveryDTO) throws MessagingException {
+    public String emaildeliveryUpdate(Account receiver, DeliveryDTO deliveryDTO) throws MessagingException {
         MimeMessage msg = javaMailSender.createMimeMessage();
 
         // true = multipart message

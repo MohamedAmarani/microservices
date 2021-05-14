@@ -147,7 +147,7 @@ public class HomeController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Delivery> deliveryEntity = new HttpEntity<Delivery>(delivery, headers);
         //enviar mail de update
-        final ResponseEntity<String> res1 = restTemplate.exchange("http://delivery-service:8080/" + orderDTO.getCart().getId() + "/deliveryUpdateEmail",
+        final ResponseEntity<String> res1 = restTemplate.exchange("http://account-service:8080/" + orderDTO.getCart().getId() + "/deliveryUpdateEmail",
                 HttpMethod.POST, deliveryEntity, new ParameterizedTypeReference<String>() {
                 });
         return delivery;
