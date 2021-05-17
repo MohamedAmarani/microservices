@@ -275,6 +275,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
+        helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
         String text = "<h2>Hi " + receiver.getUsername() + ", a delivery status has been updated!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() + " is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
@@ -318,6 +319,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
+        helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
         String text = "<h2>Hi " + receiver.getUsername() + ", a delivery has successfully arrived at its destination!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">" + "The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() +
@@ -362,6 +364,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
+        helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
         String text = "<h2>Hi " + receiver.getUsername() + ", a delivery date has been updated!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() + " in the  " +
@@ -455,6 +458,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
+        helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("Welcome");
         String text = "<h2>Hi " + receiver.getUsername() + ", you have been signed up successfully!</h2>\n";
         text += "</tbody>\n" +
@@ -472,6 +476,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver);
+        helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("Te has registrado correctamente");
         helper.setText( "<h2>Your delivery status has been updated!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The delivery 'id' is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">type your text</strong> status. We will keep you updated of any new event.</p>\n" +
