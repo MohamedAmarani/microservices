@@ -21,7 +21,7 @@ public class Discount {
     @ApiModelProperty(notes = "Value of the discount. It could be either a percentage or a EUR amount, it depends on the 'percentage' boolean")
     double value;
     @ApiModelProperty(notes = "Minimum amount of money that the order has to be in order to apply the discount")
-    boolean minimumAmount;
+    double minimumAmount;
     @ApiModelProperty(notes = "Start date of the availability discount")
     Date startDate;
     @ApiModelProperty(notes = "End date of the availability of the discount")
@@ -75,11 +75,11 @@ public class Discount {
         this.value = value;
     }
 
-    public boolean getMinimumAmount() {
+    public double getMinimumAmount() {
         return minimumAmount;
     }
 
-    public void setMinimumAmount(boolean minimumAmount) {
+    public void setMinimumAmount(double minimumAmount) {
         this.minimumAmount = minimumAmount;
     }
 
