@@ -412,7 +412,7 @@ public class HomeController {
         helper.setSubject("Order done successfully " + deliveryDTO.getOrderId());
         String text = "<h2>Hi " + receiver.getUsername() + ", you have just paid and confirmed an order!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The order "+ deliveryDTO.getOrderId() +", whose delivery  " + deliveryDTO.getId() + " is managed by " + deliveryDTO.getDeliveryCompany() + ", is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
-                "and you will receive it at "+ deliveryDTO.getDeliveryAddress() + ", the " + deliveryDTO.getEstimatedDateOfArrival() + ". We will keep you updated of any new event.</p>\n" +
+                "and you will receive it at "+ deliveryDTO.getDeliveryAddress() + ", the " + deliveryDTO.getEstimatedDateOfArrival() + ". We will notify you when " + deliveryDTO.getDeliveryCompany() + " ships your order.</p>\n" +
                 "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ". " +
                 "The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
                 "<table class=\"editorDemoTable\">\n" +
