@@ -108,6 +108,18 @@ public class HomeController {
                 " InstanceId " + instanceId;
     }
 
+    @GetMapping("")
+    public List<Discount> getDiscounts() {
+        incrementCounter();
+        return discountRepository.findAll();
+    }
+
+    @GetMapping("/{discountId}")
+    public Discount getDiscount(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String discountId) {
+        incrementCounter();
+        return discountRepository.findById(discountId).get();
+    }
+
     @PatchMapping("/{discountId}/useDiscount")
     public Discount useDiscount(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String discountId) {
         incrementCounter();
