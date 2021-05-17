@@ -3,6 +3,7 @@ package com.ecommerce.discountservice.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 
@@ -13,13 +14,14 @@ public class Discount {
     @Id
     String id;
     @ApiModelProperty(notes = "Code of the discount")
+    @Indexed(unique=true, sparse=true)
     String code;
     @ApiModelProperty(notes = "Indicates whether it is a discount over the purchase or a EUR amount to subtract from the purchase price")
     boolean isPercentage;
     @ApiModelProperty(notes = "Value of the discount. It could be either a percentage or a EUR amount, it depends on the 'percentage' boolean")
     double value;
     @ApiModelProperty(notes = "Minimum amount of money that the order has to be in order to apply the discount")
-    int minimumAmount;
+    boolean minimumAmount;
     @ApiModelProperty(notes = "Start date of the availability discount")
     Date startDate;
     @ApiModelProperty(notes = "End date of the availability of the discount")
@@ -73,11 +75,11 @@ public class Discount {
         this.value = value;
     }
 
-    public int getMinimumAmount() {
+    public boolean getMinimumAmount() {
         return minimumAmount;
     }
 
-    public void setMinimumAmount(int minimumAmount) {
+    public void setMinimumAmount(boolean minimumAmount) {
         this.minimumAmount = minimumAmount;
     }
 

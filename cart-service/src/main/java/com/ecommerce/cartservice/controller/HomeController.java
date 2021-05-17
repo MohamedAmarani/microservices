@@ -355,7 +355,8 @@ public class HomeController {
 
     @RequestMapping(value = "/{cartId}/checkout", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Checkout a cart", notes = "Proceed to do the checkout of a given cart, paying with Paypal")
-    public Object doCheckoutPart1(@ApiParam(value = "Id of the cart for which the checkout has to be done", required = true) @PathVariable final String cartId) {
+    public Object doCheckoutPart1(@ApiParam(value = "Id of the cart for which the checkout has to be done", required = true) @PathVariable final String cartId,
+                                  @ApiParam(value = "Discount code, if any", required = true) @RequestBody Map<String, String> discountCodeBody) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
         double totalPrice = 0.0;
@@ -380,10 +381,24 @@ public class HomeController {
             totalPrice += inventoryItemDTO.getProduct().getPrice() * (double) cartItem.getQuantity();
 
         }
-        //realizar el pago
+        //formatear el precio total a dos decimales
         JSONObject obj = new JSONObject();
         DecimalFormat df = new DecimalFormat("#.##");
         totalPrice = Double.valueOf(df.format(totalPrice));
+        //comprovar que el codigo de descuento, si hay, es valido
+        String discountCode = discountCodeBody.get("discountCode");
+        if (discountCode != null) {
+            //consultar informacion del descuento
+            final ResponseEntity<String> res = restTemplate.exchange("http://discount-service:8080/" + ),
+                    HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
+                    });
+
+            Gson gson = new Gson();
+            InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
+        }
+
+
+        //realizar el pago
         obj.put("totalPrice", totalPrice);
         System.out.println(obj.get("totalPrice"));
         // set headers
