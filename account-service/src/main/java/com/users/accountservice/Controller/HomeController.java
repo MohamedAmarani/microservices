@@ -26,6 +26,7 @@ import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.awt.*;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -404,6 +405,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
+        helper.setFrom("");
         helper.setSubject("Order done successfully " + deliveryDTO.getOrderId());
         String text = "<h2>Hi " + receiver.getUsername() + ", you have just paid and confirmed an order!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The order "+ deliveryDTO.getOrderId() +", whose delivery  " + deliveryDTO.getId() + " is managed by " + deliveryDTO.getDeliveryCompany() + ", is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
@@ -433,6 +435,9 @@ public class HomeController {
                     "</tr>\n";
             totalPrice += cartItemDTO.getProduct().getPrice() * (double) cartItemDTO.getQuantity();
         }
+        //dos decimales a totalPrice
+        DecimalFormat df = new DecimalFormat("#.##");
+        totalPrice = Double.valueOf(df.format(totalPrice));
         text += "</tbody>\n" +
                 "</table>\n" +
                 "<p>The total price that you have paid is " + totalPrice + " euros.</p>\n" +
