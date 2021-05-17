@@ -405,7 +405,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
-        helper.setFrom("");
+        //helper.setFrom("");
         helper.setSubject("Order done successfully " + deliveryDTO.getOrderId());
         String text = "<h2>Hi " + receiver.getUsername() + ", you have just paid and confirmed an order!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The order "+ deliveryDTO.getOrderId() +", whose delivery  " + deliveryDTO.getId() + " is managed by " + deliveryDTO.getDeliveryCompany() + ", is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
