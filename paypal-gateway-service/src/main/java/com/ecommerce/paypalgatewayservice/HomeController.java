@@ -134,7 +134,7 @@ public class HomeController {
                                     @ApiParam(value = "Id of the payer", required = true) @RequestParam("PayerID") String PayerID) throws PayPalRESTException {
         incrementCounter();
         completePayment(accountId, paymentId, PayerID);
-        return "El pago se ha realizado correctamente.";
+        return completePayment(accountId, paymentId, PayerID).toString();
     }
 
     @GetMapping("/cancel/{accountId}")
