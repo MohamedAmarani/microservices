@@ -120,6 +120,13 @@ public class HomeController {
         return discountRepository.findById(discountId).get();
     }
 
+    @PostMapping("")
+    @ApiOperation(value = "Create a discount", notes = "Provide information to create a discount")
+    public Discount postDiscount(@ApiParam(value = "Information of the discount to create", required = true) @RequestBody Discount discount) {
+        incrementCounter();
+        return discountRepository.save(discount);
+    }
+
     @PatchMapping("/{discountId}/useDiscount")
     public Discount useDiscount(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String discountId) {
         incrementCounter();
