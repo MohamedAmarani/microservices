@@ -463,6 +463,15 @@ public class HomeController {
                 HttpMethod.PUT, entity, new ParameterizedTypeReference<OrderDTO>() {
                 });
 
+        //enviar email de confirmacion de pedido
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<DeliveryDTO> deliveryEntity = new HttpEntity<DeliveryDTO>(res2.getBody(), headers);
+        //enviar mail de update
+        final ResponseEntity<String> res6 = restTemplate.exchange("http://account-service:8080/" + res1.getBody().getId() + "/deliveryUpdateEmail",
+                HttpMethod.POST, deliveryEntity, new ParameterizedTypeReference<String>() {
+                });
+
         //devolver envio
         //return res2.getBody();
         JSONObject jo = new JSONObject();
