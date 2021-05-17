@@ -4,10 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Document
 @ApiModel(description = "Details of a discount")
@@ -17,9 +14,15 @@ public class Discount {
     String id;
     @ApiModelProperty(notes = "Code of the discount")
     String code;
-    @ApiModelProperty(notes = "Start date of the discount")
+    @ApiModelProperty(notes = "Indicates whether it is a discount over the purchase or a EUR amount to subtract from the purchase price")
+    boolean isPercentage;
+    @ApiModelProperty(notes = "Value of the discount. It could be either a percentage or a EUR amount, it depends on the 'percentage' boolean")
+    double value;
+    @ApiModelProperty(notes = "Minimum amount of money that the order has to be in order to apply the discount")
+    int minimumAmount;
+    @ApiModelProperty(notes = "Start date of the availability discount")
     Date startDate;
-    @ApiModelProperty(notes = "End date of the discount")
+    @ApiModelProperty(notes = "End date of the availability of the discount")
     Date endDate;
     @ApiModelProperty(notes = "Current uses of the discount")
     int currentUses = 0;
@@ -52,6 +55,30 @@ public class Discount {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public boolean isPercentage() {
+        return isPercentage;
+    }
+
+    public void setPercentage(boolean percentage) {
+        isPercentage = percentage;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public int getMinimumAmount() {
+        return minimumAmount;
+    }
+
+    public void setMinimumAmount(int minimumAmount) {
+        this.minimumAmount = minimumAmount;
     }
 
     public Date getStartDate() {

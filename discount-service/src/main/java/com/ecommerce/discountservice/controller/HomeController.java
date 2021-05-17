@@ -114,17 +114,26 @@ public class HomeController {
         return discountRepository.findAll();
     }
 
+    @PostMapping("")
+    @ApiOperation(value = "Create a discount", notes = "Provide information to create a discount")
+    public Discount postDiscount(@ApiParam(value = "Information of the discount to create", required = true) @RequestBody Discount discount) {
+        incrementCounter();
+        return discountRepository.save(discount);
+    }
+
     @GetMapping("/{discountId}")
     public Discount getDiscount(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String discountId) {
         incrementCounter();
         return discountRepository.findById(discountId).get();
     }
 
-    @PostMapping("")
+    @DeleteMapping("/{discountId}")
     @ApiOperation(value = "Create a discount", notes = "Provide information to create a discount")
-    public Discount postDiscount(@ApiParam(value = "Information of the discount to create", required = true) @RequestBody Discount discount) {
+    public Discount deleteDiscount(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String discountId) {
         incrementCounter();
-        return discountRepository.save(discount);
+        Discount discount = discountRepository.findById(discountId).get();
+        discountRepository.delete(discount);
+        return discount;
     }
 
     @PatchMapping("/{discountId}/useDiscount")
