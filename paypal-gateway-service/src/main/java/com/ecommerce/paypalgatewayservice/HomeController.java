@@ -129,12 +129,12 @@ public class HomeController {
 
     @GetMapping("/success/{accountId}")
     @ApiOperation(value = "Manage error in payment", notes = "If the payment goes wrong the user will be redirected here.")
-    public String successfulPayment(@ApiParam(value = "Id of the cart that tried to be checked out", required = true) @PathVariable final String accountId,
+    public Object successfulPayment(@ApiParam(value = "Id of the cart that tried to be checked out", required = true) @PathVariable final String accountId,
                                     @ApiParam(value = "Id of the payment", required = true) @RequestParam("paymentId") String paymentId,
                                     @ApiParam(value = "Id of the payer", required = true) @RequestParam("PayerID") String PayerID) throws PayPalRESTException {
         incrementCounter();
         completePayment(accountId, paymentId, PayerID);
-        return completePayment(accountId, paymentId, PayerID).toString();
+        return completePayment(accountId, paymentId, PayerID);
     }
 
     @GetMapping("/cancel/{accountId}")
