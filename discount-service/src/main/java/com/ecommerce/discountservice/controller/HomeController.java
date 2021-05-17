@@ -128,12 +128,20 @@ public class HomeController {
     }
 
     @DeleteMapping("/{discountId}")
-    @ApiOperation(value = "Create a discount", notes = "Provide information to create a discount")
-    public Discount deleteDiscount(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String discountId) {
+    @ApiOperation(value = "Delete a discount", notes = "Provide information to delete a discount")
+    public Discount deleteDiscount(@ApiParam(value = "Id of the discount that wants to be deleted", required = true) @PathVariable final String discountId) {
         incrementCounter();
         Discount discount = discountRepository.findById(discountId).get();
         discountRepository.delete(discount);
         return discount;
+    }
+
+    @DeleteMapping("")
+    @ApiOperation(value = "Delete all discounts", notes = "Provide information to delete all discounts")
+    public List<Discount> deleteDiscounts() {
+        incrementCounter();
+        discountRepository.deleteAll();
+        return discountRepository.findAll();
     }
 
     @PatchMapping("/{discountId}/useDiscount")
