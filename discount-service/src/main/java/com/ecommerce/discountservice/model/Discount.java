@@ -14,7 +14,7 @@ public class Discount {
     @Id
     String id;
     @ApiModelProperty(notes = "Code of the discount")
-    @Indexed(unique=true, sparse=true)
+    @Indexed(unique=true)
     String code;
     @ApiModelProperty(notes = "Indicates whether it is a discount over the purchase or a EUR amount to subtract from the purchase price")
     boolean isPercentage;
