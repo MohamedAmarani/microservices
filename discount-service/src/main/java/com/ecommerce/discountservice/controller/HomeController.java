@@ -145,7 +145,7 @@ public class HomeController {
         } catch (Exception e) {
             discount = discountRepository.findByCode(discountId).get();
         }
-        return  discount;
+        return discount;
     }
 
     @DeleteMapping("/{discountId}")

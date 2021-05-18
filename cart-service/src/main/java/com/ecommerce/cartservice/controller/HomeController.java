@@ -432,9 +432,10 @@ public class HomeController {
             //incrementar current uses
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
+            headers.add("X-HTTP-Method-Override", "PATCH");
+            HttpEntity<String> entity = new HttpEntity<String>(null, headers);
             final ResponseEntity<String> res1 = restTemplate.exchange("http://discount-service:8080/" + discountDTO.getId() + "/useDiscount",
-                    HttpMethod.PATCH, null, new ParameterizedTypeReference<String>() {
+                    HttpMethod.PATCH, entity, new ParameterizedTypeReference<String>() {
                     });
 
             //reducir el precio total aplicando el descuento
