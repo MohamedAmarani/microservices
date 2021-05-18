@@ -165,7 +165,7 @@ public class HomeController {
         return discountRepository.findAll();
     }
 
-    @PatchMapping("/{discountId}/useDiscount")
+    @PutMapping("/{discountId}/useDiscount")
     public Discount useDiscount(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String discountId) {
         incrementCounter();
         Discount discount = discountRepository.findById(discountId).get();
