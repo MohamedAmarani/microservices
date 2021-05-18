@@ -139,6 +139,7 @@ public class HomeController {
         incrementCounter();
         Order order = orderRepository.findById(id).get();
         OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId());
+        System.out.println(order.getCart().getInventoryId());
         try {
             CartDTO cartDTO = new CartDTO(order.getCart().getId(), order.getCart().getInventoryId());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
