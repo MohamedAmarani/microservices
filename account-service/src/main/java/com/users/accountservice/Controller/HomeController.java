@@ -465,7 +465,7 @@ public class HomeController {
                     "</tr>\n";
         }
         text += "</tbody>\n" +
-                "</table>\n" +
+                "</table>\n\n" +
                 "Thank you for the purchase, enjoy it!\n" +
                 "<p>Regards.</p>\n";
 
@@ -485,8 +485,8 @@ public class HomeController {
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
         String text = "<h2>Hi " + receiver.getUsername() + ", a delivery date has been updated!</h2>\n" +
-                "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() + " in the  " +
-                "has changed its delivery date to " + deliveryDTO.getEstimatedDateOfArrival() + ". Remember that it is in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state and you will receive it at " + deliveryDTO.getDeliveryAddress() + ". We will keep you updated of any new event.</p>\n" +
+                "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() +
+                " has changed its delivery date to " + deliveryDTO.getEstimatedDateOfArrival() + ". Remember that it is in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state and you will receive it at " + deliveryDTO.getDeliveryAddress() + ". We will keep you updated of any new event.</p>\n" +
                 "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ". " +
                 "The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
                 "<table class=\"editorDemoTable\">\n" +

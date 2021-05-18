@@ -468,26 +468,28 @@ public class HomeController {
     public Object doCheckoutPart2(@ApiParam(value = "Id of the cart for which the second part of the checkout has to be done", required = true) @PathVariable final String cartId) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
-                /*final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://account-service/" + accountId + "/buy",
+        /*final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://account-service/" + accountId + "/buy",
                 HttpMethod.PUT, entity, new ParameterizedTypeReference<ProductDTO>() {
                 });*/
+
+        HttpHeaders headers = new HttpHeaders();
         //eliminar items del inventario
-        /*for (CartItem cartItem: cart.get().getCartItems()) {
-            obj = new JSONObject();
-            obj.put("numItems", cartItem.getItems());
+        for (CartItem cartItem: cart.get().getCartItems()) {
+            JSONObject obj = new JSONObject();
+            obj.put("numItems", cartItem.getQuantity());
             // set headers
             headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            entity = new HttpEntity<String>(obj.toString(), headers);
+            HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
             // reducir el numero de items de un producto en el inventario
             final ResponseEntity<ProductDTO> res1 = restTemplate.exchange("http://inventory-service/" + cart.get().getInventoryId() +
                             "/products/" + cartItem.getProductId() + "/reduceStock",
                     HttpMethod.PUT, entity, new ParameterizedTypeReference<ProductDTO>() {
                     });
-        }*/
+        }
 
         //crear pedido (order)
-        HttpHeaders headers = new HttpHeaders();
+        headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Cart> orderEntity = new HttpEntity<Cart>(cart.get(), headers);
         final ResponseEntity<OrderDTO> res1 = restTemplate.exchange("http://order-service:8080",
@@ -495,9 +497,9 @@ public class HomeController {
                 });
 
         //vaciar carrito
-        /*cart = cartRepository.findById(accountId);
+        cart = cartRepository.findById(cartId);
         cart.get().setCartItems(new ArrayList<>());
-        cartRepository.save(cart.get());*/
+        cartRepository.save(cart.get());
 
         //llamar al micro de transporte
         // set headers
