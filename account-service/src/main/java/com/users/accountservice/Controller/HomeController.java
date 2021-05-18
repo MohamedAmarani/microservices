@@ -269,12 +269,53 @@ public class HomeController {
         emailOrderSuccess(userRepository.findById(accountId).get(), deliveryDTO);
     }
 
+    @PostMapping("/newDiscountEmail")
+    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
+    public void sendNewDiscountEmail(@ApiParam(value = "Id of the account for which a delivery state update email has to be sent", required = true) @PathVariable final String accountId,
+                                        @ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
+        incrementCounter();
+        if (discountDTO.getUsers() != null) {
+            for (Account account : userRepository.findAll())
+                if (account.getRole().equals("USER")) {
+                    emailNewDiscount(account, discountDTO);
+                }
+        }
+        else {
+            for (AccountIdDTO accountIdDTO : discountDTO.getUsers())
+                if (userRepository.findById(accountIdDTO.getAccountId()).get().getRole().equals("USER"))
+                    emailNewDiscount(userRepository.findById(accountIdDTO.getAccountId()).get(), discountDTO);
+        }
+    }
+
+    public String emailNewDiscount(Account receiver, DiscountDTO discountDTO) throws MessagingException {
+        MimeMessage msg = javaMailSender.createMimeMessage();
+
+        // true = multipart message
+        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+        helper.setTo(receiver.getEmail());
+        helper.setBcc("saasecommerce@gmail.com");
+        helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
+        helper.setSubject("New discount code available for you");
+        String text = "<h2>Hi " + receiver.getUsername() + ", a new discount code has been created for you!</h2>\n" +
+                "<p style=\"font-size: 1.5em;\">You can use the discount code <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + discountDTO.getCode() + "</strong> " +
+                "to get a " + discountDTO.getValue() + (discountDTO.isPercentage() ? "%" : "") + " discount on every order of " + discountDTO.getMinimumAmount() + " EUR or more.</p>\n" +
+                "You will be able to use it from "+ discountDTO.getStartDate() + " to " + discountDTO.getEndDate() + ", and it is only available for the "
+                + discountDTO.getMaxUses() + " first uses. We will keep you updated of any new event.</p>\n" +
+                "<p>Regards.</p>\n";
+
+        helper.setText(text,true);
+        //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
+        javaMailSender.send(msg);
+        return msg.getSubject();
+    }
+
     public String emailDeliveryUpdate(Account receiver, DeliveryDTO deliveryDTO) throws MessagingException {
         MimeMessage msg = javaMailSender.createMimeMessage();
 
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
+        helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
         String text = "<h2>Hi " + receiver.getUsername() + ", a delivery status has been updated!</h2>\n" +
@@ -319,6 +360,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
+        helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
         String text = "<h2>Hi " + receiver.getUsername() + ", a delivery has successfully arrived at its destination!</h2>\n" +
@@ -364,6 +406,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
+        helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
         String text = "<h2>Hi " + receiver.getUsername() + ", a delivery date has been updated!</h2>\n" +
@@ -408,6 +451,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
+        helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("Order done successfully " + deliveryDTO.getOrderId());
         String text = "<h2>Hi " + receiver.getUsername() + ", you have just paid and confirmed an order!</h2>\n" +
@@ -458,6 +502,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
+        helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("Welcome");
         String text = "<h2>Hi " + receiver.getUsername() + ", you have been signed up successfully!</h2>\n";
@@ -476,6 +521,7 @@ public class HomeController {
         // true = multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver);
+        helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("Te has registrado correctamente");
         helper.setText( "<h2>Your delivery status has been updated!</h2>\n" +

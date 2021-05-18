@@ -1,18 +1,15 @@
-package com.ecommerce.discountservice.model;
+package com.users.accountservice.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Document
 @ApiModel(description = "Details of a discount")
-public class Discount {
+public class DiscountDTO {
     @ApiModelProperty(notes = "Unique id of the discount")
     @Id
     String id;
@@ -38,12 +35,15 @@ public class Discount {
     @ApiModelProperty(notes = "Indicates the accountId's of the users that can use the discount. If the list is null, then it will be available for everyone")
     List<AccountIdDTO> users;
 
-    public Discount() {
+    public DiscountDTO() {
     }
 
-    public Discount(String id, String code, Date startDate, Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users) {
+    public DiscountDTO(String id, String code, boolean isPercentage, double value, double minimumAmount, Date startDate, Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users) {
         this.id = id;
         this.code = code;
+        this.isPercentage = isPercentage;
+        this.value = value;
+        this.minimumAmount = minimumAmount;
         this.startDate = startDate;
         this.endDate = endDate;
         //this.currentUses = currentUses;
@@ -144,4 +144,3 @@ public class Discount {
         this.users = users;
     }
 }
-

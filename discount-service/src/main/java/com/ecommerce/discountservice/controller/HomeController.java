@@ -118,7 +118,21 @@ public class HomeController {
     @ApiOperation(value = "Create a discount", notes = "Provide information to create a discount")
     public Discount postDiscount(@ApiParam(value = "Information of the discount to create", required = true) @RequestBody Discount discount) {
         incrementCounter();
-        return discountRepository.save(discount);
+        try {
+            discount = discountRepository.save(discount);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "A discount with the same code already exists"
+            );
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Discount> discountEntity = new HttpEntity<Discount>(discount, headers);
+        //enviar mail de update
+        final ResponseEntity<String> res1 = restTemplate.exchange("http://account-service:8080/newDiscountEmail",
+                HttpMethod.POST, discountEntity, new ParameterizedTypeReference<String>() {
+                });
+        return discount;
     }
 
     @GetMapping("/{discountId}")
@@ -149,6 +163,22 @@ public class HomeController {
         incrementCounter();
         Discount discount = discountRepository.findById(discountId).get();
         discount.incrementCurrentUses();
+        return discountRepository.save(discount);
+    }
+
+    @PatchMapping("/{discountId}/enable")
+    public Discount enableDiscount(@ApiParam(value = "Id of the discount that has to be enabled", required = true) @PathVariable final String discountId) {
+        incrementCounter();
+        Discount discount = discountRepository.findById(discountId).get();
+        discount.setEnabled(true);
+        return discountRepository.save(discount);
+    }
+
+    @PatchMapping("/{discountId}/disable")
+    public Discount disableDiscount(@ApiParam(value = "Id of the discount that has to be disabled", required = true) @PathVariable final String discountId) {
+        incrementCounter();
+        Discount discount = discountRepository.findById(discountId).get();
+        discount.setEnabled(false);
         return discountRepository.save(discount);
     }
 
