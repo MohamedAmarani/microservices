@@ -330,8 +330,8 @@ public class HomeController {
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("A discount code has been enabled again");
         String text = "<h2>Hi " + receiver.getUsername() + ", a discount is back enabled!</h2>\n" +
-                "<p style=\"font-size: 1.5em;\">You can now use again the discount code <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + discountDTO.getCode() + "</strong> " +
-                "to get a " + discountDTO.getValue() + (discountDTO.isPercentage() ? "%" : " EUR") + " discount on every order of " + discountDTO.getMinimumAmount() + " EUR or more.</p>\n" +
+                "<p style=\"font-size: 1.5em;\">You can now use the discount code <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + discountDTO.getCode() + "</strong> " +
+                "again to get a " + discountDTO.getValue() + (discountDTO.isPercentage() ? "%" : " EUR") + " discount on every order of " + discountDTO.getMinimumAmount() + " EUR or more.</p>\n" +
                 "You will be able to use it from "+ discountDTO.getStartDate() + " to " + discountDTO.getEndDate() + ", and it is only available for the "
                 + discountDTO.getMaxUses() + " first uses. We will keep you updated of any new event.</p>\n" +
                 "<p>Regards.</p>\n";

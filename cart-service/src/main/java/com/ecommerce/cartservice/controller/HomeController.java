@@ -385,18 +385,68 @@ public class HomeController {
         JSONObject obj = new JSONObject();
         DecimalFormat df = new DecimalFormat("#.##");
         totalPrice = Double.valueOf(df.format(totalPrice));
-        //comprovar que el codigo de descuento, si hay, es valido
+
+        //comprovar que el codigo de descuento, si hay, es valido, y aplicarlo
         String discountCode = discountCodeBody.get("discountCode");
         if (discountCode != null) {
             //consultar informacion del descuento
-            final ResponseEntity<String> res = restTemplate.exchange("http://discount-service:8080/" + ),
+            final ResponseEntity<String> res = restTemplate.exchange("http://discount-service:8080/" + discountCode,
                     HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                     });
-
             Gson gson = new Gson();
-            InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-        }
+            DiscountDTO discountDTO = gson.fromJson(res.getBody(), DiscountDTO.class);
+            boolean cont = true;
+            if (discountDTO.getUsers() != null) {
+                for (int i = 0; i < discountDTO.getUsers().size() && cont; ++i) {
+                    if (discountDTO.getUsers().get(i).getAccountId().equals(cartId))
+                        cont = false;
+                }
+                if (cont) {
+                    //el usuario no esta entre los que pueden usar el cupon
+                    throw new ResponseStatusException(
+                            HttpStatus.CONFLICT, "Discount can not be used"
+                    );
+                }
+            }
+            if (!discountDTO.getStartDate().before(new Date()) || !discountDTO.getEndDate().after(new Date()))
+                //el cupon no esta activo en esta fecha
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT, "Discount can not be used"
+                );
+            if (discountDTO.getMinimumAmount() > totalPrice)
+                //no ha llegado al precio minimo para usar el cupon
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT, "Discount can not be used"
+                );
+            if (discountDTO.getCurrentUses() >= discountDTO.getMaxUses())
+                //se ha llegado al limite de usos del cupon
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT, "Discount can not be used"
+                );
+            if (!discountDTO.isEnabled())
+                //el cupon esta desactivado
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT, "Discount can not be used"
+                );
 
+            //incrementar current uses
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
+            final ResponseEntity<String> res1 = restTemplate.exchange("http://discount-service:8080/" + discountDTO.getId() + "/useDiscount",
+                    HttpMethod.PATCH, null, new ParameterizedTypeReference<String>() {
+                    });
+
+            //reducir el precio total aplicando el descuento
+            if (!discountDTO.isPercentage())
+                totalPrice -= discountDTO.getValue();
+            else {
+                double percentage = 100 - discountDTO.getValue();
+                percentage /= 100;
+                totalPrice *= percentage;
+                totalPrice = Double.valueOf(df.format(totalPrice));
+            }
+        }
 
         //realizar el pago
         obj.put("totalPrice", totalPrice);
