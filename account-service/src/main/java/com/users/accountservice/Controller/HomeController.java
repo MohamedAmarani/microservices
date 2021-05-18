@@ -293,7 +293,7 @@ public class HomeController {
         if (discountDTO.getUsers() == null) {
             for (Account account : userRepository.findAll())
                 if (account.getRole().equals("USER")) {
-                    emailNewDiscount(account, discountDTO);
+                    emailEnabledDiscount(account, discountDTO);
                 }
         }
         else {
@@ -310,7 +310,7 @@ public class HomeController {
         if (discountDTO.getUsers() == null) {
             for (Account account : userRepository.findAll())
                 if (account.getRole().equals("USER")) {
-                    emailNewDiscount(account, discountDTO);
+                    emailDisabledDiscount(account, discountDTO);
                 }
         }
         else {
