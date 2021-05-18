@@ -144,7 +144,7 @@ public class HomeController {
             product = productRepository.findById(id).get();
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Product not found in catalog"
+                    HttpStatus.NOT_FOUND, "Product not found"
             );
         }
         incrementCounter();

@@ -143,6 +143,34 @@ public class HomeController {
             CartDTO cartDTO = new CartDTO(order.getCart().getId(), order.getCart().getInventoryId());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
             for (CartItem cartItem : order.getCart().getCartItems()) {
+                final ResponseEntity<String> res = restTemplate.exchange("http://product-service:8080/" + cartItem.getProductId(),
+                        HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
+                        });
+                Gson gson = new Gson();
+                ProductDTO productDTO = gson.fromJson(res.getBody(), ProductDTO.class);
+                CartItemDTO cartItemDTO = new CartItemDTO(productDTO, cartItem.getQuantity(), cartItem.isAvailable());
+                cartDTO.addItems(cartItemDTO);
+                System.out.println(cartItem.getProductId());
+            }
+            orderDTO.setCart(cartDTO);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Order not found"
+            );
+        }
+        return orderDTO;
+    }
+
+    @PostMapping("")
+    @ApiOperation(value = "Create an order", notes = "Provide information to create an order")
+    public OrderDTO createInventory(@ApiParam(value = "Information of the order to create", required = true) @RequestBody Cart cart) {
+        incrementCounter();
+        Order order = orderRepository.save(new Order(cart));
+        OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId());
+        try {
+            CartDTO cartDTO = new CartDTO(order.getCart().getId(), order.getCart().getInventoryId());
+            List<CartItemDTO> cartItemDTOS = new ArrayList<>();
+            for (CartItem cartItem : order.getCart().getCartItems()) {
                 final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + order.getCart().getInventoryId() +
                                 "/products/" + cartItem.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
@@ -152,12 +180,14 @@ public class HomeController {
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
                 CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.isAvailable());
                 cartDTO.addItems(cartItemDTO);
+                System.out.println(cartItem.getProductId());
             }
             orderDTO.setCart(cartDTO);
         } catch (Exception e) {
             throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Order not found"
+                    HttpStatus.NOT_FOUND, "Order not found"
             );
+
         }
         return orderDTO;
     }
@@ -189,35 +219,6 @@ public class HomeController {
             );
         }
         orderRepository.deleteById(id);
-        return orderDTO;
-    }
-
-    @PostMapping("")
-    @ApiOperation(value = "Create an order", notes = "Provide information to create an order")
-    public OrderDTO createInventory(@ApiParam(value = "Information of the order to create", required = true) @RequestBody Cart cart) {
-        incrementCounter();
-        Order order = orderRepository.save(new Order(cart));
-        OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId());
-        try {
-            CartDTO cartDTO = new CartDTO(order.getCart().getId(), order.getCart().getInventoryId());
-            List<CartItemDTO> cartItemDTOS = new ArrayList<>();
-            for (CartItem cartItem : order.getCart().getCartItems()) {
-                final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + order.getCart().getInventoryId() +
-                                "/products/" + cartItem.getProductId(),
-                        HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
-                        });
-
-                Gson gson = new Gson();
-                InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.isAvailable());
-                cartDTO.addItems(cartItemDTO);
-            }
-            orderDTO.setCart(cartDTO);
-        } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Order not found"
-            );
-        }
         return orderDTO;
     }
 

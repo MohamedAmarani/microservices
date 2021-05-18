@@ -14,13 +14,13 @@ public class Order {
     @ApiModelProperty(notes = "Unique id of the delivery linked to the order")
     String deliveryId;
     @ApiModelProperty(notes = "Information about the ordered cart")
-    Cart orderCart;
+    Cart cart;
 
     public Order() {
     }
 
-    public Order(Cart orderCart) {
-        this.orderCart = orderCart;
+    public Order(Cart cart) {
+        this.cart = cart;
     }
 
     public String getId() {
@@ -32,11 +32,11 @@ public class Order {
     }
 
     public Cart getCart() {
-        return orderCart;
+        return cart;
     }
 
-    public void setCart(Cart orderCart) {
-        this.orderCart = orderCart;
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 
     public String getDeliveryId() {
