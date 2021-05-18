@@ -170,7 +170,16 @@ public class HomeController {
     public Discount enableDiscount(@ApiParam(value = "Id of the discount that has to be enabled", required = true) @PathVariable final String discountId) {
         incrementCounter();
         Discount discount = discountRepository.findById(discountId).get();
-        discount.setEnabled(true);
+        if (!discount.isEnabled()) {
+            discount.setEnabled(true);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Discount> discountEntity = new HttpEntity<Discount>(discount, headers);
+            //enviar mail de update
+            final ResponseEntity<String> res1 = restTemplate.exchange("http://account-service:8080/enabledDiscountEmail",
+                    HttpMethod.POST, discountEntity, new ParameterizedTypeReference<String>() {
+                    });
+        }
         return discountRepository.save(discount);
     }
 
@@ -178,7 +187,16 @@ public class HomeController {
     public Discount disableDiscount(@ApiParam(value = "Id of the discount that has to be disabled", required = true) @PathVariable final String discountId) {
         incrementCounter();
         Discount discount = discountRepository.findById(discountId).get();
-        discount.setEnabled(false);
+        if (discount.isEnabled()) {
+            discount.setEnabled(false);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Discount> discountEntity = new HttpEntity<Discount>(discount, headers);
+            //enviar mail de update
+            final ResponseEntity<String> res1 = restTemplate.exchange("http://account-service:8080/disabledDiscountEmail",
+                    HttpMethod.POST, discountEntity, new ParameterizedTypeReference<String>() {
+                    });
+        }
         return discountRepository.save(discount);
     }
 

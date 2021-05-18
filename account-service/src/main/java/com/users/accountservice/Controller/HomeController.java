@@ -286,6 +286,82 @@ public class HomeController {
         }
     }
 
+    @PostMapping("/enabledDiscountEmail")
+    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
+    public void sendEnabledDiscountEmail(@ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
+        incrementCounter();
+        if (discountDTO.getUsers() == null) {
+            for (Account account : userRepository.findAll())
+                if (account.getRole().equals("USER")) {
+                    emailNewDiscount(account, discountDTO);
+                }
+        }
+        else {
+            for (AccountIdDTO accountIdDTO : discountDTO.getUsers())
+                if (userRepository.findById(accountIdDTO.getAccountId()).get().getRole().equals("USER"))
+                    emailEnabledDiscount(userRepository.findById(accountIdDTO.getAccountId()).get(), discountDTO);
+        }
+    }
+
+    @PostMapping("/disabledDiscountEmail")
+    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
+    public void sendDisabledDiscountEmail(@ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
+        incrementCounter();
+        if (discountDTO.getUsers() == null) {
+            for (Account account : userRepository.findAll())
+                if (account.getRole().equals("USER")) {
+                    emailNewDiscount(account, discountDTO);
+                }
+        }
+        else {
+            for (AccountIdDTO accountIdDTO : discountDTO.getUsers())
+                if (userRepository.findById(accountIdDTO.getAccountId()).get().getRole().equals("USER"))
+                    emailDisabledDiscount(userRepository.findById(accountIdDTO.getAccountId()).get(), discountDTO);
+        }
+    }
+
+    public String emailEnabledDiscount(Account receiver, DiscountDTO discountDTO) throws MessagingException {
+        MimeMessage msg = javaMailSender.createMimeMessage();
+
+        // true = multipart message
+        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+        helper.setTo(receiver.getEmail());
+        helper.setBcc("saasecommerce@gmail.com");
+        helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
+        helper.setSubject("A discount code has been enabled again");
+        String text = "<h2>Hi " + receiver.getUsername() + ", a discount is back enabled!</h2>\n" +
+                "<p style=\"font-size: 1.5em;\">You can now use again the discount code <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + discountDTO.getCode() + "</strong> " +
+                "to get a " + discountDTO.getValue() + (discountDTO.isPercentage() ? "%" : " EUR") + " discount on every order of " + discountDTO.getMinimumAmount() + " EUR or more.</p>\n" +
+                "You will be able to use it from "+ discountDTO.getStartDate() + " to " + discountDTO.getEndDate() + ", and it is only available for the "
+                + discountDTO.getMaxUses() + " first uses. We will keep you updated of any new event.</p>\n" +
+                "<p>Regards.</p>\n";
+
+        helper.setText(text,true);
+        //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
+        javaMailSender.send(msg);
+        return msg.getSubject();
+    }
+
+    public String emailDisabledDiscount(Account receiver, DiscountDTO discountDTO) throws MessagingException {
+        MimeMessage msg = javaMailSender.createMimeMessage();
+
+        // true = multipart message
+        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+        helper.setTo(receiver.getEmail());
+        helper.setBcc("saasecommerce@gmail.com");
+        helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
+        helper.setSubject("A discount code has been disabled");
+        String text = "<h2>Hi " + receiver.getUsername() + ", a discount code has been disabled!</h2>\n" +
+                "<p style=\"font-size: 1.5em;\">Due to technical issues, the discount code <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + discountDTO.getCode() + "</strong> " +
+                "has been disabled, thus, it can not be redeemed at the moment. We will keep you updated of any new event.</p>\n" +
+                "<p>Regards.</p>\n";
+
+        helper.setText(text,true);
+        //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
+        javaMailSender.send(msg);
+        return msg.getSubject();
+    }
+
     public String emailNewDiscount(Account receiver, DiscountDTO discountDTO) throws MessagingException {
         MimeMessage msg = javaMailSender.createMimeMessage();
 
@@ -297,7 +373,7 @@ public class HomeController {
         helper.setSubject("New discount code available for you");
         String text = "<h2>Hi " + receiver.getUsername() + ", a new discount code has been created for you!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">You can use the discount code <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + discountDTO.getCode() + "</strong> " +
-                "to get a " + discountDTO.getValue() + (discountDTO.isPercentage() ? "%" : "") + " discount on every order of " + discountDTO.getMinimumAmount() + " EUR or more.</p>\n" +
+                "to get a " + discountDTO.getValue() + (discountDTO.isPercentage() ? "%" : " EUR") + " discount on every order of " + discountDTO.getMinimumAmount() + " EUR or more.</p>\n" +
                 "You will be able to use it from "+ discountDTO.getStartDate() + " to " + discountDTO.getEndDate() + ", and it is only available for the "
                 + discountDTO.getMaxUses() + " first uses. We will keep you updated of any new event.</p>\n" +
                 "<p>Regards.</p>\n";
