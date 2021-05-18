@@ -8,6 +8,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.KeyFactorySpi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -138,7 +139,13 @@ public class HomeController {
     @GetMapping("/{discountId}")
     public Discount getDiscount(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String discountId) {
         incrementCounter();
-        return discountRepository.findById(discountId).get();
+        Discount discount;
+        try {
+            discount = discountRepository.findById(discountId).get();
+        } catch (Exception e) {
+            discount = discountRepository.findByCode(discountId).get();
+        }
+        return  discount;
     }
 
     @DeleteMapping("/{discountId}")

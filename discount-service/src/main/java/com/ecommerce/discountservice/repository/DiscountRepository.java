@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface DiscountRepository extends MongoRepository<Discount, String> {
     public Optional<Discount> findById(String id);
+    public Optional<Discount> findByCode(String code);
 }
 
