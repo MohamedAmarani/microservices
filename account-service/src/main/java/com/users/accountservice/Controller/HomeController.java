@@ -273,7 +273,7 @@ public class HomeController {
     @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
     public void sendNewDiscountEmail(@ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
         incrementCounter();
-        if (discountDTO.getUsers() != null) {
+        if (discountDTO.getUsers() == null) {
             for (Account account : userRepository.findAll())
                 if (account.getRole().equals("USER")) {
                     emailNewDiscount(account, discountDTO);

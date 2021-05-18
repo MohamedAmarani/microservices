@@ -34,7 +34,7 @@ public class Discount {
     @ApiModelProperty(notes = "Maximum number of times that the discount can be used")
     int maxUses;
     @ApiModelProperty(notes = "Indicates weather the discount can be used or has been disabled due to some reason")
-    boolean enabled;
+    boolean enabled = true;
     @ApiModelProperty(notes = "Indicates the accountId's of the users that can use the discount. If the list is null, then it will be available for everyone")
     List<AccountIdDTO> users;
 
@@ -51,7 +51,6 @@ public class Discount {
         this.endDate = endDate;
         //this.currentUses = currentUses;
         this.maxUses = maxUses;
-        this.enabled = true;
         this.users = users;
     }
 
