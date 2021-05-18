@@ -223,6 +223,12 @@ public class HomeController {
         return orderDTO;
     }
 
+    @DeleteMapping("")
+    @ApiOperation(value = "Delete an order", notes = "Provide an Id to delete a specific order from the Database")
+    public void deleteOrders() {
+        orderRepository.deleteAll();
+    }
+
     //set delivery id
     @PutMapping("/{orderId}/deliveryId")
     @ApiOperation(value = "Add deliveryId to the order", notes = "Link the order to a delivery by giving a deliveryId")
