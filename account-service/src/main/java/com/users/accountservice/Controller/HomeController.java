@@ -271,8 +271,7 @@ public class HomeController {
 
     @PostMapping("/newDiscountEmail")
     @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
-    public void sendNewDiscountEmail(@ApiParam(value = "Id of the account for which a delivery state update email has to be sent", required = true) @PathVariable final String accountId,
-                                        @ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
+    public void sendNewDiscountEmail(@ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
         incrementCounter();
         if (discountDTO.getUsers() != null) {
             for (Account account : userRepository.findAll())

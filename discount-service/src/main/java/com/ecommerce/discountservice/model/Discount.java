@@ -41,9 +41,12 @@ public class Discount {
     public Discount() {
     }
 
-    public Discount(String id, String code, Date startDate, Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users) {
+    public Discount(String id, String code, boolean isPercentage, double value, double minimumAmount, Date startDate, Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users) {
         this.id = id;
         this.code = code;
+        this.isPercentage = isPercentage;
+        this.value = value;
+        this.minimumAmount = minimumAmount;
         this.startDate = startDate;
         this.endDate = endDate;
         //this.currentUses = currentUses;
