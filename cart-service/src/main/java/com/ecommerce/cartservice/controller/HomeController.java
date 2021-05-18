@@ -482,7 +482,7 @@ public class HomeController {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
             // reducir el numero de items de un producto en el inventario
-            final ResponseEntity<ProductDTO> res1 = restTemplate.exchange("http://inventory-service/" + cart.get().getInventoryId() +
+            final ResponseEntity<ProductDTO> res1 = restTemplate.exchange("http://inventory-service:8080/" + cart.get().getInventoryId() +
                             "/products/" + cartItem.getProductId() + "/reduceStock",
                     HttpMethod.PUT, entity, new ParameterizedTypeReference<ProductDTO>() {
                     });

@@ -240,7 +240,6 @@ public class HomeController {
     public InventoryItemDTO getInventory(@ApiParam(value = "Id of the inventory for which we a product has to be retrieved", required = true) @PathVariable final String inventoryId,
                                          @ApiParam(value = "Id of the product of the inventory to get", required = true) @PathVariable final String productId) {
         incrementCounter();
-        System.out.println("hola");
         Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
         List<InventoryItem> inventoryItems = inventory.get().getInventoryItems();
 
