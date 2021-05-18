@@ -439,14 +439,15 @@ public class HomeController {
                     });
 
             //reducir el precio total aplicando el descuento
-            if (!discountDTO.isPercentage())
+            if (!discountDTO.isPercentage()) {
                 totalPrice -= discountDTO.getValue();
+            }
             else {
                 double percentage = 100 - discountDTO.getValue();
                 percentage /= 100;
                 totalPrice *= percentage;
-                totalPrice = Double.valueOf(df.format(totalPrice));
             }
+            totalPrice = Double.valueOf(df.format(totalPrice));
         }
 
         //realizar el pago
