@@ -562,8 +562,8 @@ public class HomeController {
         totalPrice = Double.valueOf(df.format(totalPrice));
         text += "</tbody>\n" +
                 "</table>\n" +
-                "<p>The total price that you have paid is " + totalPrice + " euros.</p>\n" +
-                "<p>Regards.</p>\n";
+                //"<p>The total price that you have paid is " + totalPrice + " euros.</p>\n" +
+                "<p>Thank you and regards.</p>\n";
 
         helper.setText(text,true);
         //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));

@@ -3,6 +3,7 @@ package com.users.accountservice.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -12,8 +13,10 @@ public class Account {
     @Id
     String id;
     @ApiModelProperty(notes = "Username of the user", required = true)
+    @Indexed(unique=true)
     String username;
     @ApiModelProperty(notes = "Email of the user", required = true)
+    @Indexed(unique=true)
     String email;
     @ApiModelProperty(notes = "Password of the user", required = true)
     String password;

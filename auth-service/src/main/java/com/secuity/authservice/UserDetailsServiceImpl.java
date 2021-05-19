@@ -89,7 +89,7 @@ public class UserDetailsServiceImpl implements UserDetailsService  {
         final List<AccountDTO> users = res.getBody();
 
         for (AccountDTO accountDTO: users) {
-            if(accountDTO.getUsername().equals(username)) {
+            if (accountDTO.getUsername().equals(username) && accountDTO.getRole().equals("ADMIN")) {
 
                 // Remember that Spring needs roles to be in this format: "ROLE_" + userRole (i.e. "ROLE_ADMIN")
                 // So, we need to set it to that format, so we can verify and compare roles (i.e. hasRole("ADMIN")).
