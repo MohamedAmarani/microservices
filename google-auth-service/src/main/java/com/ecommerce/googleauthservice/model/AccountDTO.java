@@ -20,9 +20,6 @@ public class AccountDTO {
     @ApiModelProperty(notes = "Available credit of the user")
     double credit;
 
-    public AccountDTO() {
-    }
-
     public AccountDTO(String username, String email, String password, String role, String deliveryAddress, double credit) {
         this.username = username;
         this.email = email;
@@ -34,6 +31,10 @@ public class AccountDTO {
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUsername() {
