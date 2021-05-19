@@ -115,7 +115,7 @@ public class HomeController {
         return new ResponseEntity<String>(res2.getBody().toString(), HttpStatus.OK);
     }
 
-    @GetMapping("/hello")
+    @GetMapping("/return")
     @ApiOperation(value = "Retrieve a Google access token out of the authorization code and generate own JWT access token for the user",
             notes = "If the user does not exist in the system, they will be added. At the end, a JWT access token will be returned for the user for which" +
                     "the authorization code was created.")
