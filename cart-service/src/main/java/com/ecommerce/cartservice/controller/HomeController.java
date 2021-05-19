@@ -387,7 +387,7 @@ public class HomeController {
         totalPrice = Double.valueOf(df.format(totalPrice));
 
         //comprovar que el codigo de descuento, si hay, es valido, y aplicarlo
-        if (!discountCodeBody.isEmpty()) {
+        if (discountCodeBody != null) {
             String discountCode = discountCodeBody.get("discountCode");
             final ResponseEntity<String> res;
             //consultar informacion del descuento Y COMPROVAR QUE EXISTE
