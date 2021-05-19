@@ -389,10 +389,16 @@ public class HomeController {
         //comprovar que el codigo de descuento, si hay, es valido, y aplicarlo
         String discountCode = discountCodeBody.get("discountCode");
         if (discountCode != null) {
-            //consultar informacion del descuento
-            final ResponseEntity<String> res = restTemplate.exchange("http://discount-service:8080/" + discountCode,
-                    HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
-                    });
+            //consultar informacion del descuento Y COMPROVAR QUE EXISTE
+            try {
+                final ResponseEntity<String> res = restTemplate.exchange("http://discount-service:8080/" + discountCode,
+                        HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
+                        });
+            } catch (Exception e) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT, "Discount does not exist"
+                );
+            }
             Gson gson = new Gson();
             DiscountDTO discountDTO = gson.fromJson(res.getBody(), DiscountDTO.class);
             boolean cont = true;
@@ -439,11 +445,12 @@ public class HomeController {
                     });
 
             //reducir el precio total aplicando el descuento
-            if (!discountDTO.getIsPercentage()) {
+            if (!discountDTO.getPercentage()) {
                 totalPrice -= discountDTO.getValue();
             }
             else {
                 double percentage = 100 - discountDTO.getValue();
+                System.out.println("percentage: " + percentage);
                 percentage /= 100;
                 //ver si hay limite de descuento y aplicarlo si es necesario
                 if ((discountDTO.getMaxDiscount() > 0.0) && ((totalPrice * discountDTO.getValue()) > discountDTO.getMaxDiscount()))

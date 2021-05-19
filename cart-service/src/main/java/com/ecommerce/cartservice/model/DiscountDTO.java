@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @ApiModel(description = "Details of a discount")
-public class Discount {
+public class DiscountDTO {
     @ApiModelProperty(notes = "Unique id of the discount")
     @Id
     String id;
@@ -37,10 +37,10 @@ public class Discount {
     @ApiModelProperty(notes = "Indicates the accountId's of the users that can use the discount. If the list is null, then it will be available for everyone")
     List<AccountIdDTO> users;
 
-    public Discount() {
+    public DiscountDTO() {
     }
 
-    public Discount(String id, String code, boolean isPercentage, double maxDiscount, double value, double minimumAmount, Date startDate, Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users) {
+    public DiscountDTO(String id, String code, boolean isPercentage, double maxDiscount, double value, double minimumAmount, Date startDate, Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users) {
         this.id = id;
         this.code = code;
         this.percentage = percentage;
