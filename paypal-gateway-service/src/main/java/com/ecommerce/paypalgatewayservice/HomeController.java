@@ -133,7 +133,6 @@ public class HomeController {
                                     @ApiParam(value = "Id of the payment", required = true) @RequestParam("paymentId") String paymentId,
                                     @ApiParam(value = "Id of the payer", required = true) @RequestParam("PayerID") String PayerID) throws PayPalRESTException {
         incrementCounter();
-        completePayment(accountId, paymentId, PayerID);
         return completePayment(accountId, paymentId, PayerID);
     }
 
