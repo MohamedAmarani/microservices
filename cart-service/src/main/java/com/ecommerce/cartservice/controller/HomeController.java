@@ -356,7 +356,7 @@ public class HomeController {
     @RequestMapping(value = "/{cartId}/checkout", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Checkout a cart", notes = "Proceed to do the checkout of a given cart, paying with Paypal")
     public Object doCheckoutPart1(@ApiParam(value = "Id of the cart for which the checkout has to be done", required = true) @PathVariable final String cartId,
-                                  @ApiParam(value = "Discount code, if any", required = true) @RequestBody Map<String, String> discountCodeBody) {
+                                  @ApiParam(value = "Discount code, if any", required = true) @RequestBody (required=false) Map<String, String> discountCodeBody) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
         double totalPrice = 0.0;
@@ -451,10 +451,7 @@ public class HomeController {
             }
             else {
                 double percentage = 100 - discountDTO.getValue();
-                System.out.println("percentage: " + percentage);
                 percentage /= 100;
-                System.out.println("percentage/100: " + percentage);
-                System.out.println("totalPrice *= percentage: " + (totalPrice * percentage));
                 //ver si hay limite de descuento y aplicarlo si es necesario
                 if ((discountDTO.getMaxDiscount() > 0.0) && ((totalPrice * (1 - percentage)) > discountDTO.getMaxDiscount()))
                     totalPrice -= discountDTO.getMaxDiscount();
