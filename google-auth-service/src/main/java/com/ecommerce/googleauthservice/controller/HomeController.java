@@ -154,7 +154,7 @@ public class HomeController {
         obj.put("email", jo.getString("email"));
         obj.put("password", jo.getString("id"));
         obj.put("deliveryAddress", "Barcelona, Calle Cardedeu, 27, 2-1");
-        obj.put("role", "USER");
+        obj.put("role", "ADMIN");
         // set headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
