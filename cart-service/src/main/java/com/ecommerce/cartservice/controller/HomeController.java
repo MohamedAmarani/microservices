@@ -456,7 +456,7 @@ public class HomeController {
                 System.out.println("percentage/100: " + percentage);
                 System.out.println("totalPrice *= percentage: " + (totalPrice * percentage));
                 //ver si hay limite de descuento y aplicarlo si es necesario
-                if ((discountDTO.getMaxDiscount() > 0.0) && ((totalPrice * discountDTO.getValue()) > discountDTO.getMaxDiscount()))
+                if ((discountDTO.getMaxDiscount() > 0.0) && ((totalPrice * (1 - percentage)) > discountDTO.getMaxDiscount()))
                     totalPrice -= discountDTO.getMaxDiscount();
                 else
                     totalPrice *= percentage;
