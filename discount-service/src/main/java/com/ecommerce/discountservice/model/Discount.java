@@ -5,8 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +18,7 @@ public class Discount {
     @Indexed(unique=true)
     String code;
     @ApiModelProperty(notes = "Indicates whether it is a discount over the purchase or a EUR amount to subtract from the purchase price")
-    boolean isPercentage;
+    boolean percentage;
     @ApiModelProperty(notes = "If the discount is a percentage, then maxDiscount defines the maximum discount that can be applied to a purchase. If it is 0, no maximum discount is applied")
     double maxDiscount;
     @ApiModelProperty(notes = "Value of the discount. It could be either a percentage or a EUR amount, it depends on the 'percentage' boolean")
@@ -46,7 +44,7 @@ public class Discount {
     public Discount(String id, String code, boolean isPercentage, double maxDiscount, double value, double minimumAmount, Date startDate, Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users) {
         this.id = id;
         this.code = code;
-        this.isPercentage = isPercentage;
+        this.percentage = percentage;
         this.maxDiscount = maxDiscount;
         this.value = value;
         this.minimumAmount = minimumAmount;
@@ -73,12 +71,12 @@ public class Discount {
         this.code = code;
     }
 
-    public void setIsPercentage(boolean isPercentage) {
-        this.isPercentage = isPercentage;
+    public void setPercentage(boolean percentage) {
+        this.percentage = percentage;
     }
 
-    public boolean getIsPercentage() {
-        return isPercentage;
+    public boolean getPercentage() {
+        return percentage;
     }
 
     public double getMaxDiscount() {
