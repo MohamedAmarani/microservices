@@ -495,6 +495,7 @@ public class HomeController {
         final ResponseEntity<OrderDTO> res1 = restTemplate.exchange("http://order-service:8080",
                 HttpMethod.POST, orderEntity, new ParameterizedTypeReference<OrderDTO>() {
                 });
+        System.out.println(res1.getBody().getId());
 
         //vaciar carrito
         cart = cartRepository.findById(cartId);

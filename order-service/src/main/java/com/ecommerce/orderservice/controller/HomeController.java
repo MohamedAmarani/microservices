@@ -150,7 +150,6 @@ public class HomeController {
                 ProductDTO productDTO = gson.fromJson(res.getBody(), ProductDTO.class);
                 CartItemDTO cartItemDTO = new CartItemDTO(productDTO, cartItem.getQuantity(), cartItem.isAvailable());
                 cartDTO.addItems(cartItemDTO);
-                System.out.println(cartItem.getProductId());
             }
             orderDTO.setCart(cartDTO);
         } catch (Exception e) {
@@ -165,7 +164,6 @@ public class HomeController {
     @ApiOperation(value = "Create an order", notes = "Provide information to create an order")
     public OrderDTO createInventory(@ApiParam(value = "Information of the order to create", required = true) @RequestBody Cart cart) {
         incrementCounter();
-        System.out.println("hola");
         Order order = orderRepository.save(new Order(cart));
         OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId());
         try {
@@ -189,6 +187,7 @@ public class HomeController {
             );
 
         }
+        System.out.println(order.getId() + " POST");
         return orderDTO;
     }
 
@@ -258,6 +257,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Order not found"
             );
         }
+        System.out.println(order.getId() + " PUT");
         return orderDTO;
     }
 
