@@ -81,6 +81,10 @@ public class Discount {
         isPercentage = percentage;
     }
 
+    public boolean getPercentage() {
+        return isPercentage;
+    }
+
     public double getMaxDiscount() {
         return maxDiscount;
     }
