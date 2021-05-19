@@ -445,7 +445,11 @@ public class HomeController {
             else {
                 double percentage = 100 - discountDTO.getValue();
                 percentage /= 100;
-                totalPrice *= percentage;
+                //ver si hay limite de descuento y aplicarlo si es necesario
+                if ((discountDTO.getMaxDiscount() > 0.0) && ((totalPrice * discountDTO.getValue()) > discountDTO.getMaxDiscount()))
+                    totalPrice -= discountDTO.getMaxDiscount();
+                else
+                    totalPrice *= percentage;
             }
             totalPrice = Double.valueOf(df.format(totalPrice));
         }

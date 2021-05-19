@@ -21,6 +21,8 @@ public class Discount {
     String code;
     @ApiModelProperty(notes = "Indicates whether it is a discount over the purchase or a EUR amount to subtract from the purchase price")
     boolean isPercentage;
+    @ApiModelProperty(notes = "If the discount is a percentage, then maxDiscount defines the maximum discount that can be applied to a purchase. If it is 0, no maximum discount is applied")
+    double maxDiscount;
     @ApiModelProperty(notes = "Value of the discount. It could be either a percentage or a EUR amount, it depends on the 'percentage' boolean")
     double value;
     @ApiModelProperty(notes = "Minimum amount of money that the order has to be in order to apply the discount")
@@ -41,10 +43,11 @@ public class Discount {
     public Discount() {
     }
 
-    public Discount(String id, String code, boolean isPercentage, double value, double minimumAmount, Date startDate, Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users) {
+    public Discount(String id, String code, boolean isPercentage, double maxDiscount, double value, double minimumAmount, Date startDate, Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users) {
         this.id = id;
         this.code = code;
         this.isPercentage = isPercentage;
+        this.maxDiscount = maxDiscount;
         this.value = value;
         this.minimumAmount = minimumAmount;
         this.startDate = startDate;
@@ -76,6 +79,14 @@ public class Discount {
 
     public void setPercentage(boolean percentage) {
         isPercentage = percentage;
+    }
+
+    public double getMaxDiscount() {
+        return maxDiscount;
+    }
+
+    public void setMaxDiscount(double maxDiscount) {
+        this.maxDiscount = maxDiscount;
     }
 
     public double getValue() {
