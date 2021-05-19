@@ -139,11 +139,6 @@ public class HomeController {
         incrementCounter();
         Order order = orderRepository.findById(id).get();
         OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId());
-        System.out.println("---------------");
-        System.out.println(order.getCart().getId());
-        System.out.println(order.getCart().getCartItems());
-        System.out.println(order.getCart().getInventoryId());
-        System.out.println("---------------");
         try {
             CartDTO cartDTO = new CartDTO(order.getCart().getId(), order.getCart().getInventoryId());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
@@ -170,6 +165,7 @@ public class HomeController {
     @ApiOperation(value = "Create an order", notes = "Provide information to create an order")
     public OrderDTO createInventory(@ApiParam(value = "Information of the order to create", required = true) @RequestBody Cart cart) {
         incrementCounter();
+        System.out.println("hola");
         Order order = orderRepository.save(new Order(cart));
         OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId());
         try {
@@ -185,7 +181,6 @@ public class HomeController {
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
                 CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.isAvailable());
                 cartDTO.addItems(cartItemDTO);
-                System.out.println(cartItem.getProductId());
             }
             orderDTO.setCart(cartDTO);
         } catch (Exception e) {
