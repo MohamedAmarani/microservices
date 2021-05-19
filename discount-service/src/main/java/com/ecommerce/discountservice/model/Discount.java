@@ -73,15 +73,11 @@ public class Discount {
         this.code = code;
     }
 
-    public boolean isPercentage() {
-        return isPercentage;
+    public void setIsPercentage(boolean isPercentage) {
+        this.isPercentage = isPercentage;
     }
 
-    public void setPercentage(boolean percentage) {
-        isPercentage = percentage;
-    }
-
-    public boolean getPercentage() {
+    public boolean getIsPercentage() {
         return isPercentage;
     }
 

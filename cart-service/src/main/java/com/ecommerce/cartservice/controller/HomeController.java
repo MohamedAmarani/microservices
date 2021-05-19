@@ -439,7 +439,7 @@ public class HomeController {
                     });
 
             //reducir el precio total aplicando el descuento
-            if (!discountDTO.isPercentage()) {
+            if (!discountDTO.getIsPercentage()) {
                 totalPrice -= discountDTO.getValue();
             }
             else {
