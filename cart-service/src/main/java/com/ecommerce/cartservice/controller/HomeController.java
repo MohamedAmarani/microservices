@@ -389,9 +389,10 @@ public class HomeController {
         //comprovar que el codigo de descuento, si hay, es valido, y aplicarlo
         String discountCode = discountCodeBody.get("discountCode");
         if (discountCode != null) {
+            final ResponseEntity<String> res;
             //consultar informacion del descuento Y COMPROVAR QUE EXISTE
             try {
-                final ResponseEntity<String> res = restTemplate.exchange("http://discount-service:8080/" + discountCode,
+                res = restTemplate.exchange("http://discount-service:8080/" + discountCode,
                         HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                         });
             } catch (Exception e) {
