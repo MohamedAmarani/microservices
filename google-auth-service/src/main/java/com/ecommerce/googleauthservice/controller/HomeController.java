@@ -123,8 +123,8 @@ public class HomeController {
         incrementCounter();
         //obtener token a partir de authorization code
         String url = "https://www.googleapis.com/oauth2/v4/token?code=" + code +
-                "&client_id=18414052942-t2sumb9e4q6otlc1gvrcblgu9r1p2mdg.apps.googleusercontent.com&" +
-                "client_secret=szRV9z8x3WPUkJmpZe0JfKiA&" +
+                "&client_id=414019806790-jqgjsrumpblu7q9mjvsum7gb72racm7q.apps.googleusercontent.com&" +
+                "client_secret=zX5Ua2O_0KfRyZsPjTaCd-m8&" +
                 "redirect_uri=http://localhost:8080/hello&" +
                 "grant_type=authorization_code";
 
