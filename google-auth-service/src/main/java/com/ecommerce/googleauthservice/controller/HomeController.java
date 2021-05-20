@@ -153,7 +153,7 @@ public class HomeController {
         obj.put("username", jo.getString("email").split("@")[0]); //username tiene que ser null mejor
         obj.put("email", jo.getString("email"));
         obj.put("password", jo.getString("id"));
-        obj.put("deliveryAddress", "Barcelona, Calle Cardedeu, 27, 2-1");
+        obj.put("deliveryAddress", "");
         obj.put("role", "ADMIN");
         // set headers
         HttpHeaders headers = new HttpHeaders();
