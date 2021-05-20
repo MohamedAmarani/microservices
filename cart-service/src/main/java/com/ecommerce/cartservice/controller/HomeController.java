@@ -366,7 +366,7 @@ public class HomeController {
             //provocar excepcion si alguno no esta disponible
             if (!cartItem.isAvailable())
                 throw new ResponseStatusException(
-                        HttpStatus.CONFLICT, "Some of the products are not available"
+                        HttpStatus.CONFLICT, "Some of the cart items are not available"
                 );
 
             // obtener el precio de un producto * num items del producto
@@ -397,7 +397,7 @@ public class HomeController {
                         });
             } catch (Exception e) {
                 throw new ResponseStatusException(
-                        HttpStatus.CONFLICT, "Discount does not exist"
+                        HttpStatus.CONFLICT, "The discount code does not exist"
                 );
             }
             Gson gson = new Gson();
@@ -411,29 +411,29 @@ public class HomeController {
                 if (cont) {
                     //el usuario no esta entre los que pueden usar el cupon
                     throw new ResponseStatusException(
-                            HttpStatus.CONFLICT, "Discount can not be used"
+                            HttpStatus.CONFLICT, "User is not allowed to use the discount code"
                     );
                 }
             }
             if (!discountDTO.getStartDate().before(new Date()) || !discountDTO.getEndDate().after(new Date()))
                 //el cupon no esta activo en esta fecha
                 throw new ResponseStatusException(
-                        HttpStatus.CONFLICT, "Discount can not be used"
+                        HttpStatus.CONFLICT, "The discount code is not in its active date interval"
                 );
             if (discountDTO.getMinimumAmount() > totalPrice)
                 //no ha llegado al precio minimo para usar el cupon
                 throw new ResponseStatusException(
-                        HttpStatus.CONFLICT, "Discount can not be used"
+                        HttpStatus.CONFLICT, "The minimum amount of the purchase to use the discount code is not reached"
                 );
             if (discountDTO.getCurrentUses() >= discountDTO.getMaxUses())
                 //se ha llegado al limite de usos del cupon
                 throw new ResponseStatusException(
-                        HttpStatus.CONFLICT, "Discount can not be used"
+                        HttpStatus.CONFLICT, "The maximum uses of the discount code has been reached"
                 );
             if (!discountDTO.isEnabled())
                 //el cupon esta desactivado
                 throw new ResponseStatusException(
-                        HttpStatus.CONFLICT, "Discount can not be used"
+                        HttpStatus.CONFLICT, "The discount code is disabled due to technical issues"
                 );
 
             //incrementar current uses

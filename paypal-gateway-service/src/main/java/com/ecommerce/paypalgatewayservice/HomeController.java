@@ -142,7 +142,7 @@ public class HomeController {
                                 @ApiParam(value = "Id of the payment", required = true) @RequestParam("paymentId") String paymentId,
                                 @ApiParam(value = "Id of the payer", required = true) @RequestParam("PayerID") String PayerID) throws PayPalRESTException {
         incrementCounter();
-        return "Algo no ha ido como debía.";
+        return "El pago se ha cancelado.";
     }
 
     @PostMapping(value = "/paypal/make/payment/{accountId}")
