@@ -40,6 +40,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/paypal/success/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/paypal/cancel/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/googleAuth/return**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/googleAuth/oauth2/authorization/google**").permitAll()
                 // must be an admin if trying to access admin area (authentication is also required here)
                 .antMatchers("/group" + "/api/v1/admin/**").hasRole("ADMIN")
