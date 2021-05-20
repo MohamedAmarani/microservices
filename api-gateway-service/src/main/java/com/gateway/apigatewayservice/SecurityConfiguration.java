@@ -38,6 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/info").permitAll()
                 // allow GET metrics
                 .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+                //permitimos callbacks de paypal y google auth
                 .antMatchers(HttpMethod.GET, "/api/v1/paypal/success/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/paypal/cancel/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/googleAuth/return**").permitAll()

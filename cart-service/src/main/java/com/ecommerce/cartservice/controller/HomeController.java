@@ -285,7 +285,7 @@ public class HomeController {
                                       @ApiParam(value = "Product Id and quantity of items available in the inventory to be added to the given cart", required = true) @RequestBody CartItem cartItem) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
-
+        System.out.println("Hola");
         JSONObject obj = new JSONObject();
         obj.put("numItems", cartItem.getQuantity());
         // set headers
