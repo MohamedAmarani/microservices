@@ -1,6 +1,9 @@
 package com.ecommerce.paypalgatewayservice;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import com.paypal.api.payments.Payment;
+import com.paypal.api.payments.PaymentExecution;
+import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
@@ -138,9 +141,11 @@ public class HomeController {
 
     @GetMapping("/cancel/{accountId}")
     @ApiOperation(value = "Manage error in payment", notes = "If the payment goes wrong the user will be redirected here.")
-    public String cancelPayment(@ApiParam(value = "Id of the cart that tried to be checked out", required = true) @PathVariable final String accountId) throws PayPalRESTException {
+    public Map<String, Object> cancelPayment(@ApiParam(value = "Id of the cart that tried to be checked out", required = true) @PathVariable final String accountId) throws PayPalRESTException {
         incrementCounter();
-        return "El pago se ha cancelado.";
+        Map<String, Object> response = new HashMap();
+        response.put("status", "canceled");
+        return response;
     }
 
     @PostMapping(value = "/paypal/make/payment/{accountId}")
