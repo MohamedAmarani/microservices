@@ -11,7 +11,8 @@ spec:
       port: 27017
       # Port to forward to inside the pod
       targetPort: 27017
-  type: ClusterIP
+      nodePort: 30017
+  type: NodePort
 
 ---
 apiVersion: apps/v1

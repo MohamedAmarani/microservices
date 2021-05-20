@@ -7,7 +7,7 @@ metadata:
   name: apigateway-ingress
 spec:
   rules:
-    - host: ec2-15-237-24-182.eu-west-3.compute.amazonaws.com
+    - host: ec2-35-180-204-28.eu-west-3.compute.amazonaws.com
       http:
         paths:
           - path: /api/v1

@@ -1,40 +1,41 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: account-service
+  name: discount-service
 spec:
   selector:
-    app: accountse
+    app: discountse
   ports:
     - protocol: "TCP"
       # Port accessible inside cluster
       port: 8080
       # Port to forward to inside the pod
       targetPort: 8080
-      nodePort: 30038
+      nodePort: 30084
   type: LoadBalancer
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: account-deployment
+  name: discount-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: accountse
+      app: discountse
   template:
     metadata:
       labels:
-        app: accountse
+        app: discountse
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/path: 'actuator/prometheus'
     spec:
       containers:
-        - name: accountse
-          image: scaredste/account-service:v6.0.2
+        - name: discountse
+          image: scaredste/discount-service:v4.0.4
           ports:
-            - containerPort: 8080
-              protocol: TCP
+          - containerPort: 8080
+            protocol: TCP
+

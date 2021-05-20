@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: googleauthse
-          image: scaredste/google-auth-service:v3.0.3
+          image: scaredste/google-auth-service:v5.0.6
           ports:
           - containerPort: 8080
             protocol: TCP

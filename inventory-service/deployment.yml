@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: inventoryse
-          image: scaredste/inventory-service:v3.0.1
+          image: scaredste/inventory-service:v4.0.1
           ports:
           - containerPort: 8080
             protocol: TCP
