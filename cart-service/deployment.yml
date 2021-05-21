@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: cartse
-          image: scaredste/cart-service:v6.0.7
+          image: scaredste/cart-service:v6.0.9
           ports:
           - containerPort: 8080
             protocol: TCP

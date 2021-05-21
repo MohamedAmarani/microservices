@@ -3,13 +3,20 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
-    #nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /
   name: apigateway-ingress
 spec:
   rules:
     - host: ec2-35-180-204-28.eu-west-3.compute.amazonaws.com
       http:
         paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: welcome-service
+                port:
+                  number: 80
           - path: /api/v1
             pathType: Prefix
             backend:

@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: paypalgatewayse
-          image: scaredste/paypal-gateway-service:v3.0.7
+          image: scaredste/paypal-gateway-service:v4.0.2
           ports:
           - containerPort: 8080
             protocol: TCP
