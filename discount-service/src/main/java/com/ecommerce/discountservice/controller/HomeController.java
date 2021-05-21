@@ -141,9 +141,15 @@ public class HomeController {
         incrementCounter();
         Discount discount;
         try {
-            discount = discountRepository.findById(discountId).get();
+            try {
+                discount = discountRepository.findById(discountId).get();
+            } catch (Exception e) {
+                discount = discountRepository.findByCode(discountId).get();
+            }
         } catch (Exception e) {
-            discount = discountRepository.findByCode(discountId).get();
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Discount not found"
+            );
         }
         return discount;
     }
