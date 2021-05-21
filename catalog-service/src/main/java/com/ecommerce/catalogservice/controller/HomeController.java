@@ -197,7 +197,7 @@ public class HomeController {
             result = new CatalogDTO(catalog.get().getId());
         } catch (Exception e){
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Catalog not found in catalog"
+                    HttpStatus.NOT_FOUND, "Catalog not found"
             );
         }
         List<CatalogItem> ids = catalog.get().getProductIdentifiers();
@@ -269,7 +269,7 @@ public class HomeController {
             }
         }
         throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Product not found"
+                HttpStatus.NOT_FOUND, "Product not found in catalog"
         );
     }
 

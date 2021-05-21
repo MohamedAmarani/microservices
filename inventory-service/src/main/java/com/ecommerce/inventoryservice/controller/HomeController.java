@@ -159,7 +159,7 @@ public class HomeController {
         }
         catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Product not found in catalog"
+                    HttpStatus.NOT_FOUND, "Inventory not found"
             );
         }
         List<InventoryItemDTO> inventoryItemDTOs = new ArrayList<>();
@@ -205,7 +205,7 @@ public class HomeController {
             inventoryRepository.deleteById(id);
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Inventory not found in catalog"
+                    HttpStatus.NOT_FOUND, "Inventory not found"
             );
         }
         incrementCounter();
@@ -257,7 +257,7 @@ public class HomeController {
             }
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Product not found in catalog"
+                    HttpStatus.NOT_FOUND, "Product not found in inventory"
             );
         }
         throw new ResponseStatusException(
@@ -280,7 +280,7 @@ public class HomeController {
                     });
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Inventory not found in catalog"
+                    HttpStatus.NOT_FOUND, "Inventory not found"
             );
         }
         boolean alreadyExists = false;
