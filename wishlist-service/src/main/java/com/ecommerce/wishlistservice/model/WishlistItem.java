@@ -25,20 +25,20 @@ public class WishlistItem {
     }
 
     public WishlistItem(String id, String productId, String inventoryId, double targetPrice, Date creationDate) {
-        this.id = id;
+        //this.id = id;
         this.productId = productId;
         this.inventoryId = inventoryId;
         this.targetPrice = targetPrice;
         this.creationDate = creationDate;
     }
 
-    public String getId() {
+   /* public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
-    }
+    } */
 
     public String getProductId() {
         return productId;
