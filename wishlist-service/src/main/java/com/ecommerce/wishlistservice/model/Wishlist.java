@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class Wishlist {
     @Id
     String id;
     @ApiModelProperty(notes = "Wishlist items of the wishlist")
-    List<WishlistItem> wishlistItems;
+    List<WishlistItem> wishlistItems = new ArrayList<>();
     @ApiModelProperty(notes = "Creation date of the wishlist")
     Date creationDate = new Date();
 
