@@ -196,6 +196,15 @@ public class HomeController {
         restTemplate.exchange("http://cart-service:8080/",
                 HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
                 });
+        //crear wishlist
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        obj = new JSONObject();
+        obj.put("id", account1.getId());
+        entity = new HttpEntity<String>(obj.toString(), headers);
+        restTemplate.exchange("http://wishlist-service:8080/",
+                HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
+                });
         //SI ES USER ENVIAR MAIL DE BIENVENIDA
         if (account1.getRole().equals("USER"))
             emailWelcome(account1);
