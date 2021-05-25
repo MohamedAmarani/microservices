@@ -364,7 +364,7 @@ public class HomeController {
         for (Picture picture: productDTO.getPictures()) {
             ++cont;
             File file = new File("C:/Users/moha1/Pictures/eCommerceSaas/" + productDTO.getName() + "-picture" + cont + ".jpg");
-            FileUtils.copyURLToFile(new URL("https://static.pullandbear.net/2/photos//2021/V/0/2/p/4681/526/400/4681526400_2_1_8.jpg?t=1607360791243"), file, 0, 0);
+            FileUtils.copyURLToFile(new URL(picture.getUrl()), file, 0, 0);
             helper.addAttachment(productDTO.getName() + "-picture" + cont + ".jpg", new File("C:/Users/moha1/Pictures/eCommerceSaas/" + productDTO.getName() + "-picture" + cont + ".jpg"));
         }
         javaMailSender.send(msg);
