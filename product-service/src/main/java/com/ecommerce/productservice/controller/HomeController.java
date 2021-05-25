@@ -183,7 +183,6 @@ public class HomeController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         updatedProductInfo.put("productId", id);
-        DecimalFormat df = new DecimalFormat("#.##");
         //udate solo 2 decimales
         updatedProductInfo.put("newPrice", df.format(product.getPrice()));
         HttpEntity<String> entity = new HttpEntity<String>(null, headers);
