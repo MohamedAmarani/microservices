@@ -3,6 +3,7 @@ package com.ecommerce.productservice.controller;
 import com.ecommerce.productservice.model.Product;
 import com.ecommerce.productservice.repository.ProductRepository;
 import com.google.common.util.concurrent.AtomicDouble;
+import com.google.gson.Gson;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
@@ -12,14 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -34,6 +37,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class HomeController {
     @Autowired
     private Environment env;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Autowired
     private ProductRepository productRepository;
@@ -148,6 +154,43 @@ public class HomeController {
             );
         }
         incrementCounter();
+        return product;
+    }
+
+    @PatchMapping("/{id}/price")
+    @ApiOperation(value = "Get a product", notes = "Provide an Id to retrieve a specific product from the Database")
+    public Product patchProductPrice(@ApiParam(value = "Id of the product to get", required = true) @PathVariable final String id,
+                                     @ApiParam(value = "New product price", required = true) @RequestBody Map<String, Double> newProductPrice) throws Exception {
+        incrementCounter();
+        Map<String, String> updatedProductInfo = new HashMap<>();
+        Product product = null;
+        //si no existe ningun producto con ese id retornamos null
+        try {
+            //throw new Exception("Images can't be fetched");
+            product = productRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found"
+            );
+        }
+        //meter precio antiguo en el map
+        DecimalFormat df = new DecimalFormat("#.##");
+        //update solo 2 decimales
+        updatedProductInfo.put("oldPrice", df.format(product.getPrice()));
+        product.setPrice(newProductPrice.get("newPrice"));
+        product = productRepository.save(product);
+        //avisar a las wishlist que lo tengan
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        updatedProductInfo.put("productId", id);
+        DecimalFormat df = new DecimalFormat("#.##");
+        //udate solo 2 decimales
+        updatedProductInfo.put("newPrice", df.format(product.getPrice()));
+        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+        final ResponseEntity<Map<String, String>> res = restTemplate.exchange("http://wishlist-service:8080/priceReduced",
+                HttpMethod.PUT, entity, new ParameterizedTypeReference<Map<String, String>>() {
+                });
+
         return product;
     }
 

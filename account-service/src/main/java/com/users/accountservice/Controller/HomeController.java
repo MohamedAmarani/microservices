@@ -9,10 +9,12 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import net.minidev.json.JSONObject;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -26,6 +28,13 @@ import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -318,6 +327,48 @@ public class HomeController {
                 if (userRepository.findById(accountIdDTO.getAccountId()).get().getRole().equals("USER"))
                     emailDisabledDiscount(userRepository.findById(accountIdDTO.getAccountId()).get(), discountDTO);
         }
+    }
+
+    @PostMapping("/{accountId}/reachedTargetPriceEmail")
+    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
+    public void sendReachedTargetPriceEmail(@ApiParam(value = "Id of the account to notify", required = true) @PathVariable final String accountId,
+                                            @ApiParam(value = "Information regarding the price update", required = true) @RequestBody Map<String, String> updatedProductInfo) throws MessagingException, IOException {
+        incrementCounter();
+        //obtener product
+        ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + updatedProductInfo.get("productId"),
+                HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
+                });
+        ProductDTO productDTO = res.getBody();
+        emailReachedTargetPrice(userRepository.findById(accountId).get(), productDTO, updatedProductInfo);
+    }
+
+    public String emailReachedTargetPrice(Account receiver, ProductDTO productDTO, Map<String, String> updatedProductInfo) throws MessagingException, IOException {
+        MimeMessage msg = javaMailSender.createMimeMessage();
+
+        // true = multipart message
+        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+        helper.setTo(receiver.getEmail());
+        helper.setBcc("saasecommerce@gmail.com");
+        helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
+        helper.setSubject("A product of your wishlist has matched the target price");
+        String text = "<h2>Hi " + receiver.getUsername() + ", a product that you wish has now a price within your target price!</h2>\n" +
+                "<p style=\"font-size: 1.5em;\">The product " + productDTO.getName() + " of size " + productDTO.getSize() + " and id <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + productDTO.getId() + "</strong> " +
+                "has reduced its price from " + updatedProductInfo.get("oldPrice") + " EUR to " + productDTO.getPrice() + " EUR, matching the target price restriction of " +
+                updatedProductInfo.get("targetPrice") + " that you set on your wishlist.</p>\n" +
+                "Below you can find attached the pics of the product. We will keep you updated of any new event.</p>\n" +
+                "<p>Regards.</p>\n";
+
+        helper.setText(text,true);
+        //añadir fotos de product
+        int cont = 0;
+        for (Picture picture: productDTO.getPictures()) {
+            ++cont;
+            File file = new File("C:/Users/moha1/Pictures/" + productDTO.getName() + "-picture" + cont + ".jpg");
+            FileUtils.copyURLToFile(new URL("https://static.pullandbear.net/2/photos//2021/V/0/2/p/4681/526/400/4681526400_2_1_8.jpg?t=1607360791243"), file, 0, 0);
+            helper.addAttachment("C:/Users/moha1/Pictures/" + productDTO.getName() + "-picture" + cont + ".jpg", new File("C:/Users/moha1/Pictures/" + productDTO.getName() + "-picture" + cont + ".jpg"));
+        }
+        javaMailSender.send(msg);
+        return msg.getSubject();
     }
 
     public String emailEnabledDiscount(Account receiver, DiscountDTO discountDTO) throws MessagingException {

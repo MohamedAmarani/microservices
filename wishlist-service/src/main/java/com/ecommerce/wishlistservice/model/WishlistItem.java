@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Document
 @ApiModel(description = "Details of a wishlist item")
 public class WishlistItem {
     @ApiModelProperty(notes = "Unique id of the wishlist item")

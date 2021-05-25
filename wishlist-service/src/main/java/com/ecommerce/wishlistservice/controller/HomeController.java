@@ -5,6 +5,7 @@ import com.ecommerce.wishlistservice.model.WishlistItem;
 import com.ecommerce.wishlistservice.repository.WishlistItemRepository;
 import com.ecommerce.wishlistservice.repository.WishlistRepository;
 import com.google.common.util.concurrent.AtomicDouble;
+import com.google.gson.Gson;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -18,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -99,7 +101,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
-    @RequestMapping("/info")
+    @GetMapping("/info")
     @ApiOperation(value = "Get information from the wishlist-service instance", notes = "Retrieve information from a cart-service instance")
     public String home() {
         incrementCounter();
@@ -124,7 +126,40 @@ public class HomeController {
         return wishlist;
     }
 
-    @PostMapping("/{wishlistId}")
+    @PutMapping("/priceReduced")
+    public void patchPriceReducedWishlist(@ApiParam(value = "Discount code, if any", required = true) @RequestBody Map<String, String> updatedProductInfo) {
+        incrementCounter();
+        List<Wishlist> wishlistList;
+        try {
+            wishlistList = wishlistRepository.findAll();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Wishlist not found"
+            );
+        }
+        //iterar sobre todos los wishlist
+        for (Wishlist wishlist: wishlistList)
+            //iterar sobre todos los items de cada wishlist
+            for (WishlistItem wishlistItem: wishlist.getWishlistItems())
+                if (wishlistItem.getProductId().equals(updatedProductInfo.get("productId")))
+                    if (wishlistItem.getTargetPrice() >= Double.parseDouble(updatedProductInfo.get("newPrice"))) {
+                    //enviar corro a propietario de la wishlist
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.setContentType(MediaType.APPLICATION_JSON);
+                        Map<String, String> updatedProductPriceInfo = new HashMap<>();
+                        updatedProductInfo.put("productId", wishlistItem.getProductId());
+                        updatedProductInfo.put("oldPrice", updatedProductInfo.get("oldPrice"));
+                        DecimalFormat df = new DecimalFormat("#.##");
+                        //update solo 2 decimales
+                        updatedProductInfo.put("targetPrice", df.format(wishlistItem.getTargetPrice()));
+                        HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(updatedProductPriceInfo, headers);
+                        final ResponseEntity<String> res1 = restTemplate.exchange("http://account-service:8080/" + wishlist.getId() + "/reachedTargetPriceEmail",
+                            HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
+                                });
+                    }
+    }
+
+    @PostMapping("")
     public Wishlist postWishlist(@ApiParam(value = "Information of the wishlist to create", required = true) @RequestBody Wishlist wishlist) {
         incrementCounter();
         try {
