@@ -455,8 +455,7 @@ public class HomeController {
         String text = "<h2>Hi " + receiver.getUsername() + ", a delivery status has been updated!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() + " is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
                 "and you will receive it at "+ deliveryDTO.getDeliveryAddress() + ", the " + deliveryDTO.getEstimatedDateOfArrival() + ". We will keep you updated of any new event.</p>\n" +
-                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ". " +
-                "The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
+                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ".</p>\n" +
                 "<table class=\"editorDemoTable\">\n" +
                 "<tbody>\n" +
                 "<tr>\n" +
@@ -500,8 +499,7 @@ public class HomeController {
         String text = "<h2>Hi " + receiver.getUsername() + ", a delivery has successfully arrived at its destination!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">" + "The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() +
                 " has now arrived at " + deliveryDTO.getDeliveryAddress() + ".\n" +
-                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ". " +
-                "The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
+                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ".</p>\n" +
                 "<table class=\"editorDemoTable\">\n" +
                 "<tbody>\n" +
                 "<tr>\n" +
@@ -546,8 +544,7 @@ public class HomeController {
         String text = "<h2>Hi " + receiver.getUsername() + ", a delivery date has been updated!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() +
                 " has changed its delivery date to " + deliveryDTO.getEstimatedDateOfArrival() + ". Remember that it is in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state and you will receive it at " + deliveryDTO.getDeliveryAddress() + ". We will keep you updated of any new event.</p>\n" +
-                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ". " +
-                "The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
+                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ".</p>\n" +
                 "<table class=\"editorDemoTable\">\n" +
                 "<tbody>\n" +
                 "<tr>\n" +
@@ -591,8 +588,7 @@ public class HomeController {
         String text = "<h2>Hi " + receiver.getUsername() + ", you have just paid and confirmed an order!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The order "+ deliveryDTO.getOrderId() +", whose delivery  " + deliveryDTO.getId() + " is managed by " + deliveryDTO.getDeliveryCompany() + ", is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
                 "and you will receive it at "+ deliveryDTO.getDeliveryAddress() + ", the " + deliveryDTO.getEstimatedDateOfArrival() + ". We will notify you when " + deliveryDTO.getDeliveryCompany() + " ships your order.</p>\n" +
-                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ". " +
-                "The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
+                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ".</p>\n" +
                 "<table class=\"editorDemoTable\">\n" +
                 "<tbody>\n" +
                 "<tr>\n" +
@@ -660,7 +656,7 @@ public class HomeController {
         helper.setSubject("Te has registrado correctamente");
         helper.setText( "<h2>Your delivery status has been updated!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The delivery 'id' is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">type your text</strong> status. We will keep you updated of any new event.</p>\n" +
-                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order 'id'.The <strong>visual editor</strong> on the right and the <strong>source editor</strong> on the left are linked together and the changes are reflected in the other one as you type! <img src=\"https://html5-editor.net/images/smiley.png\" alt=\"smiley\" /></p>\n" +
+                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order 'id'.</p>\n" +
                 "<table class=\"editorDemoTable\" style=\"height: 88px;\" width=\"167\">\n" +
                 "<tbody>\n" +
                 "<tr>\n" +
