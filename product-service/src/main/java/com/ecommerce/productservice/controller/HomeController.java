@@ -176,19 +176,22 @@ public class HomeController {
         //meter precio antiguo en el map
         DecimalFormat df = new DecimalFormat("#.##");
         //update solo 2 decimales
+        double oldPrice = product.getPrice();
         updatedProductInfo.put("oldPrice", df.format(product.getPrice()));
         product.setPrice(newProductPrice.get("newPrice"));
         product = productRepository.save(product);
-        //avisar a las wishlist que lo tengan
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        updatedProductInfo.put("productId", id);
-        //update solo 2 decimales
-        updatedProductInfo.put("newPrice", df.format(product.getPrice()));
-        HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(updatedProductInfo, headers);
-        final ResponseEntity<Map<String, String>> res = restTemplate.exchange("http://wishlist-service:8080/priceReduced",
-                HttpMethod.PUT, entity, new ParameterizedTypeReference<Map<String, String>>() {
-                });
+        //avisar a las wishlist que lo tengan si el precio nuevo es menor al actual
+        if (oldPrice > newProductPrice.get("newPrice")) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            updatedProductInfo.put("productId", id);
+            //update solo 2 decimales
+            updatedProductInfo.put("newPrice", df.format(product.getPrice()));
+            HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(updatedProductInfo, headers);
+            final ResponseEntity<Map<String, String>> res = restTemplate.exchange("http://wishlist-service:8080/priceReduced",
+                    HttpMethod.PUT, entity, new ParameterizedTypeReference<Map<String, String>>() {
+                    });
+        }
 
         return product;
     }
