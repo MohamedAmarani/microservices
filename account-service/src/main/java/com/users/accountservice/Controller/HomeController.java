@@ -352,9 +352,9 @@ public class HomeController {
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("A product of your wishlist has matched the target price");
         String text = "<h2>Hi " + receiver.getUsername() + ", a product that you wish has now a price within your target price!</h2>\n" +
-                "<p style=\"font-size: 1.5em;\">The product " + productDTO.getName() + " of size " + productDTO.getSize() + " and id <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + productDTO.getId() + "</strong> " +
+                "<p style=\"font-size: 1.5em;\">The product " + productDTO.getName() + " of size " + productDTO.getSize().getSizeId() + " and id <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + productDTO.getId() + "</strong> " +
                 "has reduced its price from " + updatedProductInfo.get("oldPrice") + " EUR to " + productDTO.getPrice() + " EUR, matching the target price restriction of " +
-                updatedProductInfo.get("targetPrice") + " that you set on your wishlist.</p>\n" +
+                updatedProductInfo.get("targetPrice") + " that you established on your wishlist.</p>\n" +
                 "Below you can find attached the pics of the product. We will keep you updated of any new event.</p>\n" +
                 "<p>Regards.</p>\n";
 
@@ -365,7 +365,7 @@ public class HomeController {
             ++cont;
             File file = new File("C:/Users/moha1/Pictures/" + productDTO.getName() + "-picture" + cont + ".jpg");
             FileUtils.copyURLToFile(new URL("https://static.pullandbear.net/2/photos//2021/V/0/2/p/4681/526/400/4681526400_2_1_8.jpg?t=1607360791243"), file, 0, 0);
-            helper.addAttachment("C:/Users/moha1/Pictures/" + productDTO.getName() + "-picture" + cont + ".jpg", new File("C:/Users/moha1/Pictures/" + productDTO.getName() + "-picture" + cont + ".jpg"));
+            helper.addAttachment(productDTO.getName() + "-picture" + cont + ".jpg", new File("C:/Users/moha1/Pictures/" + productDTO.getName() + "-picture" + cont + ".jpg"));
         }
         javaMailSender.send(msg);
         return msg.getSubject();
