@@ -154,12 +154,12 @@ public class HomeController {
                         HttpHeaders headers = new HttpHeaders();
                         headers.setContentType(MediaType.APPLICATION_JSON);
                         Map<String, String> updatedProductPriceInfo = new HashMap<>();
-                        updatedProductInfo.put("productId", wishlistItem.getProductId());
+                        updatedProductPriceInfo.put("productId", wishlistItem.getProductId());
                         System.out.println("productId: " + wishlistItem.getProductId());
-                        updatedProductInfo.put("oldPrice", updatedProductInfo.get("oldPrice"));
+                        updatedProductPriceInfo.put("oldPrice", updatedProductInfo.get("oldPrice"));
                         DecimalFormat df = new DecimalFormat("#.##");
                         //update solo 2 decimales
-                        updatedProductInfo.put("targetPrice", df.format(wishlistItem.getTargetPrice()));
+                        updatedProductPriceInfo.put("targetPrice", df.format(wishlistItem.getTargetPrice()));
                         HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(updatedProductPriceInfo, headers);
                         final ResponseEntity<String> res1 = restTemplate.exchange("http://account-service:8080/" + wishlist.getId() + "/reachedTargetPriceEmail",
                             HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
