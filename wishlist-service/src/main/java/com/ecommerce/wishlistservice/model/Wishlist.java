@@ -2,6 +2,7 @@ package com.ecommerce.wishlistservice.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class Wishlist {
     @ApiModelProperty(notes = "Wishlist items of the wishlist")
     List<WishlistItem> wishlistItems;
     @ApiModelProperty(notes = "Creation date of the wishlist")
-    Date creationDate;
+    Date creationDate = new Date();
 
     public Wishlist() {
     }
