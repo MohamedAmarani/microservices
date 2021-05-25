@@ -185,7 +185,7 @@ public class HomeController {
         updatedProductInfo.put("productId", id);
         //udate solo 2 decimales
         updatedProductInfo.put("newPrice", df.format(product.getPrice()));
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+        HttpEntity<Map<String, String>> entity = new HttpEntity<Map<String, String>>(updatedProductInfo, headers);
         final ResponseEntity<Map<String, String>> res = restTemplate.exchange("http://wishlist-service:8080/priceReduced",
                 HttpMethod.PUT, entity, new ParameterizedTypeReference<Map<String, String>>() {
                 });
