@@ -208,7 +208,7 @@ public class HomeController {
             );
         }
         try {
-            wishlist.deleteFromWishlistItems(wishlistItemId);
+            //wishlist.deleteFromWishlistItems(wishlistItemId);
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Wishlist item not found in the given wishlist"
