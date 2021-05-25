@@ -155,6 +155,7 @@ public class HomeController {
                         headers.setContentType(MediaType.APPLICATION_JSON);
                         Map<String, String> updatedProductPriceInfo = new HashMap<>();
                         updatedProductInfo.put("productId", wishlistItem.getProductId());
+                        System.out.println("productId: " + wishlistItem.getProductId());
                         updatedProductInfo.put("oldPrice", updatedProductInfo.get("oldPrice"));
                         DecimalFormat df = new DecimalFormat("#.##");
                         //update solo 2 decimales
