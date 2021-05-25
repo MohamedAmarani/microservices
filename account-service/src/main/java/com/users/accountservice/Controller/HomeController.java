@@ -359,15 +359,23 @@ public class HomeController {
                 "<p>Regards.</p>\n";
 
         helper.setText(text,true);
-        //añadir fotos de product
+        //descargar y añadir fotos de product
         int cont = 0;
         for (Picture picture: productDTO.getPictures()) {
             ++cont;
-            File file = new File("C:/Users/moha1/Pictures/" + productDTO.getName() + "-picture" + cont + ".jpg");
+            File file = new File("C:/Users/moha1/Pictures/eCommerceSaas/" + productDTO.getName() + "-picture" + cont + ".jpg");
             FileUtils.copyURLToFile(new URL("https://static.pullandbear.net/2/photos//2021/V/0/2/p/4681/526/400/4681526400_2_1_8.jpg?t=1607360791243"), file, 0, 0);
-            helper.addAttachment(productDTO.getName() + "-picture" + cont + ".jpg", new File("C:/Users/moha1/Pictures/" + productDTO.getName() + "-picture" + cont + ".jpg"));
+            helper.addAttachment(productDTO.getName() + "-picture" + cont + ".jpg", new File("C:/Users/moha1/Pictures/eCommerceSaas/" + productDTO.getName() + "-picture" + cont + ".jpg"));
         }
         javaMailSender.send(msg);
+
+        //borrar fotos temporales del sistema
+        for (Picture picture: productDTO.getPictures()) {
+            ++cont;
+            File file = new File("C:/Users/moha1/Pictures/eCommerceSaas/" + productDTO.getName() + "-picture" + cont + ".jpg");
+            file.delete();
+        }
+
         return msg.getSubject();
     }
 
