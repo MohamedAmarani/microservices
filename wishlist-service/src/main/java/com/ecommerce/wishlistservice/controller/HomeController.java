@@ -112,6 +112,13 @@ public class HomeController {
                 " InstanceId " + instanceId;
     }
 
+    @GetMapping("")
+    public List<Wishlist> getWishlists(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String wishlistId) {
+        incrementCounter();
+        Wishlist wishlist;
+        return wishlistRepository.findAll();
+    }
+
     @GetMapping("/{wishlistId}")
     public Wishlist getWishlist(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String wishlistId) {
         incrementCounter();
@@ -160,7 +167,7 @@ public class HomeController {
     }
 
     @PostMapping("")
-    public Wishlist postWishlist(@ApiParam(value = "Information of the wishlist to create", required = true) @RequestBody Wishlist wishlist) {
+    public Wishlist postWishlist(@ApiParam(value = "Information of the wishlist to create", required = true) @RequestBody (required = false) Wishlist wishlist) {
         incrementCounter();
         try {
             wishlist = wishlistRepository.save(wishlist);
