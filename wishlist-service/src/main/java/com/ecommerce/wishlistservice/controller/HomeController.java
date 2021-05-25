@@ -113,7 +113,7 @@ public class HomeController {
     }
 
     @GetMapping("")
-    public List<Wishlist> getWishlists(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String wishlistId) {
+    public List<Wishlist> getWishlists() {
         incrementCounter();
         Wishlist wishlist;
         return wishlistRepository.findAll();
