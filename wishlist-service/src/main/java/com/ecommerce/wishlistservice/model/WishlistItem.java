@@ -9,9 +9,9 @@ import java.util.Date;
 
 @ApiModel(description = "Details of a wishlist item")
 public class WishlistItem {
-    @ApiModelProperty(notes = "Unique id of the wishlist item")
+    /*@ApiModelProperty(notes = "Unique id of the wishlist item")
     @Id
-    String id;
+    String id;*/
     @ApiModelProperty(notes = "Unique id of the wishlist item product")
     private String productId;
     @ApiModelProperty(notes = "Unique id of the inventory on which the wishlist item was created")
@@ -19,7 +19,7 @@ public class WishlistItem {
     @ApiModelProperty(notes = "Target price for which a notification email will be sent to the user when reached")
     private double targetPrice;
     @ApiModelProperty(notes = "Creation date of the wishlist item")
-    Date creationDate;
+    Date creationDate = new Date();
 
     public WishlistItem() {
     }
