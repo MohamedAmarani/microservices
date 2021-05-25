@@ -1,0 +1,41 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: wishlist-service
+spec:
+  selector:
+    app: wishlistse
+  ports:
+    - protocol: "TCP"
+      # Port accessible inside cluster
+      port: 8080
+      # Port to forward to inside the pod
+      targetPort: 8080
+      nodePort: 30054
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wishlist-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wishlistse
+  template:
+    metadata:
+      labels:
+        app: wishlistse
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: 'actuator/prometheus'
+    spec:
+      containers:
+        - name: wishlistse
+          image: scaredste/wishlist-service:v2.0.5
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+
