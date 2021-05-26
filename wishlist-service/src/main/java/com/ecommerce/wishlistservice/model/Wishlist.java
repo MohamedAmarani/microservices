@@ -55,8 +55,10 @@ public class Wishlist {
     public void deleteFromWishlistItems(String wishlistItemProductId) {
         boolean cont = true;
         for (WishlistItem wishlistItem: wishlistItems) {
-            if (wishlistItem.getProductId().equals(wishlistItemProductId))
+            if (wishlistItem.getProductId().equals(wishlistItemProductId)) {
                 this.wishlistItems.remove(wishlistItem);
+                cont = false;
+            }
         }
         if (cont)
             throw new ResponseStatusException(
