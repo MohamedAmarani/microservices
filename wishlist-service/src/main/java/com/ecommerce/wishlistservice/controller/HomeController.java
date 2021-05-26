@@ -210,7 +210,7 @@ public class HomeController {
         }
         try {
             wishlist.deleteFromWishlistItems(wishlistItemProductId);
-        } catch (Exception e) {
+        } catch (ResponseStatusException e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Wishlist item not found"
             );

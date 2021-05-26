@@ -52,21 +52,25 @@ public class Wishlist {
         this.wishlistItems.add(wishlistItem);
     }
 
-    public void deleteFromWishlistItems(String wishlistItemProductId) {
+    public void deleteFromWishlistItems(String wishlistItemProductId) throws ResponseStatusException{
         boolean cont = true;
         for (WishlistItem wishlistItem: wishlistItems) {
             System.out.println("wishlistItemProductId: " + wishlistItemProductId + "     wishlistItem.getProductId(): " + wishlistItem.getProductId());
             if (wishlistItem.getProductId().equals(wishlistItemProductId)) {
                 System.out.println("hola");
+                System.out.println(wishlistItems.size());
                 this.wishlistItems.remove(wishlistItem);
+                System.out.println(wishlistItems.size());
                 System.out.println("hola1");
                 cont = false;
             }
         }
-        if (cont)
+        if (cont) {
+            System.out.println("cont: " + cont);
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Wishlist item not found"
             );
+        }
     }
 
     public Date getCreationDate() {
