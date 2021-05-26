@@ -212,6 +212,14 @@ public class HomeController {
         return response;
     }
 
+    @DeleteMapping("")
+    @ApiOperation(value = "Delete all inventories", notes = "Delete all inventories and their respective items from the Database")
+    public void deleteInventories() throws Exception {
+        incrementCounter();
+        inventoryRepository.deleteAll();
+    }
+
+
     @PostMapping("")
     @ApiOperation(value = "Create an inventory", notes = "Provide information to create an inventory")
     public Inventory createInventory(@ApiParam(value = "Information of the inventory to create", required = true) @RequestBody Inventory inventory) {
