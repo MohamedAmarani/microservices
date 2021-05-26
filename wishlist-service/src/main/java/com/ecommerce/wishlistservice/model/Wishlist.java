@@ -52,16 +52,17 @@ public class Wishlist {
         this.wishlistItems.add(wishlistItem);
     }
 
-    /*public void deleteFromWishlistItems(String wishlistItemId) {
+    public void deleteFromWishlistItems(String wishlistItemProductId) {
         boolean cont = true;
-        for (WishlistItem wishlistItem: wishlistItems)
-            if (wishlistItem.getId().equals(wishlistItemId))
+        for (WishlistItem wishlistItem: wishlistItems) {
+            if (wishlistItem.getProductId().equals(wishlistItemProductId))
                 this.wishlistItems.remove(wishlistItem);
-            if (cont)
-                throw new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Wishlist item not found"
-                );
-    }*/
+        }
+        if (cont)
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Wishlist item not found"
+            );
+    }
 
     public Date getCreationDate() {
         return creationDate;

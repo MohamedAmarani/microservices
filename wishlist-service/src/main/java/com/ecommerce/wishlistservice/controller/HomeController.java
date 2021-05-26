@@ -180,8 +180,33 @@ public class HomeController {
         return wishlist;
     }
 
+    @DeleteMapping("/{wishlistId}/items/{wishlistItemProductId}")
+    public Wishlist deleteWishlist(@ApiParam(value = "Id of the wishlist that contains the wishlist item to delete", required = true) @PathVariable final String wishlistId,
+                                   @ApiParam(value = "Id of wishlist item to delete", required = true) @PathVariable final String wishlistItemProductId) {
+        incrementCounter();
+        Wishlist wishlist;
+        try {
+            wishlist = wishlistRepository.findById(wishlistId).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Wishlist not found"
+            );
+        }
+        try {
+            for (WishlistItem wishlistItem : wishlist.getWishlistItems()) {
+                if (wishlistItem.getProductId().equals(wishlistItemProductId))
+                    wishlist.deleteFromWishlistItems(wishlistItemProductId);
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Wishlist item not found"
+            );
+        }
+        return wishlist;
+    }
+
     @DeleteMapping("/{wishlistId}")
-    public Wishlist deleteWishlist(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String wishlistId) {
+    public Wishlist deleteWishlistItem(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String wishlistId) {
         incrementCounter();
         Wishlist wishlist;
         try {
