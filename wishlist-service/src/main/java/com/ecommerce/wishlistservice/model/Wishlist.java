@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @Document
@@ -54,19 +55,14 @@ public class Wishlist {
 
     public void deleteFromWishlistItems(String wishlistItemProductId) throws ResponseStatusException{
         boolean cont = true;
-        for (WishlistItem wishlistItem: wishlistItems) {
-            System.out.println("wishlistItemProductId: " + wishlistItemProductId + "     wishlistItem.getProductId(): " + wishlistItem.getProductId());
-            if (wishlistItem.getProductId().equals(wishlistItemProductId)) {
-                System.out.println("hola");
-                System.out.println(wishlistItems.size());
-                this.wishlistItems.remove(wishlistItem);
-                System.out.println(wishlistItems.size());
-                System.out.println("hola1");
+        Iterator<WishlistItem> iter = this.wishlistItems.iterator();
+        while (iter.hasNext() && cont) {
+            if (iter.next().getProductId().equals(wishlistItemProductId)) {
+                iter.remove();
                 cont = false;
             }
         }
         if (cont) {
-            System.out.println("cont: " + cont);
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Wishlist item not found"
             );
