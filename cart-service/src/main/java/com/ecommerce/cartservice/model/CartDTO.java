@@ -14,7 +14,7 @@ public class CartDTO {
     @ApiModelProperty(notes = "Information of the cart items of the cart")
     List<CartItemDTO> items = new ArrayList<>();
     @ApiModelProperty(notes = "Creation date of the cart item")
-    Date creationDate = new Date();
+    Date creationDate;
 
     public CartDTO() {
     }
