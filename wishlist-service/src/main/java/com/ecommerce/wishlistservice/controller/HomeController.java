@@ -209,10 +209,7 @@ public class HomeController {
             );
         }
         try {
-            for (WishlistItem wishlistItem : wishlist.getWishlistItems()) {
-                if (wishlistItem.getProductId().equals(wishlistItemProductId))
-                    wishlist.deleteFromWishlistItems(wishlistItemProductId);
-            }
+            wishlist.deleteFromWishlistItems(wishlistItemProductId);
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Wishlist item not found"
