@@ -16,7 +16,7 @@ public class CartItemDTO {
     @ApiModelProperty(notes = "Availability of the cart item")
     boolean available = true;
     @ApiModelProperty(notes = "Creation date of the cart item")
-    Date creationDate = new Date();
+    Date creationDate;
 
     public CartItemDTO() {
     }
