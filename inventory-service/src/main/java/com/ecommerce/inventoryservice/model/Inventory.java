@@ -10,15 +10,13 @@ import java.util.List;
 public class Inventory {
     @Id
     String id;
-    String catalogId;
     List<InventoryItem> inventoryItems = new ArrayList<>();
 
     public Inventory() {
     }
 
-    public Inventory(String id, String catalogId, List<InventoryItem> inventoryItems) {
+    public Inventory(String id, List<InventoryItem> inventoryItems) {
         this.id = id;
-        this.catalogId = catalogId;
         this.inventoryItems = inventoryItems;
     }
 
@@ -40,14 +38,6 @@ public class Inventory {
 
     public void addInventoryItems(InventoryItem inventoryItems) {
         this.inventoryItems.add(inventoryItems);
-    }
-
-    public String getCatalogId() {
-        return catalogId;
-    }
-
-    public void setCatalogId(String catalogId) {
-        this.catalogId = catalogId;
     }
 
     //public InventoryItem findInventoryItemByProductId(String productId) {

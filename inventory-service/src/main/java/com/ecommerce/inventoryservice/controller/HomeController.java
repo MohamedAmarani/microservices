@@ -127,18 +127,18 @@ public class HomeController {
         for (Inventory inventory: inventoryRepository.findAll()) {
             //la respuesta inicialiada con dos paramatros
             InventoryDTO inventoryDTO = null;
-            inventoryDTO = new InventoryDTO(inventory.getId(), inventory.getCatalogId());
+            inventoryDTO = new InventoryDTO(inventory.getId());
             List<InventoryItemDTO> inventoryItemDTOs = new ArrayList<>();
             List<InventoryItem> inventoryItems = inventory.getInventoryItems();
 
             //pasamos todos los InventoryItem a InventoryItemDTO
             for (InventoryItem inventoryItem: inventoryItems) {
-                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.getCatalogId()
+                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventoryItem.getCatalogId()
                                 + "/products/" + inventoryItem.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
                 ProductDTO product = res.getBody();
-                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getQuantity()));
+                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getCatalogId(), inventoryItem.getQuantity()));
             }
             inventoryDTO.setItems(inventoryItemDTOs);
             inventoryDTOs.add(inventoryDTO);
@@ -155,7 +155,7 @@ public class HomeController {
         //la respuesta inicialiada con dos paramatros
         InventoryDTO response = null;
         try {
-            response = new InventoryDTO(inventory.get().getId(), inventory.get().getCatalogId());
+            response = new InventoryDTO(inventory.get().getId());
         }
         catch (Exception e) {
             throw new ResponseStatusException(
@@ -167,12 +167,12 @@ public class HomeController {
 
         //pasamos todos los InventoryItem a InventoryItemDTO
         for (InventoryItem inventoryItem: inventoryItems) {
-            final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.get().getCatalogId()
+            final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventoryItem.getCatalogId()
                             + "/products/" + inventoryItem.getProductId(),
                     HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                     });
             ProductDTO product = res.getBody();
-            inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getQuantity()));
+            inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getCatalogId(), inventoryItem.getQuantity()));
         }
         response.setItems(inventoryItemDTOs);
         return response;
@@ -188,18 +188,18 @@ public class HomeController {
             //throw new Exception("Images can't be fetched");
             inventory = inventoryRepository.findById(id).get();
             //la respuesta inicialiada con dos paramatros (pasar inventory a inventorydto)
-            response = new InventoryDTO(inventory.getId(), inventory.getCatalogId());
+            response = new InventoryDTO(inventory.getId());
             List<InventoryItemDTO> inventoryItemDTOs = new ArrayList<>();
             List<InventoryItem> inventoryItems = inventory.getInventoryItems();
 
             //pasamos todos los InventoryItem a InventoryItemDTO
             for (InventoryItem inventoryItem: inventoryItems) {
-                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.getCatalogId()
+                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventoryItem.getCatalogId()
                                 + "/products/" + inventoryItem.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
                 ProductDTO product = res.getBody();
-                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getQuantity()));
+                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getCatalogId(), inventoryItem.getQuantity()));
             }
             response.setItems(inventoryItemDTOs);
             inventoryRepository.deleteById(id);
@@ -216,15 +216,6 @@ public class HomeController {
     @ApiOperation(value = "Create an inventory", notes = "Provide information to create an inventory")
     public Inventory createInventory(@ApiParam(value = "Information of the inventory to create", required = true) @RequestBody Inventory inventory) {
         incrementCounter();
-        try {
-            restTemplate.exchange("http://catalog-service:8080/" + inventory.getCatalogId(),
-                    HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
-                    });
-        } catch (Exception e) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Inventory not found"
-            );
-        }
         return inventoryRepository.save(inventory);
     }
 
@@ -248,11 +239,11 @@ public class HomeController {
                 //si es el item que buscamos
                 if (inventoryItem.getProductId().equals(productId)) {
                     //obtener los datos del product a partir del productId
-                    final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.get().getCatalogId()
+                    final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventoryItem.getCatalogId()
                                     + "/products/" + inventoryItem.getProductId(),
                             HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                             });
-                    return new InventoryItemDTO(res.getBody(), inventoryItem.getQuantity());
+                    return new InventoryItemDTO(res.getBody(), inventoryItem.getCatalogId(), inventoryItem.getQuantity());
                 }
             }
         } catch (Exception e) {
@@ -266,7 +257,7 @@ public class HomeController {
     }
 
     @PutMapping("/{id}")
-    @ApiOperation(value = "Add a product to an inventory", notes = "Insert a product to an existing inventory")
+    @ApiOperation(value = "Add an inventory item to an inventory", notes = "Insert a product to an existing inventory")
     //añadir un producto a un inventario
     public InventoryItemDTO addProductToInventory(@ApiParam(value = "Id of the inventory for which a product has to be inserted", required = true) @PathVariable final String id,
                                                   @ApiParam(value = "Information of the product to insert into the inventory", required = true) @RequestBody InventoryItem inventoryItem) {
@@ -274,13 +265,13 @@ public class HomeController {
         Optional<Inventory> inventory = inventoryRepository.findById(id);
         ResponseEntity<ProductDTO> res = null;
         try {
-            res = restTemplate.exchange("http://catalog-service:8080/" + inventory.get().getCatalogId()
+            res = restTemplate.exchange("http://catalog-service:8080/" + inventoryItem.getCatalogId()
                             + "/products/" + inventoryItem.getProductId(),
                     HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                     });
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Inventory not found"
+                    HttpStatus.NOT_FOUND, "Catalog not found"
             );
         }
         boolean alreadyExists = false;
@@ -295,7 +286,7 @@ public class HomeController {
         if (!alreadyExists)
             inventory.get().addInventoryItems(inventoryItem);
         inventoryRepository.save(inventory.get());
-        return new InventoryItemDTO(res.getBody(), inventoryItem.getQuantity());
+        return new InventoryItemDTO(res.getBody(), inventoryItem.getCatalogId(), inventoryItem.getQuantity());
     }
 
     //decrement items
@@ -311,19 +302,19 @@ public class HomeController {
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())
             //si es el inventory item que buscamos
             if  (inventoryItem.getProductId().equals(productId)) {
-                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.get().getCatalogId()
+                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventoryItem.getCatalogId()
                                 + "/products/" + inventoryItem.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
                 try {
-                    inventoryItem.decrementItems(num);
+                    inventoryItem.decrementQuantity(num);
                     //guardamos los cambios
                     inventoryRepository.save(inventory.get());
                     //update carts
                     restTemplate.exchange("http://cart-service:8080/update",
                             HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {
                             });
-                    return new InventoryItemDTO(res.getBody(), inventoryItem.getQuantity());
+                    return new InventoryItemDTO(res.getBody(), inventoryItem.getCatalogId(), inventoryItem.getQuantity());
 
                 } catch (Exception e) {
                     throw new ResponseStatusException(
@@ -349,19 +340,19 @@ public class HomeController {
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())
             //si es el inventory item que buscamos
             if  (inventoryItem.getProductId().equals(productId)) {
-                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventory.get().getCatalogId()
+                final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://catalog-service:8080/" + inventoryItem.getCatalogId()
                                 + "/products/" + inventoryItem.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
                 try {
-                    inventoryItem.incrementItems(num);
+                    inventoryItem.incrementQuantity(num);
                     //guardamos los cambios
                     inventoryRepository.save(inventory.get());
                     //update carts
                     restTemplate.exchange("http://cart-service:8080/update",
                             HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {
                             });
-                    return new InventoryItemDTO(res.getBody(), inventoryItem.getQuantity());
+                    return new InventoryItemDTO(res.getBody(), inventoryItem.getCatalogId(), inventoryItem.getQuantity());
 
                 } catch (Exception e) {
                     throw new ResponseStatusException(

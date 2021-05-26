@@ -12,22 +12,18 @@ import java.util.List;
 public class InventoryDTO {
     @ApiModelProperty(notes = "Unique id of the product")
     String id;
-    @ApiModelProperty(notes = "Unique id of the inventory catalog")
-    String catalogId;
     @ApiModelProperty(notes = "Information of the items of the inventory")
     List<InventoryItemDTO> items = new ArrayList<>();
 
     public InventoryDTO() {
     }
 
-    public InventoryDTO(String id, String catalogId) {
+    public InventoryDTO(String id) {
         this.id = id;
-        this.catalogId = catalogId;
     }
 
-    public InventoryDTO(String id, String catalogId, List<InventoryItemDTO> items) {
+    public InventoryDTO(String id, List<InventoryItemDTO> items) {
         this.id = id;
-        this.catalogId = catalogId;
         this.items = items;
     }
 
@@ -49,14 +45,6 @@ public class InventoryDTO {
 
     public void addItems(InventoryItemDTO items) {
         this.items.add(items);
-    }
-
-    public String getCatalogId() {
-        return catalogId;
-    }
-
-    public void setCatalogId(String catalogId) {
-        this.catalogId = catalogId;
     }
 }
 

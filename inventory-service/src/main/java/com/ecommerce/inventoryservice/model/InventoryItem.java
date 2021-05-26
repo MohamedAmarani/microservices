@@ -8,8 +8,9 @@ public class InventoryItem {
     public InventoryItem() {
     }
 
-    public InventoryItem(String productId, int quantity) {
+    public InventoryItem(String productId, String catalogId, int quantity) {
         this.productId = productId;
+        this.catalogId = catalogId;
         this.quantity = quantity;
     }
 
@@ -21,6 +22,14 @@ public class InventoryItem {
         this.productId = productId;
     }
 
+    public String getCatalogId() {
+        return catalogId;
+    }
+
+    public void setCatalogId(String catalogId) {
+        this.catalogId = catalogId;
+    }
+
     public int getQuantity() {
         return quantity;
     }
@@ -29,14 +38,14 @@ public class InventoryItem {
         this.quantity = quantity;
     }
 
-    public void incrementItems(int quantity) throws Exception {
+    public void incrementQuantity(int quantity) throws Exception {
         if (quantity < 0)
             throw new Exception("Can not add negative stock");
         else
             this.quantity += quantity;
     }
 
-    public void decrementItems(int quantity) throws Exception {
+    public void decrementQuantity(int quantity) throws Exception {
         if (this.quantity < quantity)
             throw new Exception("Fewer items than demanded");
         else
