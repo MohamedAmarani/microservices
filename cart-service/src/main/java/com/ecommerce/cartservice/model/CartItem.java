@@ -9,15 +9,18 @@ public class CartItem {
     String productId;
     @ApiModelProperty(notes = "Quantity of the given products in the cart")
     int quantity;
+    @ApiModelProperty(notes = "Unique id of the inventory attached to the cart item")
+    String inventoryId;
     @ApiModelProperty(notes = "Availability of the cart item")
     boolean available;
 
     public CartItem() {
     }
 
-    public CartItem(String productDTO, int quantity, boolean available) {
+    public CartItem(String productDTO, int quantity, String inventoryId, boolean available) {
         this.productId = productDTO;
         this.quantity = quantity;
+        this.inventoryId = inventoryId;
         this.available = available;
     }
 
@@ -35,6 +38,14 @@ public class CartItem {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public String getInventoryId() {
+        return inventoryId;
+    }
+
+    public void setInventoryId(String inventoryId) {
+        this.inventoryId = inventoryId;
     }
 
     public boolean isAvailable() {

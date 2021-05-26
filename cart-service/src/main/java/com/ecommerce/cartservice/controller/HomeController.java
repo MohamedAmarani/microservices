@@ -128,17 +128,17 @@ public class HomeController {
         List<CartDTO> result = new ArrayList<>();
         List<Cart> carts = cartRepository.findAll();
         for (Cart cart: carts) {
-            CartDTO cartDTO = new CartDTO(cart.getId(), cart.getInventoryId());
+            CartDTO cartDTO = new CartDTO(cart.getId());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
             for (CartItem cartItem : cart.getCartItems()) {
-                final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cart.getInventoryId() +
+                final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
                                 "/products/" + cartItem.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                         });
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable());
                 cartDTO.addItems(cartItemDTO);
             }
             result.add(cartDTO);
@@ -161,7 +161,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Cart not found"
             );
         }
-        CartDTO cartDTO = new CartDTO(cart.get().getId(), cart.get().getInventoryId());
+        CartDTO cartDTO = new CartDTO(cart.get().getId());
         List<CartItemDTO> cartItemDTOs = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -170,7 +170,7 @@ public class HomeController {
         for (CartItem cartItem: cartItems) {
             CartItemDTO cartItemDTO = new CartItemDTO();
 
-            final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cart.get().getInventoryId() +
+            final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
                             "/products/" + cartItem.getProductId(),
                     HttpMethod.GET, entity, new ParameterizedTypeReference<String>() {
                     });
@@ -178,7 +178,7 @@ public class HomeController {
             Gson gson = new Gson();
             InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
 
-            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.isAvailable());
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable());
 
             cartDTO.addItems(cartItemDTO);
         }
@@ -200,7 +200,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Cart not found"
             );
         }
-        CartDTO cartDTO = new CartDTO(cart.get().getId(), cart.get().getInventoryId());
+        CartDTO cartDTO = new CartDTO(cart.get().getId());
         List<CartItemDTO> cartItemDTOs = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -209,7 +209,7 @@ public class HomeController {
         for (CartItem cartItem: cartItems) {
             CartItemDTO cartItemDTO = new CartItemDTO();
 
-            final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cart.get().getInventoryId() +
+            final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
                             "/products/" + cartItem.getProductId(),
                     HttpMethod.GET, entity, new ParameterizedTypeReference<String>() {
                     });
@@ -217,7 +217,7 @@ public class HomeController {
             Gson gson = new Gson();
             InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
 
-            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.isAvailable());
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable());
 
             cartDTO.addItems(cartItemDTO);
         }
@@ -225,7 +225,7 @@ public class HomeController {
         return cartDTO;
     }
 
-    @PatchMapping("/{cartId}/inventoryId")
+    /*@PatchMapping("/{cartId}/inventoryId")
     @ApiOperation(value = "Change the inventoryId of a cart", notes = "Provide the new inventory id")
     public CartDTO changeInventoryId(@ApiParam(value = "Id of the inventory for which the inventoryId has to be changed", required = true) @PathVariable final String cartId,
                                          @ApiParam(value = "New inventoryId", required = true) @RequestBody Map<String, String> myJsonRequest) {
@@ -263,7 +263,7 @@ public class HomeController {
         }
         cartRepository.save(cart.get());
         return cartDTO;
-    }
+    }*/
 
 
     @PostMapping("")
@@ -294,7 +294,7 @@ public class HomeController {
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
         // send request and parse result
         //añadir al carrito si hay numero suficiente de items del producto en el inventario y no existe ya en el carrito (si ya existe se suman items)
-        final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cart.get().getInventoryId() +
+        final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
                         "/products/" + cartItem.getProductId(),
                 HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                 });
@@ -329,7 +329,7 @@ public class HomeController {
         //pasar cart a cartDTO
         Cart cart1 = cartRepository.save(cart.get());
 
-        CartDTO cartDTO = new CartDTO(cart1.getId(), cart1.getInventoryId());
+        CartDTO cartDTO = new CartDTO(cart1.getId());
         List<CartItemDTO> cartItemDTOs = new ArrayList<>();
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -338,7 +338,7 @@ public class HomeController {
         for (CartItem cartItem1: cart1.getCartItems()) {
             CartItemDTO cartItemDTO = new CartItemDTO();
 
-            final ResponseEntity<String> res1 = restTemplate.exchange("http://inventory-service:8080/" + cart1.getInventoryId() +
+            final ResponseEntity<String> res1 = restTemplate.exchange("http://inventory-service:8080/" + cartItem1.getInventoryId() +
                             "/products/" + cartItem1.getProductId(),
                     HttpMethod.GET, entity, new ParameterizedTypeReference<String>() {
                     });
@@ -346,7 +346,7 @@ public class HomeController {
             gson = new Gson();
             inventoryItemDTO = gson.fromJson(res1.getBody(), InventoryItemDTO.class);
 
-            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem1.getQuantity(), cartItem1.isAvailable());
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem1.getQuantity(), cartItem1.getInventoryId(), cartItem1.isAvailable());
 
             cartDTO.addItems(cartItemDTO);
         }
@@ -356,7 +356,7 @@ public class HomeController {
     @RequestMapping(value = "/{cartId}/checkout", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Checkout a cart", notes = "Proceed to do the checkout of a given cart, paying with Paypal")
     public Object doCheckoutPart1(@ApiParam(value = "Id of the cart for which the checkout has to be done", required = true) @PathVariable final String cartId,
-                                  @ApiParam(value = "Discount code, if any", required = true) @RequestBody (required=false) Map<String, String> discountCodeBody) {
+                                  @ApiParam(value = "Discount code, if any", required = true) @RequestBody (required = false) Map<String, String> discountCodeBody) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
         double totalPrice = 0.0;
@@ -370,7 +370,7 @@ public class HomeController {
                 );
 
             // obtener el precio de un producto * num items del producto
-            final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cart.get().getInventoryId()  +
+            final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId()  +
                             "/products/" + cartItem.getProductId(),
                     HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                     });
@@ -493,7 +493,7 @@ public class HomeController {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
             // reducir el numero de items de un producto en el inventario
-            final ResponseEntity<ProductDTO> res1 = restTemplate.exchange("http://inventory-service:8080/" + cart.get().getInventoryId() +
+            final ResponseEntity<ProductDTO> res1 = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
                             "/products/" + cartItem.getProductId() + "/reduceStock",
                     HttpMethod.PUT, entity, new ParameterizedTypeReference<ProductDTO>() {
                     });
@@ -573,7 +573,7 @@ public class HomeController {
     private void updateAvailability() {
         for (Cart cart: cartRepository.findAll()) {
             for (CartItem cartItem : cart.getCartItems()) {
-                final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cart.getInventoryId() +
+                final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
                                 "/products/" + cartItem.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                         });

@@ -2,6 +2,7 @@ package com.ecommerce.inventoryservice.model;
 
 public class InventoryItem {
     String productId;
+    String catalogId;
     int quantity;
 
     public InventoryItem() {

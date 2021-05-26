@@ -15,16 +15,13 @@ public class Cart {
     String id;
     @ApiModelProperty(notes = "Information of the cart items of the cart")
     List<CartItem> cartItems = new ArrayList<>();
-    @ApiModelProperty(notes = "Unique id of the inventory attached to the cart")
-    String inventoryId;
 
     public Cart() {
     }
 
-    public Cart(String id, List<CartItem> cartItems, String inventoryId) {
+    public Cart(String id, List<CartItem> cartItems) {
         this.id = id;
         this.cartItems = cartItems;
-        this.inventoryId = inventoryId;
     }
 
     public String getId() {
@@ -45,13 +42,5 @@ public class Cart {
 
     public void addCartItem(CartItem cartItems) {
         this.cartItems.add(cartItems);
-    }
-
-    public String getInventoryId() {
-        return inventoryId;
-    }
-
-    public void setInventoryId(String inventoryId) {
-        this.inventoryId = inventoryId;
     }
 }

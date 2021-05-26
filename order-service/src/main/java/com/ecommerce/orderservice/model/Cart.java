@@ -2,26 +2,26 @@ package com.ecommerce.orderservice.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@ApiModel(description = "Details obout a cart")
+@ApiModel(description = "Details of a cart item")
 public class Cart {
     @ApiModelProperty(notes = "Unique id of the cart")
+    @Id
     String id;
-    @ApiModelProperty(notes = "Information about the ordered cart items")
-    List<CartItem> orderCartItems = new ArrayList<>();
-    @ApiModelProperty(notes = "Unique id of the inventory on which the cart is linked")
-    String inventoryId;
+    @ApiModelProperty(notes = "Information of the cart items of the cart")
+    List<CartItem> cartItems = new ArrayList<>();
 
     public Cart() {
     }
 
-    public Cart(String id, List<CartItem> cartItems, String inventoryId) {
+    public Cart(String id, List<CartItem> cartItems) {
         this.id = id;
-        this.orderCartItems = cartItems;
-        this.inventoryId = inventoryId;
+        this.cartItems = cartItems;
     }
 
     public String getId() {
@@ -33,22 +33,14 @@ public class Cart {
     }
 
     public List<CartItem> getCartItems() {
-        return orderCartItems;
+        return cartItems;
     }
 
-    public void setCartItems(List<CartItem> orderCartItems) {
-        this.orderCartItems = orderCartItems;
+    public void setCartItems(List<CartItem> cartItems) {
+        this.cartItems = cartItems;
     }
 
-    public void addCartItem(CartItem orderCartItems) {
-        this.orderCartItems.add(orderCartItems);
-    }
-
-    public String getInventoryId() {
-        return inventoryId;
-    }
-
-    public void setInventoryId(String inventoryId) {
-        this.inventoryId = inventoryId;
+    public void addCartItem(CartItem cartItems) {
+        this.cartItems.add(cartItems);
     }
 }
