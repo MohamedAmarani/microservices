@@ -193,7 +193,7 @@ public class HomeController {
         incrementCounter();
         //encriptar contraseña
         account.setPassword(new BCryptPasswordEncoder().encode(account.getPassword()));
-        if (userRepository.findByUsername(account.getUsername()).size() > 0) {
+        if (userRepository.findByUsername(account.getUsername()).size() == 0) {
             Account account1 = userRepository.save(account);
             //crear carrito
             JSONObject obj = new JSONObject();
