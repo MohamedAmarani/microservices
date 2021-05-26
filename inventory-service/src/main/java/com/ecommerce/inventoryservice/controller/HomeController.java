@@ -279,9 +279,10 @@ public class HomeController {
                     });
         } catch (Exception e) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Catalog not found"
+                    HttpStatus.NOT_FOUND, "Product not found in the given catalog"
             );
         }
+        //si ya esta en el inventoario sumar cantidades, si no crear de nuevo
         boolean alreadyExists = false;
         for (InventoryItem inventoryItem1: inventory.get().getInventoryItems()) {
             if (inventoryItem1.getProductId().equals(inventoryItem.getProductId())) {
@@ -293,8 +294,15 @@ public class HomeController {
         }
         if (!alreadyExists)
             inventory.get().addInventoryItems(inventoryItem);
-        inventoryRepository.save(inventory.get());
-        return new InventoryItemDTO(res.getBody(), inventoryItem.getCatalogId(), inventoryItem.getQuantity());
+        Inventory inventory1 = inventoryRepository.save(inventory.get());
+        for (InventoryItem inventoryItem1: inventory.get().getInventoryItems()) {
+            if (inventoryItem1.getProductId().equals(inventoryItem.getProductId())) {
+                return new InventoryItemDTO(res.getBody(), inventoryItem1.getCatalogId(), inventoryItem1.getQuantity());
+            }
+        }
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Bad Request"
+        );
     }
 
     //decrement items
