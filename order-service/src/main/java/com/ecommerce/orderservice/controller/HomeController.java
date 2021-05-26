@@ -111,7 +111,7 @@ public class HomeController {
         List<OrderDTO> result = new ArrayList<>();
         List<Order> orders = orderRepository.findAll();
         for (Order order: orders) {
-            OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId());
+            OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
             Cart cart = order.getCart();
             CartDTO cartDTO = new CartDTO(cart.getId());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
@@ -138,7 +138,7 @@ public class HomeController {
     public OrderDTO getOrder(@ApiParam(value = "Id of the order to get", required = true) @PathVariable final String id) {
         incrementCounter();
         Order order = orderRepository.findById(id).get();
-        OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId());
+        OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
         try {
             CartDTO cartDTO = new CartDTO(order.getCart().getId());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
@@ -165,7 +165,7 @@ public class HomeController {
     public OrderDTO createInventory(@ApiParam(value = "Information of the order to create", required = true) @RequestBody Cart cart) {
         incrementCounter();
         Order order = orderRepository.save(new Order(cart));
-        OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId());
+        OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
         try {
             CartDTO cartDTO = new CartDTO(order.getCart().getId());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
@@ -196,7 +196,7 @@ public class HomeController {
     public OrderDTO deleteOrder(@ApiParam(value = "Id of the order to delete", required = true) @PathVariable final String id) {
         incrementCounter();
         Order order = orderRepository.findById(id).get();
-        OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId());
+        OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
         try {
             CartDTO cartDTO = new CartDTO(order.getCart().getId());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
@@ -236,7 +236,7 @@ public class HomeController {
         Order order = orderRepository.findById(orderId).get();
         order.setDeliveryId(myJsonRequest.get("deliveryId").toString());
         order = orderRepository.save(order);
-        OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId());
+        OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
         try {
             CartDTO cartDTO = new CartDTO(order.getCart().getId());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
