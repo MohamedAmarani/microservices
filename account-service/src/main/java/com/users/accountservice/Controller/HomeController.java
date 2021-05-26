@@ -193,33 +193,38 @@ public class HomeController {
         incrementCounter();
         //encriptar contraseña
         account.setPassword(new BCryptPasswordEncoder().encode(account.getPassword()));
-        Account account1 = userRepository.save(account);
-        //crear carrito
-        JSONObject obj = new JSONObject();
-        obj.put("id", account1.getId());
-        //nventario por defecto
-        obj.put("inventoryId", "609d71c0607c8c13aabf9e7b");
-        // crear carrito
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
-        restTemplate.exchange("http://cart-service:8080/",
-                HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
-                });
-        //crear wishlist
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        obj = new JSONObject();
-        obj.put("id", account1.getId());
-        entity = new HttpEntity<String>(obj.toString(), headers);
-        restTemplate.exchange("http://wishlist-service:8080/",
-                HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
-                });
-        //SI ES USER ENVIAR MAIL DE BIENVENIDA
-        if (account1.getRole().equals("USER"))
-            emailWelcome(account1);
+        if (userRepository.findByUsername(account.getUsername()).size() > 0) {
+            Account account1 = userRepository.save(account);
+            //crear carrito
+            JSONObject obj = new JSONObject();
+            obj.put("id", account1.getId());
+            //nventario por defecto
+            obj.put("inventoryId", "609d71c0607c8c13aabf9e7b");
+            // crear carrito
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
+            restTemplate.exchange("http://cart-service:8080/",
+                    HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
+                    });
+            //crear wishlist
+            headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            obj = new JSONObject();
+            obj.put("id", account1.getId());
+            entity = new HttpEntity<String>(obj.toString(), headers);
+            restTemplate.exchange("http://wishlist-service:8080/",
+                    HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
+                    });
+            //SI ES USER ENVIAR MAIL DE BIENVENIDA
+            if (account1.getRole().equals("USER"))
+                emailWelcome(account1);
 
-        return account1;
+            return account1;
+        }
+        throw new ResponseStatusException(
+                HttpStatus.CONFLICT, "Account already exists"
+        );
     }
 
     @PatchMapping("/{accountId}/deliveryAddress")
