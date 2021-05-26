@@ -215,7 +215,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Wishlist item not found"
             );
         }
-        wishlistRepository.save(wishlist);
+        wishlist = wishlistRepository.save(wishlist);
         return wishlist;
     }
 

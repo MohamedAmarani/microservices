@@ -128,7 +128,7 @@ public class HomeController {
         List<CartDTO> result = new ArrayList<>();
         List<Cart> carts = cartRepository.findAll();
         for (Cart cart: carts) {
-            CartDTO cartDTO = new CartDTO(cart.getId());
+            CartDTO cartDTO = new CartDTO(cart.getId(), cart.getCreationDate());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
             for (CartItem cartItem : cart.getCartItems()) {
                 final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
@@ -138,7 +138,8 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable(),
+                        cartItem.getCreationDate());
                 cartDTO.addItems(cartItemDTO);
             }
             result.add(cartDTO);
@@ -161,7 +162,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Cart not found"
             );
         }
-        CartDTO cartDTO = new CartDTO(cart.get().getId());
+        CartDTO cartDTO = new CartDTO(cart.get().getId(), cart.get().getCreationDate());
         List<CartItemDTO> cartItemDTOs = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -178,7 +179,8 @@ public class HomeController {
             Gson gson = new Gson();
             InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
 
-            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable());
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable(),
+                    cartItem.getCreationDate());
 
             cartDTO.addItems(cartItemDTO);
         }
@@ -200,7 +202,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Cart not found"
             );
         }
-        CartDTO cartDTO = new CartDTO(cart.get().getId());
+        CartDTO cartDTO = new CartDTO(cart.get().getId(), cart.get().getCreationDate());
         List<CartItemDTO> cartItemDTOs = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -217,7 +219,56 @@ public class HomeController {
             Gson gson = new Gson();
             InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
 
-            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable());
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable(),
+                    cartItem.getCreationDate());
+
+            cartDTO.addItems(cartItemDTO);
+        }
+        cartRepository.deleteById(cartId);
+        return cartDTO;
+    }
+
+    @HystrixCommand(fallbackMethod = "fallback")
+    @DeleteMapping("/{cartId}/items/{wishlistItemProductId}")
+    @ApiOperation(value = "Delete a cart", notes = "Provide an Id to delete a specific cart from the Database")
+    public CartDTO deleteCart(@ApiParam(value = "Id of the cart that contains the cart item to delete", required = true) @PathVariable final String cartId,
+                              @ApiParam(value = "Id of the cart item to delete", required = true) @PathVariable final String wishlistItemProductId) {
+        incrementCounter();
+        Cart cart = null;
+        try {
+            cart = cartRepository.findById(cartId).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Cart not found"
+            );
+        }
+        try {
+            cart.deleteFromCartItems(wishlistItemProductId);
+        } catch (ResponseStatusException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Cart item not found"
+            );
+        }
+        cart = cartRepository.save(cart);
+        CartDTO cartDTO = new CartDTO(cart.getId(), cart.getCreationDate());
+        List<CartItemDTO> cartItemDTOs = new ArrayList<>();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
+
+        for (CartItem cartItem: cart.getCartItems()) {
+            CartItemDTO cartItemDTO = new CartItemDTO();
+
+            final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
+                            "/products/" + cartItem.getProductId(),
+                    HttpMethod.GET, entity, new ParameterizedTypeReference<String>() {
+                    });
+
+            Gson gson = new Gson();
+            InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
+
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable(),
+                    cartItem.getCreationDate());
 
             cartDTO.addItems(cartItemDTO);
         }
@@ -329,7 +380,7 @@ public class HomeController {
         //pasar cart a cartDTO
         Cart cart1 = cartRepository.save(cart.get());
 
-        CartDTO cartDTO = new CartDTO(cart1.getId());
+        CartDTO cartDTO = new CartDTO(cart1.getId(), cart1.getCreationDate());
         List<CartItemDTO> cartItemDTOs = new ArrayList<>();
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -346,7 +397,8 @@ public class HomeController {
             gson = new Gson();
             inventoryItemDTO = gson.fromJson(res1.getBody(), InventoryItemDTO.class);
 
-            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem1.getQuantity(), cartItem1.getInventoryId(), cartItem1.isAvailable());
+            cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem1.getQuantity(), cartItem1.getInventoryId(), cartItem1.isAvailable(),
+                    cartItem1.getCreationDate());
 
             cartDTO.addItems(cartItemDTO);
         }
