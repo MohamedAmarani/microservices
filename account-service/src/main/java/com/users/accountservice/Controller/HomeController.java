@@ -166,15 +166,25 @@ public class HomeController {
     public Account deleteAccount(@ApiParam(value = "Id of the account to delete", required = true) @PathVariable final String id) {
         incrementCounter();
         Optional<Account> account = userRepository.findById(id);
+        Account account1;
         try {
-            Account account1 = account.get();
+            //borrar cuenta
+            account1 = account.get();
             userRepository.deleteById(id);
-            return account1;
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Account not found"
             );
         }
+        //borrar carrito
+        restTemplate.exchange("http://cart-service:8080/" + id,
+                HttpMethod.DELETE, null, new ParameterizedTypeReference<String>() {
+                });
+        //borrar wishlist
+        restTemplate.exchange("http://wishlist-service:8080/" + id,
+                HttpMethod.DELETE, null, new ParameterizedTypeReference<String>() {
+                });
+        return account1;
     }
 
     @PostMapping("")
