@@ -55,9 +55,11 @@ public class Wishlist {
     public void deleteFromWishlistItems(String wishlistItemProductId) {
         boolean cont = true;
         for (WishlistItem wishlistItem: wishlistItems) {
-            System.out.println("wishlistItemProductId:" + wishlistItemProductId + "     wishlistItem.getProductId(): " + wishlistItem.getProductId());
+            System.out.println("wishlistItemProductId: " + wishlistItemProductId + "     wishlistItem.getProductId(): " + wishlistItem.getProductId());
             if (wishlistItem.getProductId().equals(wishlistItemProductId)) {
+                System.out.println("hola");
                 this.wishlistItems.remove(wishlistItem);
+                System.out.println("hola1");
                 cont = false;
             }
         }
