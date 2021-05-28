@@ -92,7 +92,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
-    @RequestMapping("/info")
+    @GetMapping("/info")
     @ApiOperation(value = "Get information from the delivery-service instance", notes = "Retrieve information from a delivery-service instance")
     public String home() {
         incrementCounter();
@@ -154,7 +154,7 @@ public class HomeController {
     }
 
     @PatchMapping("/{id}/estimatedDateOfArrival")
-    @ApiOperation(value = "Update the delivery estiamted date of arrival", notes = "Proceed to update the date of the delivery")
+    @ApiOperation(value = "Update the delivery estimated date of arrival", notes = "Proceed to update the date of the delivery")
     public Delivery updateEstimatedDateOfArrival(@ApiParam(value = "Id of the delivery for which the date has to be updated", required = true) @PathVariable final String id,
                                                  @ApiParam(value = "New date based out of offset days of the estimated date of arrival", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
         incrementCounter();

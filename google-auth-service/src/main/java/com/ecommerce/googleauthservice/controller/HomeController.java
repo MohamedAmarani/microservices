@@ -87,7 +87,7 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
-    @GetMapping("/instanceInfo")
+    @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
         System.out.println(message);
@@ -95,7 +95,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
-    @RequestMapping("/info")
+    @GetMapping("/info")
     @ApiOperation(value = "Get information from the google-auth-service instance", notes = "Retrieve information from a google-auth-service instance")
     public String home() {
         incrementCounter();
@@ -106,19 +106,20 @@ public class HomeController {
                 " InstanceId " + instanceId;
     }
 
-    @GetMapping("/fun")
+    /*@GetMapping("/fun")
     public ResponseEntity<String> getHellod() {
         incrementCounter();
         final ResponseEntity<String> res2 = restTemplate.exchange("http://account-service:8080/" + "602a72269ae0650a89271487",
                 HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                 });
         return new ResponseEntity<String>(res2.getBody().toString(), HttpStatus.OK);
-    }
+    }*/
 
     @GetMapping("/return")
-    @ApiOperation(value = "Retrieve a Google access token out of the authorization code and generate own JWT access token for the user",
-            notes = "If the user does not exist in the system, they will be added. At the end, a JWT access token will be returned for the user for which" +
-                    "the authorization code was created.")
+    @ApiOperation(value = "Callback of the Google OAuth authorization",
+            notes = "Retrieve a Google access token out of the authorization code and generate own JWT access token for the user. " +
+                    "If the user does not exist in the system, they will be added. At the end, a JWT access token will be returned for the user for which" +
+                    " the authorization code was created.")
     public String hello(@ApiParam(value = "Authorization code of the user requesting access to the system", required = true) @RequestParam("code") final String code) {
         incrementCounter();
         //obtener token a partir de authorization code
@@ -142,28 +143,28 @@ public class HomeController {
         jo = new JSONObject(res1.getBody());
 
         try {
-        //obtener usuario
-        final ResponseEntity<AccountDTO> res2 = restTemplate.exchange("http://account-service:8080/" + jo.getString("id"),
-                HttpMethod.GET, null, new ParameterizedTypeReference<AccountDTO>() {
-                });
+            //obtener usuario
+            final ResponseEntity<AccountDTO> res2 = restTemplate.exchange("http://account-service:8080/" + jo.getString("id"),
+                    HttpMethod.GET, null, new ParameterizedTypeReference<AccountDTO>() {
+                    });
         } catch (Exception e) {
-        //si no existe el usuario, crearlo
-        JSONObject obj = new JSONObject();
-        obj.put("id", jo.getString("id"));
-        obj.put("username", jo.getString("email").split("@")[0]); //username tiene que ser null mejor
-        obj.put("email", jo.getString("email"));
-        obj.put("password", jo.getString("id"));
-        obj.put("deliveryAddress", "");
-        obj.put("role", "ADMIN");
-        // set headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
+            //si no existe el usuario, crearlo
+            JSONObject obj = new JSONObject();
+            obj.put("id", jo.getString("id"));
+            obj.put("username", jo.getString("email").split("@")[0]); //username tiene que ser null mejor
+            obj.put("email", jo.getString("email"));
+            obj.put("password", jo.getString("id"));
+            obj.put("deliveryAddress", "");
+            obj.put("role", "ADMIN");
+            // set headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
 
-        //crear cuenta
-        restTemplate.exchange("http://account-service:8080/",
-                HttpMethod.POST, entity, new ParameterizedTypeReference<AccountDTO>() {
-                });
+            //crear cuenta
+            restTemplate.exchange("http://account-service:8080/",
+                    HttpMethod.POST, entity, new ParameterizedTypeReference<AccountDTO>() {
+                    });
         }
 
         //llamar al micro de auth para obtener token JWT (contraseña null?) que pasa si te registras con username igual que el de google despues?
@@ -185,12 +186,12 @@ public class HomeController {
     }
 
     @PreAuthorize("hasRole('GOOGLE')")
-    @RequestMapping("/info1")
+    @GetMapping("/admin")
     public String homes() {
         incrementCounter();
         // This is useful for debugging
         // When having multiple instance of gallery service running at different ports.
         // We load balance among them, and display which instance received the request.
-        return "Hello from Google Auth Service running at port: " + env.getProperty("local.server.port");
+        return "This is the admin area of Google Auth service running at port: " + env.getProperty("local.server.port");
     }
 }

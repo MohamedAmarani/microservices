@@ -94,7 +94,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
-    @RequestMapping("/info")
+    @GetMapping("/info")
     @ApiOperation(value = "Get information from the order-service instance", notes = "Retrieve information from a order-service instance")
     public String home() {
         incrementCounter();
@@ -222,7 +222,7 @@ public class HomeController {
     }
 
     @DeleteMapping("")
-    @ApiOperation(value = "Delete an order", notes = "Provide an Id to delete a specific order from the Database")
+    @ApiOperation(value = "Delete all order", notes = "Delete all orders from the Database")
     public void deleteOrders() {
         orderRepository.deleteAll();
     }

@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
-@RequestMapping(value = "/")
+@RequestMapping("/")
 public class HomeController {
     @Autowired
     private Environment env;
@@ -91,7 +91,7 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
-    @GetMapping("/helloMessage")
+    @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
         System.out.println(message);
@@ -131,7 +131,7 @@ public class HomeController {
     }
 
     @GetMapping("/success/{accountId}")
-    @ApiOperation(value = "Manage error in payment", notes = "If the payment goes wrong the user will be redirected here.")
+    @ApiOperation(value = "Manage success in payment", notes = "If the payment goes well the user will be redirected here.")
     public Object successfulPayment(@ApiParam(value = "Id of the cart that tried to be checked out", required = true) @PathVariable final String accountId,
                                     @ApiParam(value = "Id of the payment", required = true) @RequestParam("paymentId") String paymentId,
                                     @ApiParam(value = "Id of the payer", required = true) @RequestParam("PayerID") String PayerID) throws PayPalRESTException {
@@ -148,14 +148,15 @@ public class HomeController {
         return response;
     }
 
-    @PostMapping(value = "/paypal/make/payment/{accountId}")
-    @ApiOperation(value = "Create payment", notes = "A payment will be created and its amount of money will be passed as a parameter.")
+    @PostMapping(value = "/make/payment/{accountId}")
+    @ApiOperation(value = "Create a payment", notes = "A payment will be created and its amount of money will be passed as a parameter.")
     public Map<String, Object> makePayment(@ApiParam(value = "Id of the client that wants to check out", required = true) @PathVariable final String accountId,
-                                           @ApiParam(value = "Amount of money to be payed, in Euros.", required = true) @RequestBody Map<String, Double> myJsonRequest) throws PayPalRESTException {
+                                           @ApiParam(value = "Amount of money to be payed, in Euros.", required = true) @RequestBody Map<String, Double> totalPrice) throws PayPalRESTException {
         incrementCounter();
-        return payPalClient.createPayment(accountId, myJsonRequest.get("totalPrice").toString());
+        return payPalClient.createPayment(accountId, totalPrice.get("totalPrice").toString());
     }
 
+    //complete the payment
     public Object completePayment(String accountId, String paymentId, String PayerID){
         incrementCounter();
         payPalClient.completePayment(paymentId, PayerID);
@@ -163,6 +164,15 @@ public class HomeController {
                 HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {
                 });
         return res.getBody();
+    }
+
+    // -------- Admin Area --------
+    // This method should only be accessed by users with role of 'admin'
+    // We'll add the logic of role based auth later
+    @GetMapping("/admin")
+    public String homeAdmin() {
+        incrementCounter();
+        return "This is the admin area of PayPal Gateway service running at port: " + env.getProperty("local.server.port");
     }
 }
 

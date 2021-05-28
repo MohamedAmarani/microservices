@@ -113,6 +113,7 @@ public class HomeController {
     }
 
     @GetMapping("")
+    @ApiOperation(value = "Get all wishlists", notes = "Retrieve all wishlists from the database")
     public List<Wishlist> getWishlists() {
         incrementCounter();
         Wishlist wishlist;
@@ -120,6 +121,7 @@ public class HomeController {
     }
 
     @GetMapping("/{wishlistId}")
+    @ApiOperation(value = "Get a cart", notes = "Provide an Id to retrieve a specific wishlist from the Database and all its wishlist items")
     public Wishlist getWishlist(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String wishlistId) {
         incrementCounter();
         Wishlist wishlist;
@@ -134,7 +136,9 @@ public class HomeController {
     }
 
     @PutMapping("/priceReduced")
-    public void patchPriceReducedWishlist(@ApiParam(value = "Discount code, if any", required = true) @RequestBody Map<String, String> updatedProductInfo) {
+    @ApiOperation(value = "Notify users when one of their wishlist items price is within their target price", notes = "When the price of a product gets reduced, call the account-service to notify all users" +
+            "that have it in their wishlist and the new product price is withing their specified target price")
+    public void patchPriceReducedWishlist(@ApiParam(value = "Information of the product whose price has been reduced", required = true) @RequestBody Map<String, String> updatedProductInfo) {
         incrementCounter();
         List<Wishlist> wishlistList;
         try {
@@ -168,6 +172,7 @@ public class HomeController {
     }
 
     @PostMapping("")
+    @ApiOperation(value = "Create a wishlist", notes = "Provide information to create a wishlist in the database")
     public Wishlist postWishlist(@ApiParam(value = "Information of the wishlist to create", required = true) @RequestBody (required = false) Wishlist wishlist) {
         incrementCounter();
         try {
@@ -181,7 +186,8 @@ public class HomeController {
     }
 
     @DeleteMapping("/{wishlistId}")
-    public Wishlist deleteWishlist(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String wishlistId) {
+    @ApiOperation(value = "Delete a wishlist", notes = "Provide the Id of the wishlist that has to be deleted from the database")
+    public Wishlist deleteWishlist(@ApiParam(value = "Id of the wishlist that has to be deleted", required = true) @PathVariable final String wishlistId) {
         incrementCounter();
         Wishlist wishlist;
         try {
@@ -197,8 +203,9 @@ public class HomeController {
 
     //@ApiParam(value = "Discount code, if any", required = true) @RequestBody Map<String, String> wishlistItemIdBody
     @DeleteMapping("/{wishlistId}/items/{wishlistItemProductId}")
+    @ApiOperation(value = "Delete a wishlist item", notes = "Provide the Id of the wishlist that that contains the wishlist item that has to be deleted from the database")
     public Wishlist deleteWishlistItem(@ApiParam(value = "Id of the wishlist that contains the wishlist item to delete", required = true) @PathVariable final String wishlistId,
-                                   @ApiParam(value = "Id of wishlist item to delete", required = true) @PathVariable final String wishlistItemProductId) {
+                                   @ApiParam(value = "Id of the wishlist item to delete", required = true) @PathVariable final String wishlistItemProductId) {
         incrementCounter();
         Wishlist wishlist;
         try {
@@ -220,7 +227,9 @@ public class HomeController {
     }
 
     @PutMapping("/{wishlistId}")
-    public Wishlist addWishlistItemToWishlist(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String wishlistId,
+    @ApiOperation(value = "Add a wishlist item to a wishlist", notes = "Provide the Id of the wishlist where a wishlist item has to be added and the information" +
+            "of the wishlist item to add")
+    public Wishlist addWishlistItemToWishlist(@ApiParam(value = "Id of the wishlist where a wishlist item has to be added", required = true) @PathVariable final String wishlistId,
                                               @ApiParam(value = "Information of the wishlist item to be added", required = true) @RequestBody WishlistItem wishlistItem) {
         incrementCounter();
         Wishlist wishlist;

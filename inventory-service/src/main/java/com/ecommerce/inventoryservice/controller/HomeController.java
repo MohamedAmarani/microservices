@@ -98,7 +98,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
-    @RequestMapping("/info")
+    @GetMapping("/info")
     @ApiOperation(value = "Get information from the inventory-service instance", notes = "Retrieve information from a inventory-service instance")
     public String home() {
         incrementCounter();

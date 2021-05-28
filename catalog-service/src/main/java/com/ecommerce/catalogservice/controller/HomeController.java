@@ -119,7 +119,7 @@ public class HomeController {
         return response.getBody().toString();
     }*/
 
-    @RequestMapping("/info")
+    @GetMapping("/info")
     @ApiOperation(value = "Get information from the catalog-service instance", notes = "Retrieve information from a catalog-service instance")
     public String home() {
         incrementCounter();
@@ -229,7 +229,7 @@ public class HomeController {
     }
 
     @PutMapping("/{catalogId}")
-    @ApiOperation(value = "Add product to catalog", notes = "Add a product to a catalog")
+    @ApiOperation(value = "Add product to a catalog", notes = "Add a product to a catalog")
     public ProductDTO addProductToCatalog(@ApiParam(value = "Id of the catalog for which a product has to be added", required = true) @PathVariable final String catalogId,
                                           @ApiParam(value = "Id of the product to add", required = true) @RequestBody CatalogItem productIdentifier) {
         incrementCounter();

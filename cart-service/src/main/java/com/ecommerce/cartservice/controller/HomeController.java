@@ -100,7 +100,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
-    @RequestMapping("/info")
+    @GetMapping("/info")
     @ApiOperation(value = "Get information from the cart-service instance", notes = "Retrieve information from a cart-service instance")
     public String home() {
         incrementCounter();
@@ -230,8 +230,8 @@ public class HomeController {
 
     @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{cartId}/items/{wishlistItemProductId}")
-    @ApiOperation(value = "Delete a cart", notes = "Provide an Id to delete a specific cart from the Database")
-    public CartDTO deleteCart(@ApiParam(value = "Id of the cart that contains the cart item to delete", required = true) @PathVariable final String cartId,
+    @ApiOperation(value = "Delete a cart item from a cart", notes = "Provide an Id to delete a specific cart item of a cart from the Database")
+    public CartDTO deleteCartItem(@ApiParam(value = "Id of the cart that contains the cart item to delete", required = true) @PathVariable final String cartId,
                               @ApiParam(value = "Id of the cart item to delete", required = true) @PathVariable final String wishlistItemProductId) {
         incrementCounter();
         Cart cart = null;
@@ -331,8 +331,8 @@ public class HomeController {
 
     //añadir producto a cart
     @PutMapping("/{cartId}")
-    @ApiOperation(value = "Add inventory product to cart", notes = "Add a product available in the inventory to a cart")
-    public CartDTO addProductToInventory(@ApiParam(value = "Id of the cart on which an inventory product has to be added", required = true) @PathVariable final String cartId,
+    @ApiOperation(value = "Add certain quantity of an inventory product to cart", notes = "Add a product available in the inventory to a cart")
+    public CartDTO addInventoryProductToCart(@ApiParam(value = "Id of the cart on which an inventory product has to be added", required = true) @PathVariable final String cartId,
                                       @ApiParam(value = "Product Id and quantity of items available in the inventory to be added to the given cart", required = true) @RequestBody CartItem cartItem) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
@@ -522,7 +522,7 @@ public class HomeController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
-        final ResponseEntity<String> res = restTemplate.exchange("http://paypal-gateway-service:8080/paypal/make/payment/" + cartId,
+        final ResponseEntity<String> res = restTemplate.exchange("http://paypal-gateway-service:8080/make/payment/" + cartId,
                 HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
                 });
         return res.getBody().toString();
@@ -616,7 +616,7 @@ public class HomeController {
     }
 
     @PutMapping("/update")
-    @ApiOperation(value = "Update the availability of the cart", notes = "Update all inventory products of the cart in function of " +
+    @ApiOperation(value = "Update the availability of all carts", notes = "Update all inventory products of the carts in function of " +
             "the available items on the inventory")
     public void updateCartsAvailability() {
         incrementCounter();

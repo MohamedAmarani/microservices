@@ -128,7 +128,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
-    @RequestMapping("/info")
+    @GetMapping("/info")
     @ApiOperation(value = "Get information from the account-service instance", notes = "Retrieve information from a account-service instance")
     public String home() {
         incrementCounter();
@@ -276,7 +276,7 @@ public class HomeController {
     }
 
     @PostMapping("/{accountId}/deliveryUpdateEmail")
-    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
+    @ApiOperation(value = "Send an email with the delivery state update information", notes = "Notify the required user when a delivery state is updated")
     public void sendDeliveryUpdateEmail(@ApiParam(value = "Id of the account for which a delivery state update email has to be sent", required = true) @PathVariable final String accountId,
                                         @ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DeliveryDTO deliveryDTO) throws MessagingException {
         incrementCounter();
@@ -287,7 +287,7 @@ public class HomeController {
     }
 
     @PostMapping("/{accountId}/deliveryDateUpdateEmail")
-    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
+    @ApiOperation(value = "Send an email with the delivery date update information", notes = "Notify the required user when a delivery estimated date of arrival is updated")
     public void sendDeliveryDateUpdateEmail(@ApiParam(value = "Id of the account for which a delivery date update email has to be sent", required = true) @PathVariable final String accountId,
                                         @ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DeliveryDTO deliveryDTO) throws MessagingException {
         incrementCounter();
@@ -295,16 +295,16 @@ public class HomeController {
     }
 
     @PostMapping("/{accountId}/orderSuccessEmail")
-    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
-    public void sendOrderSuccessEmail(@ApiParam(value = "Id of the account for which a delivery date update email has to be sent", required = true) @PathVariable final String accountId,
-                                            @ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DeliveryDTO deliveryDTO) throws MessagingException {
+    @ApiOperation(value = "Send an email with the order information", notes = "Notify the required user when an order has been carried out successfully")
+    public void sendOrderSuccessEmail(@ApiParam(value = "Id of the account that has made the order", required = true) @PathVariable final String accountId,
+                                            @ApiParam(value = "Information of the delivery of the order", required = true) @RequestBody DeliveryDTO deliveryDTO) throws MessagingException {
         incrementCounter();
         emailOrderSuccess(userRepository.findById(accountId).get(), deliveryDTO);
     }
 
     @PostMapping("/newDiscountEmail")
-    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
-    public void sendNewDiscountEmail(@ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
+    @ApiOperation(value = "Send an email with the new discount information", notes = "Notify the required users when a new discount is created")
+    public void sendNewDiscountEmail(@ApiParam(value = "Information of the new discount", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
         incrementCounter();
         if (discountDTO.getUsers() == null) {
             for (Account account : userRepository.findAll())
@@ -320,8 +320,8 @@ public class HomeController {
     }
 
     @PostMapping("/enabledDiscountEmail")
-    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
-    public void sendEnabledDiscountEmail(@ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
+    @ApiOperation(value = "Send an email notifying that a disabled discount is back enabled", notes = "Notify the required users when a new discount is back enabled")
+    public void sendEnabledDiscountEmail(@ApiParam(value = "Information of the updated discount", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
         incrementCounter();
         if (discountDTO.getUsers() == null) {
             for (Account account : userRepository.findAll())
@@ -337,8 +337,8 @@ public class HomeController {
     }
 
     @PostMapping("/disabledDiscountEmail")
-    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
-    public void sendDisabledDiscountEmail(@ApiParam(value = "Information of the updated delivery", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
+    @ApiOperation(value = "Send an email notifying that a specific discount has been disabled", notes = "Notify the required users when an enabled discounts gets disabled")
+    public void sendDisabledDiscountEmail(@ApiParam(value = "Information of the updated discount", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
         incrementCounter();
         if (discountDTO.getUsers() == null) {
             for (Account account : userRepository.findAll())
@@ -354,9 +354,9 @@ public class HomeController {
     }
 
     @PostMapping("/{accountId}/reachedTargetPriceEmail")
-    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
+    @ApiOperation(value = "Send an email notifying a user that a wishlist item has reached the specified target price", notes = "Notify the required user when one of their wishlist items has a price within the specified desired price")
     public void sendReachedTargetPriceEmail(@ApiParam(value = "Id of the account to notify", required = true) @PathVariable final String accountId,
-                                            @ApiParam(value = "Information regarding the price update", required = true) @RequestBody Map<String, String> updatedProductInfo) throws MessagingException, IOException {
+                                            @ApiParam(value = "Information regarding the product whose price has been updated", required = true) @RequestBody Map<String, String> updatedProductInfo) throws MessagingException, IOException {
         incrementCounter();
         //obtener product
         ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + updatedProductInfo.get("productId"),
@@ -718,6 +718,6 @@ public class HomeController {
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
-        return "This is the admin area of Gallery service running at port: " + env.getProperty("local.server.port");
+        return "This is the admin area of account service running at port: " + env.getProperty("local.server.port");
     }
 }

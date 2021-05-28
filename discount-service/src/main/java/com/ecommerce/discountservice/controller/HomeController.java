@@ -98,8 +98,8 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
-    @RequestMapping("/info")
-    @ApiOperation(value = "Get information from the cart-service instance", notes = "Retrieve information from a cart-service instance")
+    @GetMapping("/info")
+    @ApiOperation(value = "Get information from the discount-service instance", notes = "Retrieve information from a cart-service instance")
     public String home() {
         incrementCounter();
         // This is useful for debugging
@@ -137,7 +137,8 @@ public class HomeController {
     }
 
     @GetMapping("/{discountId}")
-    public Discount getDiscount(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String discountId) {
+    @ApiOperation(value = "Get a specific discount", notes = "Provide the id of the discount to retrieve")
+    public Discount getDiscount(@ApiParam(value = "Id of the discount that has to be retrieved", required = true) @PathVariable final String discountId) {
         incrementCounter();
         Discount discount;
         try {
@@ -155,8 +156,8 @@ public class HomeController {
     }
 
     @DeleteMapping("/{discountId}")
-    @ApiOperation(value = "Delete a discount", notes = "Provide information to delete a discount")
-    public Discount deleteDiscount(@ApiParam(value = "Id of the discount that wants to be deleted", required = true) @PathVariable final String discountId) {
+    @ApiOperation(value = "Delete a specific discount", notes = "Provide the id of the discount to delete")
+    public Discount deleteDiscount(@ApiParam(value = "Id of the discount that has to be deleted", required = true) @PathVariable final String discountId) {
         incrementCounter();
         Discount discount = discountRepository.findById(discountId).get();
         discountRepository.delete(discount);
@@ -164,7 +165,7 @@ public class HomeController {
     }
 
     @DeleteMapping("")
-    @ApiOperation(value = "Delete all discounts", notes = "Provide information to delete all discounts")
+    @ApiOperation(value = "Delete all discounts", notes = "Delete all discounts of the database")
     public List<Discount> deleteDiscounts() {
         incrementCounter();
         discountRepository.deleteAll();
@@ -172,7 +173,8 @@ public class HomeController {
     }
 
     @PutMapping("/{discountId}/useDiscount")
-    public Discount useDiscount(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String discountId) {
+    @ApiOperation(value = "Use a discount", notes = "Increment by one the number of uses of the given discount")
+    public Discount useDiscount(@ApiParam(value = "Id of the discount that has to be used", required = true) @PathVariable final String discountId) {
         incrementCounter();
         Discount discount = discountRepository.findById(discountId).get();
         discount.incrementCurrentUses();
@@ -180,6 +182,7 @@ public class HomeController {
     }
 
     @PatchMapping("/{discountId}/enable")
+    @ApiOperation(value = "Enable a specific discount", notes = "Enables the discount to be used")
     public Discount enableDiscount(@ApiParam(value = "Id of the discount that has to be enabled", required = true) @PathVariable final String discountId) {
         incrementCounter();
         Discount discount = discountRepository.findById(discountId).get();
@@ -197,6 +200,7 @@ public class HomeController {
     }
 
     @PatchMapping("/{discountId}/disable")
+    @ApiOperation(value = "Disable a specific discount", notes = "Disables the discount in order to make it not redeemable")
     public Discount disableDiscount(@ApiParam(value = "Id of the discount that has to be disabled", required = true) @PathVariable final String discountId) {
         incrementCounter();
         Discount discount = discountRepository.findById(discountId).get();

@@ -110,7 +110,7 @@ public class HomeController {
         return new ResponseEntity<String>(env.getProperty("message"), HttpStatus.OK);
     }
 
-    @RequestMapping("/info")
+    @GetMapping("/info")
     @ApiOperation(value = "Get information from the product-service instance", notes = "Retrieve information from a product-service instance")
     public String getInfo() {
         incrementCounter();
@@ -141,7 +141,7 @@ public class HomeController {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get a product", notes = "Provide an Id to retrieve a specific product from the Database")
+    @ApiOperation(value = "Get a product", notes = "Provide the Id of the specific product to retrieve from the Database")
     public Product getProduct(@ApiParam(value = "Id of the product to get", required = true) @PathVariable final String id) throws Exception {
         Product product = null;
         //si no existe ningun producto con ese id retornamos null
@@ -158,7 +158,7 @@ public class HomeController {
     }
 
     @PatchMapping("/{id}/price")
-    @ApiOperation(value = "Get a product", notes = "Provide an Id to retrieve a specific product from the Database")
+    @ApiOperation(value = "Change a product price", notes = "Provide the Id of the product for which the price has to be changed")
     public Product patchProductPrice(@ApiParam(value = "Id of the product to get", required = true) @PathVariable final String id,
                                      @ApiParam(value = "New product price", required = true) @RequestBody Map<String, Double> newProductPrice) throws Exception {
         incrementCounter();
@@ -223,7 +223,7 @@ public class HomeController {
     // -------- Admin Area --------
     // This method should only be accessed by users with role of 'admin'
     // We'll add the logic of role based auth later
-    @RequestMapping("/admin")
+    @GetMapping("/admin")
     public String getAdmin() {
         incrementCounter();
         return "This is the admin area of Product service running at port: " + env.getProperty("local.server.port");
