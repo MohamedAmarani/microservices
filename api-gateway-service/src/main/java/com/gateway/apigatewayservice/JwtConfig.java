@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class JwtConfig {
-    @Value("${security.jwt.uri:/api/v1/auth/**}")
+    @Value("${security.jwt.uri:/auth/**}")
     private String Uri;
 
     @Value("${security.jwt.header:Authorization}")

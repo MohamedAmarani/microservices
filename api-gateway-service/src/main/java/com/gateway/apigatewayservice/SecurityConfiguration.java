@@ -39,12 +39,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // allow GET metrics
                 .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                 //permitimos callbacks de paypal y google auth
-                .antMatchers(HttpMethod.GET, "/api/v1/paypal/success/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/paypal/cancel/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/googleAuth/return**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/googleAuth/oauth2/authorization/google**").permitAll()
+                .antMatchers(HttpMethod.GET, "/paypal/success/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/paypal/cancel/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/googleAuth/return**").permitAll()
+                .antMatchers(HttpMethod.GET, "/googleAuth/oauth2/authorization/google**").permitAll()
                 // must be an admin if trying to access admin area (authentication is also required here)
-                .antMatchers("/group" + "/api/v1/admin/**").hasRole("ADMIN")
+                .antMatchers("/group" + "/admin/**").hasRole("ADMIN")
                 // Any other request must be authenticated
                 .anyRequest().authenticated();
     }
