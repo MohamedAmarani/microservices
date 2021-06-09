@@ -19,7 +19,7 @@ public class Resource {
     @ApiModelProperty(notes = "Description of the product")
     String description;
     @ApiModelProperty(notes = "Data of the resource in String Base64 format")
-    @NotNull(message = "Data is requires")
+    @NotNull(message = "Data is required")
     String data;
 
     public Resource() {

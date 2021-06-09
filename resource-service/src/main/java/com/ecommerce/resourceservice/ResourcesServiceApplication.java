@@ -30,3 +30,16 @@ class RestTemplateConfig {
 	}
 
 }
+
+/*@Configuration
+class Config implements WebMvcConfigurer
+{
+	//@Autowired
+	//MinimalInterceptor minimalInterceptor;
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry)
+	{
+		registry.addInterceptor(new CustomInterceptor());
+	}
+}*/

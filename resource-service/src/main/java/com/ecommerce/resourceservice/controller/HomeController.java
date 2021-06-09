@@ -6,18 +6,30 @@ import com.google.common.util.concurrent.AtomicDouble;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@RefreshScope
+@RestController
+@RequestMapping("/")
+@Service
 public class HomeController {
     @Autowired
     private Environment env;
@@ -102,10 +114,14 @@ public class HomeController {
         try {
             //throw new Exception("Images can't be fetched");
             resource = resourceRepository.findById(id).get();
-        } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Resource not found"
-            );
+        } catch (Exception e1) {
+            try {
+                resource = resourceRepository.findByName(id).get();
+            } catch (Exception e2) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Resource not found"
+                );
+            }
         }
         incrementCounter();
         return resource;
@@ -113,9 +129,31 @@ public class HomeController {
 
     @PostMapping("")
     @ApiOperation(value = "Create a resource", notes = "Provide information to create a resource")
-    public Resource postResource(@ApiParam(value = "Resource to create", required = true) @RequestBody Resource product) {
+    public Resource postResource(@ApiParam(value = "Resource to create", required = true) @RequestBody Map<String, String> resourceBody) throws IOException {
         incrementCounter();
-        return resourceRepository.save(product);
+        Resource resource = new Resource();
+        resource.setName(resourceBody.get("name"));
+        resource.setDescription(resourceBody.get("description"));
+        String data;
+
+        //si es url descargar imagen
+        if (resourceBody.get("url") != null) {
+            //descargar archivo temporal
+            File file = new File("C:/Users/moha1/Pictures/eCommerceSaas/" + resource.getName());
+            FileUtils.copyURLToFile(new URL(resourceBody.get("url")), file, 0, 0);
+
+            //codificar archivo temporal a base64
+            byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
+            data = new String(encoded, StandardCharsets.US_ASCII);
+
+            //eliminar archivo temporal
+            file.delete();
+        }
+        else {
+            data = resourceBody.get("data");
+        }
+        resource.setData(data);
+        return resourceRepository.save(resource);
     }
 
     @DeleteMapping("/{id}")

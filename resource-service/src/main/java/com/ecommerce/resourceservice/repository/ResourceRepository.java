@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface ResourceRepository extends MongoRepository<Resource, String> {
     public Optional<Resource> findById(String id);
-    public List<Resource> findByName(String name);
+    public Optional<Resource> findByName(String name);
 }
 
