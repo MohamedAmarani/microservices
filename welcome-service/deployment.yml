@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: welcomese
-          image: scaredste/welcome-service:v1.0.1
+          image: scaredste/welcome-service:v4.0.1
         #  resources:
          #   limits:
           #    cpu: "1"

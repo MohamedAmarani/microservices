@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: orderse
-          image: scaredste/order-service:v4.0.7
+          image: scaredste/order-service:v5.0.1
           ports:
           - containerPort: 8080
             protocol: TCP

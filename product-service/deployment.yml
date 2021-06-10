@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: productse
-          image: scaredste/product-service:v4.0.6
+          image: scaredste/product-service:v5.0.3
         #  resources:
          #   limits:
           #    cpu: "1"

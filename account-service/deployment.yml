@@ -7,12 +7,9 @@ spec:
     app: accountse
   ports:
     - protocol: "TCP"
-      # Port accessible inside cluster
       port: 8080
-      # Port to forward to inside the pod
       targetPort: 8080
-      nodePort: 30038
-  type: LoadBalancer
+  type: ClusterIP
 
 ---
 apiVersion: apps/v1
@@ -34,7 +31,7 @@ spec:
     spec:
       containers:
         - name: accountse
-          image: scaredste/account-service:v6.0.2
+          image: scaredste/account-service:v7.0.6
           ports:
             - containerPort: 8080
               protocol: TCP

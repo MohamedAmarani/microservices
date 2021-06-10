@@ -1,41 +1,37 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: delivery-service
+  name: resource-service
 spec:
   selector:
-    app: deliveryse
+    app: resourcese
   ports:
     - protocol: "TCP"
-      # Port accessible inside cluster
       port: 8080
-      # Port to forward to inside the pod
       targetPort: 8080
-      nodePort: 30031
-  type: LoadBalancer
+  type: ClusterIP
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: delivery-deployment
+  name: resource-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: deliveryse
+      app: resourcese
   template:
     metadata:
       labels:
-        app: deliveryse
+        app: resourcese
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/path: 'actuator/prometheus'
     spec:
       containers:
-        - name: deliveryse
-          image: scaredste/delivery-service:v4.0.2
+        - name: resourcese
+          image: scaredste/resource-service:v1.0.1
           ports:
-          - containerPort: 8080
-            protocol: TCP
-
+            - containerPort: 8080
+              protocol: TCP

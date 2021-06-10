@@ -3,17 +3,18 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-  name: apigateway-ingress
+    #nginx.ingress.kubernetes.io/rewrite-target: /
+  name: apigateway-ingress4
+  namespace: kube-system
 spec:
   rules:
     - host: ec2-35-180-204-28.eu-west-3.compute.amazonaws.com
       http:
         paths:
-          - path: /api/v1.0(/|$)(.*)
+          - path: /kibana
             pathType: Prefix
             backend:
               service:
-                name: apigateway-service
+                name: kibana-logging
                 port:
-                  number: 8080
+                  number: 5601
