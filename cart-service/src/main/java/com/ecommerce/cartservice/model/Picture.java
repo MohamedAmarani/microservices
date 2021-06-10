@@ -1,20 +1,25 @@
 package com.ecommerce.cartservice.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(description = "Details obout a picture")
 public class Picture {
-    String url;
+    @ApiModelProperty(notes = "URL of the resource of the product")
+    String resourceId;
 
     public Picture() {
     }
 
     public Picture(String url) {
-        this.url = url;
+        this.resourceId = resourceId;
     }
 
-    public String getUrl() {
-        return url;
+    public String getResourceId() {
+        return resourceId;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setResourceId(String url) {
+        this.resourceId = url;
     }
 }

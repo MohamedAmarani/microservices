@@ -1,7 +1,9 @@
 package com.ecommerce.productservice.model;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel(description = "Details obout a size")
 public class Size
 {
     @ApiModelProperty(notes = "Size of the product")
@@ -24,6 +26,7 @@ public class Size
 
 }
 
+@ApiModel(description = "Details obout the possible sizes")
 enum Sizes {
     S, M, L, XL, XXL
 }
