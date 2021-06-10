@@ -1,0 +1,381 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana
+  namespace: monitoring
+data:
+  # kibana.yml is mounted into the Kibana container
+  # see https://github.com/elastic/kibana/blob/master/config/kibana.yml
+  # Kubernetes Ingress is used to route kib.the-project.d4ldev.txn2.com
+  defaults.ini: |
+    ---
+    ##################### Grafana Configuration Defaults         #####################
+    #
+    # Do not modify this file in grafana installs
+    #
+    
+    # possible values : production, development
+    app_mode = production
+
+    # instance name, defaults to HOSTNAME environment variable value or     hostname if HOSTNAME var is empty
+    instance_name = ${HOSTNAME}
+
+    #################################### Paths     ###############################
+    [paths]
+    # Path to where grafana can store temp files, sessions, and the sqlite3 db (if that is used)
+    data = data
+
+    # Temporary files in `data` directory older than given duration will be removed
+    temp_data_lifetime = 24h
+
+    # Directory where grafana can store logs
+    logs = data/log
+
+    # Directory where grafana will automatically scan and look for plugins
+    plugins = data/plugins
+
+    # folder that contains provisioning config files that grafana will apply on startup and while running.
+    provisioning = conf/provisioning
+
+    #################################### Server ##############################
+    [server]
+    # Protocol (http, https, h2, socket)
+    protocol = http
+
+    # The ip address to bind to, empty will bind to all interfaces
+    http_addr =
+
+    # The http port to use
+    http_port = 3000
+
+    # The public facing domain name used to access grafana from a browser
+    domain = localhost
+
+    # Redirect to correct domain if host header does not match domain
+    # Prevents DNS rebinding attacks
+    enforce_domain = false
+    
+    # The full public facing url
+    root_url = %(protocol)s://%(domain)s:%(http_port)s/grafana/
+
+    # Serve Grafana from subpath specified in `root_url` setting. By default it is set to `false` for compatibility reasons.
+    serve_from_sub_path = true
+
+    # Log web requests
+    router_logging = false
+
+    # the path relative working path
+    static_root_path = public
+
+    # enable gzip
+    enable_gzip = false
+
+    # https certs & key file
+    cert_file =
+    cert_key =
+
+    # Unix socket path
+    socket = /tmp/grafana.sock
+
+    # CDN Url
+    cdn_url =
+
+    # Sets the maximum time in minutes before timing out read of an incoming request and closing idle connections. 
+    # `0` means there is no timeout for reading the request.
+    read_timeout = 0
+
+    #################################### Database ############################
+    [database]
+    # You can configure the database connection by specifying type, host, name, user and password
+    # as separate properties or as on string using the url property.
+
+    # Either "mysql", "postgres" or "sqlite3", it's your choice
+    type = sqlite3
+    host = 127.0.0.1:3306
+    name = grafana
+    user = root
+    # If the password contains # or ; you have to wrap it with triple quotes. Ex """#password;"""
+    password =
+    # Use either URL or the previous fields to configure the database
+    # Example: mysql://user:secret@host:port/database
+    url =
+
+    # Max idle conn setting default is 2
+    max_idle_conn = 2
+
+    # Max conn setting default is 0 (mean not set)
+    max_open_conn =
+
+    # Connection Max Lifetime default is 14400 (means 14400 seconds or 4 hours)
+    conn_max_lifetime = 14400
+
+    # Set to true to log the sql calls and execution times.
+    log_queries =
+
+    # For "postgres", use either "disable", "require" or "verify-full"
+    # For "mysql", use either "true", "false", or "skip-verify".
+    ssl_mode = disable
+
+    # Database drivers may support different transaction isolation levels.
+    # Currently, only "mysql" driver supports isolation levels.
+    # If the value is empty - driver's default isolation level is applied.
+    # For "mysql" use "READ-UNCOMMITTED", "READ-COMMITTED", "REPEATABLE-READ" or "SERIALIZABLE".
+    isolation_level =
+
+    ca_cert_path =
+    client_key_path =
+    client_cert_path =
+    server_cert_name =
+
+    # For "sqlite3" only, path relative to data_path setting
+    path = grafana.db
+
+
+    cache_mode = private
+
+
+    [remote_cache]
+
+    type = database
+
+
+    connstr =
+
+
+    [dataproxy]
+
+
+    logging = false
+
+
+    timeout = 30
+
+
+    keep_alive_seconds = 30
+
+    tls_handshake_timeout_seconds = 10
+
+    expect_continue_timeout_seconds = 1
+
+
+    max_idle_connections = 100
+
+    idle_conn_timeout_seconds = 90
+
+
+    send_user_header = false
+
+
+    [analytics]
+
+
+    reporting_enabled = true
+
+
+    reporting_distributor = grafana-labs
+
+    check_for_updates = true
+
+    google_analytics_ua_id =
+
+    google_tag_manager_id =
+
+
+    [security]
+
+    disable_initial_admin_creation = false
+
+
+    admin_user = admin
+
+
+    admin_password = admin
+
+
+    secret_key = SW2YcwTIb9zpOOhoPsMm
+
+
+    disable_gravatar = false
+
+
+    data_source_proxy_whitelist =
+
+
+    disable_brute_force_login_protection = false
+
+    # set to true if you host Grafana behind HTTPS. default is false.
+    cookie_secure = false
+
+    # set cookie SameSite attribute. defaults to `lax`. can be set to "lax", "strict", "none" and "disabled"
+    cookie_samesite = lax
+
+    # set to true if you want to allow browsers to render Grafana in a <frame>, <iframe>, <embed> or <object>. default is false.
+    allow_embedding = false
+
+    # Set to true if you want to enable http strict transport security (HSTS) response header.
+    # This is only sent when HTTPS is enabled in this configuration.
+    # HSTS tells browsers that the site should only be accessed using HTTPS.
+    strict_transport_security = false
+
+    # Sets how long a browser should cache HSTS. Only applied if strict_transport_security is enabled.
+    strict_transport_security_max_age_seconds = 86400
+
+    # Set to true if to enable HSTS preloading option. Only applied if strict_transport_security is enabled.
+    strict_transport_security_preload = false
+
+    # Set to true if to enable the HSTS includeSubDomains option. Only applied if strict_transport_security is enabled.
+    strict_transport_security_subdomains = false
+
+    # Set to true to enable the X-Content-Type-Options response header.
+    # The X-Content-Type-Options response HTTP header is a marker used by the server to indicate that the MIME types advertised
+    # in the Content-Type headers should not be changed and be followed.
+    x_content_type_options = true
+
+    # Set to true to enable the X-XSS-Protection header, which tells browsers to stop pages from loading
+    # when they detect reflected cross-site scripting (XSS) attacks.
+    x_xss_protection = true
+
+    # Enable adding the Content-Security-Policy header to your requests.
+    # CSP allows to control resources the user agent is allowed to load and helps prevent XSS attacks.
+    content_security_policy = false
+
+    # Set Content Security Policy template used when adding the Content-Security-Policy header to your requests.
+    # $NONCE in the template includes a random nonce.
+    content_security_policy_template = """script-src 'unsafe-eval' 'strict-dynamic' $NONCE;object-src 'none';font-src 'self';style-src 'self' 'unsafe-inline';img-src 'self' data:;base-uri 'self';connect-src 'self' grafana.com;manifest-src 'self';media-src 'none';form-action 'self';"""
+
+    #################################### Snapshots ###########################
+    [snapshots]
+    # snapshot sharing options
+    external_enabled = true
+    external_snapshot_url = https://snapshots-origin.raintank.io
+    external_snapshot_name = Publish to snapshot.raintank.io
+
+    # Set to true to enable this Grafana instance act as an external snapshot server and allow unauthenticated requests for
+    # creating and deleting snapshots.
+    public_mode = false
+
+    # remove expired snapshot
+    snapshot_remove_expired = true
+
+    #################################### Dashboards ##################
+
+    [dashboards]
+    # Number dashboard versions to keep (per dashboard). Default: 20, Minimum: 1
+    versions_to_keep = 20
+
+    # Minimum dashboard refresh interval. When set, this will restrict users to set the refresh interval of a dashboard lower than given interval. Per default this is 5 seconds.
+    # The interval string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
+    min_refresh_interval = 5s
+
+    # Path to the default home dashboard. If this value is empty, then Grafana uses StaticRootPath + "dashboards/home.json"
+    default_home_dashboard_path =
+
+    ################################### Data sources #########################
+    [datasources]
+    # Upper limit of data sources that Grafana will return. This limit is a temporary configuration and it will be deprecated when pagination will be introduced on the list data sources API.
+    datasource_limit = 5000
+
+    #################################### Users ###############################
+    [users]
+    # disable user signup / registration
+    allow_sign_up = false
+
+    # Allow non admin users to create organizations
+    allow_org_create = false
+
+    # Set to true to automatically assign new users to the default organization (id 1)
+    auto_assign_org = true
+
+    # Set this value to automatically add new users to the provided organization (if auto_assign_org above is set to true)
+    auto_assign_org_id = 1
+
+    # Default role new users will be automatically assigned (if auto_assign_org above is set to true)
+    auto_assign_org_role = Viewer
+
+    # Require email validation before sign up completes
+    verify_email_enabled = false
+
+    # Background text for the user field on the login page
+    login_hint = email or username
+    password_hint = password
+
+    # Default UI theme ("dark" or "light")
+    default_theme = dark
+
+    # Path to a custom home page. Users are only redirected to this if the default home dashboard is used. It should match a frontend route and contain a leading slash.
+    home_page =
+
+    # External user management
+    external_manage_link_url =
+    external_manage_link_name =
+    external_manage_info =
+
+    # Viewers can edit/inspect dashboard settings in the browser. But not save the dashboard.
+    viewers_can_edit = false
+
+    # Editors can administrate dashboard, folders and teams they create
+    editors_can_admin = false
+
+    # The duration in time a user invitation remains valid before expiring. This setting should be expressed as a duration. Examples: 6h (hours), 2d (days), 1w (week). Default is 24h (24 hours). The minimum supported duration is 15m (15 minutes).
+    user_invite_max_lifetime_duration = 24h
+
+    # Enter a comma-separated list of usernames to hide them in the Grafana UI. These users are shown to Grafana admins and to themselves.
+    hidden_users =
+
+    [auth]
+    # Login cookie name
+    login_cookie_name = grafana_session
+
+    # The maximum lifetime (duration) an authenticated user can be inactive before being required to login at next visit. Default is 7 days (7d). This setting should be expressed as a duration, e.g. 5m (minutes), 6h (hours), 10d (days), 2w (weeks), 1M (month). The lifetime resets at each successful token rotation (token_rotation_interval_minutes).
+    login_maximum_inactive_lifetime_duration =
+
+    # The maximum lifetime (duration) an authenticated user can be logged in since login time before being required to login. Default is 30 days (30d). This setting should be expressed as a duration, e.g. 5m (minutes), 6h (hours), 10d (days), 2w (weeks), 1M (month).
+    login_maximum_lifetime_duration =
+
+    # How often should auth tokens be rotated for authenticated users when being active. The default is each 10 minutes.
+    token_rotation_interval_minutes = 10
+
+    # Set to true to disable (hide) the login form, useful if you use OAuth
+    disable_login_form = false
+
+    # Set to true to disable the signout link in the side menu. useful if you use auth.proxy
+    disable_signout_menu = false
+
+    # URL to redirect the user to after sign out
+    signout_redirect_url =
+
+    # Set to true to attempt login with OAuth automatically, skipping the login screen.
+    # This setting is ignored if multiple OAuth providers are configured.
+    oauth_auto_login = false
+
+    # OAuth state max age cookie duration in seconds. Defaults to 600 seconds.
+    oauth_state_cookie_max_age = 600
+
+    # limit of api_key seconds to live before expiration
+    api_key_max_seconds_to_live = -1
+
+    # Set to true to enable SigV4 authentication option for HTTP-based datasources
+    sigv4_auth_enabled = false
+
+    #################################### Anonymous Auth ######################
+    [auth.anonymous]
+    # enable anonymous access
+    enabled = false
+
+    # specify organization name that should be used for unauthenticated users
+    org_name = Main Org.
+
+    # specify role for unauthenticated users
+    org_role = Viewer
+
+    # mask the Grafana version number for unauthenticated users
+    hide_version = false
+
+    #################################### GitHub Auth #########################
+    [auth.github]
+    enabled = false
+    allow_sign_up = true
+    client_id = some_id
+    client_secret =
+    scopes = user:email,read:org
+    auth_url = https://github.com/login/oauth/authorize
