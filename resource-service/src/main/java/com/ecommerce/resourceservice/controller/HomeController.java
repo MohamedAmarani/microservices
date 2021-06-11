@@ -13,14 +13,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -185,5 +186,44 @@ public class HomeController {
     public String homeAdmin() {
         incrementCounter();
         return "This is the admin area of resource service running at port: " + env.getProperty("local.server.port");
+    }
+
+    @GetMapping("/{id}/download")
+    @ApiOperation(value = "Download a resource", notes = "Provide the Id of the specific resource to download from the Database")
+    public void downloadResource(@ApiParam(value = "Id of the resource to download", required = true) @PathVariable final String id,
+                                 HttpServletResponse response) throws Exception {
+        Resource resource = null;
+        //si no existe ningun producto con ese id retornamos null
+        try {
+            //throw new Exception("Images can't be fetched");
+            resource = resourceRepository.findById(id).get();
+        } catch (Exception e1) {
+            try {
+                resource = resourceRepository.findByName(id).get();
+            } catch (Exception e2) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Resource not found"
+                );
+            }
+        }
+        try {
+            byte[] data = Base64.decodeBase64(resource.getData());
+
+            try (OutputStream stream = new FileOutputStream(resource.getName())) {
+                stream.write(data);
+            }
+            // get your file as InputStream
+            InputStream is = new FileInputStream(resource.getName());
+            // copy it to response's OutputStream
+            org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
+            response.flushBuffer();
+            new File(resource.getName()).delete();
+
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not find the given file");
+        }
+
+        incrementCounter();
+        return new FileSystemResource(myService.getFileFor(fileName));
     }
 }
