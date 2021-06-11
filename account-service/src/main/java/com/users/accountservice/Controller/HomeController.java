@@ -9,10 +9,12 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -363,7 +365,7 @@ public class HomeController {
         emailReachedTargetPrice(userRepository.findById(accountId).get(), productDTO, updatedProductInfo);
     }
 
-    public String emailReachedTargetPrice(Account receiver, ProductDTO productDTO, Map<String, String> updatedProductInfo) throws MessagingException {
+    public String emailReachedTargetPrice(Account receiver, ProductDTO productDTO, Map<String, String> updatedProductInfo) throws MessagingException, IOException {
         MimeMessage msg = javaMailSender.createMimeMessage();
 
         // true = multipart message
@@ -398,9 +400,7 @@ public class HomeController {
         }*/
 
         //adjuntar fotos de product
-        int cont = 0;
         for (Picture picture: productDTO.getPictures()) {
-            ++cont;
             File file = new File("C:/Users/moha1/Pictures/eCommerceSaas/" + productDTO.getName());
             //obtener resource
             final ResponseEntity<String> res4 = restTemplate.exchange("http://resource-service:8080/" + picture.getResourceId(),
@@ -410,9 +410,9 @@ public class HomeController {
             ResourceDTO resourceDTO = gson.fromJson(res4.getBody(), ResourceDTO.class);
 
             InputStream inputStream = new ByteArrayInputStream(resourceDTO.getData().getBytes(StandardCharsets.UTF_8));
-            helper.addAttachment(resourceDTO.getName(),new InputStreamResource(inputStream));
+            helper.addAttachment(resourceDTO.getName(), new ByteArrayResource(IOUtils.toByteArray(inputStream)));
+            inputStream.close();
         }
-
         javaMailSender.send(msg);
 
         /*//borrar fotos temporales del sistema
@@ -428,7 +428,7 @@ public class HomeController {
     public String emailEnabledDiscount(Account receiver, DiscountDTO discountDTO) throws MessagingException {
         MimeMessage msg = javaMailSender.createMimeMessage();
 
-        // true = multipart message
+        // true permite multipart message
         MimeMessageHelper helper = new MimeMessageHelper(msg, true);
         helper.setTo(receiver.getEmail());
         helper.setBcc("saasecommerce@gmail.com");
@@ -733,10 +733,6 @@ public class HomeController {
         return msg.getSubject();
     }
 
-    // -------- Admin Area --------
-    // This method should only be accessed by users with role of 'admin'
-    // We'll add the logic of role based auth later
-    //@PreAuthorize("hasRole('GOOGLE')")
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();

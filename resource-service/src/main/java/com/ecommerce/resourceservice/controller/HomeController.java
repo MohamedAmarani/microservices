@@ -28,7 +28,7 @@ import java.util.*;
 
 @RefreshScope
 @RestController
-@RequestMapping("/")
+@RequestMapping("/resources")
 @Service
 public class HomeController {
     @Autowired
@@ -107,7 +107,7 @@ public class HomeController {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get a product", notes = "Provide the Id of the specific resource to retrieve from the Database")
+    @ApiOperation(value = "Get a resource", notes = "Provide the Id of the specific resource to retrieve from the Database")
     public Resource getResource(@ApiParam(value = "Id of the resource to get", required = true) @PathVariable final String id) throws Exception {
         Resource resource = null;
         //si no existe ningun producto con ese id retornamos null
@@ -153,11 +153,18 @@ public class HomeController {
             data = resourceBody.get("data");
         }
         resource.setData(data);
-        return resourceRepository.save(resource);
+        try {
+            resource = resourceRepository.save(resource);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Duplicated key"
+            );
+        }
+        return resource;
     }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Get a product", notes = "Provide an Id to delete a specific resource from the Database")
+    @ApiOperation(value = "Delete a resource", notes = "Provide an Id to delete a specific resource from the Database")
     public Resource deleteResource(@ApiParam(value = "Id of the resource to delete", required = true) @PathVariable final String id) throws Exception {
         Resource resource = null;
         //si no existe ningun resource con ese id retornamos null
@@ -172,5 +179,11 @@ public class HomeController {
         }
         incrementCounter();
         return resource;
+    }
+
+    @GetMapping("/admin")
+    public String homeAdmin() {
+        incrementCounter();
+        return "This is the admin area of resource service running at port: " + env.getProperty("local.server.port");
     }
 }
