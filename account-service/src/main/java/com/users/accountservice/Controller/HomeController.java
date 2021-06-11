@@ -8,6 +8,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import net.minidev.json.JSONObject;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -401,7 +399,6 @@ public class HomeController {
 
         //adjuntar fotos de product
         for (Picture picture: productDTO.getPictures()) {
-            File file = new File("C:/Users/moha1/Pictures/eCommerceSaas/" + productDTO.getName());
             //obtener resource
             final ResponseEntity<String> res4 = restTemplate.exchange("http://resource-service:8080/" + picture.getResourceId(),
                     HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
@@ -409,18 +406,27 @@ public class HomeController {
             Gson gson = new Gson();
             ResourceDTO resourceDTO = gson.fromJson(res4.getBody(), ResourceDTO.class);
 
-            InputStream inputStream = new ByteArrayInputStream(resourceDTO.getData().getBytes(StandardCharsets.UTF_8));
-            helper.addAttachment(resourceDTO.getName(), new ByteArrayResource(IOUtils.toByteArray(inputStream)));
-            inputStream.close();
+            byte[] data = Base64.decodeBase64(resourceDTO.getData());
+
+            try (OutputStream stream = new FileOutputStream(resourceDTO.getName())) {
+                stream.write(data);
+            }
+
+            helper.addAttachment(resourceDTO.getName(), new File(resourceDTO.getName()));
         }
         javaMailSender.send(msg);
 
-        /*//borrar fotos temporales del sistema
+        //borrar fotos temporales del disco
         for (Picture picture: productDTO.getPictures()) {
-            ++cont;
-            File file = new File("C:/Users/moha1/Pictures/eCommerceSaas/" + productDTO.getName() + "-picture" + cont + ".jpg");
+            //obtener resource
+            final ResponseEntity<String> res4 = restTemplate.exchange("http://resource-service:8080/" + picture.getResourceId(),
+                    HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
+                    });
+            Gson gson = new Gson();
+            ResourceDTO resourceDTO = gson.fromJson(res4.getBody(), ResourceDTO.class);
+            File file = new File(resourceDTO.getName());
             file.delete();
-        }*/
+        }
 
         return msg.getSubject();
     }
