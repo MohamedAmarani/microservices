@@ -192,6 +192,7 @@ public class HomeController {
     @ApiOperation(value = "Download a resource", notes = "Provide the Id of the specific resource to download from the Database")
     public void downloadResource(@ApiParam(value = "Id of the resource to download", required = true) @PathVariable final String id,
                                  HttpServletResponse response) throws Exception {
+        incrementCounter();
         Resource resource = null;
         //si no existe ningun producto con ese id retornamos null
         try {
@@ -222,8 +223,5 @@ public class HomeController {
         } catch (IOException ex) {
             throw new RuntimeException("Could not find the given file");
         }
-
-        incrementCounter();
-        return new FileSystemResource(myService.getFileFor(fileName));
     }
 }
