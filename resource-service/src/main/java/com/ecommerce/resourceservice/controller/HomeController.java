@@ -28,7 +28,7 @@ import java.util.*;
 
 @RefreshScope
 @RestController
-@RequestMapping("/resources")
+@RequestMapping("/")
 @Service
 public class HomeController {
     @Autowired
