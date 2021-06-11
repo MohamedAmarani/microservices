@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -24,9 +25,13 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -358,7 +363,7 @@ public class HomeController {
         emailReachedTargetPrice(userRepository.findById(accountId).get(), productDTO, updatedProductInfo);
     }
 
-    public String emailReachedTargetPrice(Account receiver, ProductDTO productDTO, Map<String, String> updatedProductInfo) throws MessagingException, IOException {
+    public String emailReachedTargetPrice(Account receiver, ProductDTO productDTO, Map<String, String> updatedProductInfo) throws MessagingException {
         MimeMessage msg = javaMailSender.createMimeMessage();
 
         // true = multipart message
@@ -375,7 +380,7 @@ public class HomeController {
                 "<p>Regards.</p>\n";
 
         helper.setText(text,true);
-        //descargar y añadir fotos de product
+        /*//descargar y añadir fotos de product
         int cont = 0;
         for (Picture picture: productDTO.getPictures()) {
             ++cont;
@@ -390,7 +395,32 @@ public class HomeController {
             ++cont;
             File file = new File("C:/Users/moha1/Pictures/eCommerceSaas/" + productDTO.getName() + "-picture" + cont + ".jpg");
             file.delete();
+        }*/
+
+        //adjuntar fotos de product
+        int cont = 0;
+        for (Picture picture: productDTO.getPictures()) {
+            ++cont;
+            File file = new File("C:/Users/moha1/Pictures/eCommerceSaas/" + productDTO.getName());
+            //obtener resource
+            final ResponseEntity<String> res4 = restTemplate.exchange("http://resource-service:8080/" + picture.getResourceId(),
+                    HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
+                    });
+            Gson gson = new Gson();
+            ResourceDTO resourceDTO = gson.fromJson(res4.getBody(), ResourceDTO.class);
+
+            InputStream inputStream = new ByteArrayInputStream(resourceDTO.getData().getBytes(StandardCharsets.UTF_8));
+            helper.addAttachment(resourceDTO.getName(),new InputStreamResource(inputStream));
         }
+
+        javaMailSender.send(msg);
+
+        /*//borrar fotos temporales del sistema
+        for (Picture picture: productDTO.getPictures()) {
+            ++cont;
+            File file = new File("C:/Users/moha1/Pictures/eCommerceSaas/" + productDTO.getName() + "-picture" + cont + ".jpg");
+            file.delete();
+        }*/
 
         return msg.getSubject();
     }
