@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: deliveryse
-          image: scaredste/delivery-service:v4.0.2
+          image: scaredste/delivery-service:v4.0.3
           ports:
           - containerPort: 8080
             protocol: TCP
