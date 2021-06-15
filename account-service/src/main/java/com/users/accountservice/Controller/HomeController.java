@@ -195,8 +195,6 @@ public class HomeController {
             //crear carrito
             JSONObject obj = new JSONObject();
             obj.put("id", account1.getId());
-            //nventario por defecto
-            obj.put("inventoryId", "609d71c0607c8c13aabf9e7b");
             // crear carrito
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -222,6 +220,22 @@ public class HomeController {
         throw new ResponseStatusException(
                 HttpStatus.CONFLICT, "Account already exists"
         );
+    }
+
+    @PatchMapping("/{accountId}/password")
+    @ApiOperation(value = "Change the password of an account", notes = "Provide the new password")
+    public Account changePassword(@ApiParam(value = "Id of the account for which the password has to be changed", required = true) @PathVariable final String accountId,
+                                         @ApiParam(value = "New password", required = true) @RequestBody Map<String, String> myJsonRequest) {
+        incrementCounter();
+        Optional<Account> account = userRepository.findById(accountId);
+        try {
+            account.get().setPassword(new BCryptPasswordEncoder().encode(myJsonRequest.get("password")));
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Could not change password"
+            );
+        }
+        return userRepository.save(account.get());
     }
 
     @PatchMapping("/{accountId}/deliveryAddress")

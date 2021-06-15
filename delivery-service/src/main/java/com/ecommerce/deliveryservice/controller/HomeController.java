@@ -123,6 +123,22 @@ public class HomeController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delete a delivery", notes = "Provide an Id to delete a specific delivery from the Database")
+    public Delivery deleteDelivery(@ApiParam(value = "Id of the delivery to delete", required = true) @PathVariable final String id) throws Exception {
+        incrementCounter();
+        Delivery delivery = null;
+        try {
+            delivery = deliveryRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Delivery not found"
+            );
+        }
+        deliveryRepository.deleteById(id);
+        return delivery;
+    }
+
     @PostMapping("")
     @ApiOperation(value = "Create a delivery", notes = "Provide information to create a delivery")
     public Delivery createDelivery(@ApiParam(value = "Delivery to create", required = true) @RequestBody Map<String, String> myJsonRequest) {

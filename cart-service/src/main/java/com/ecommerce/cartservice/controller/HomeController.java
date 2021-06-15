@@ -229,10 +229,10 @@ public class HomeController {
     }
 
     @HystrixCommand(fallbackMethod = "fallback")
-    @DeleteMapping("/{cartId}/items/{wishlistItemProductId}")
+    @DeleteMapping("/{cartId}/items/{cartItemId}")
     @ApiOperation(value = "Delete a cart item from a cart", notes = "Provide an Id to delete a specific cart item of a cart from the Database")
     public CartDTO deleteCartItem(@ApiParam(value = "Id of the cart that contains the cart item to delete", required = true) @PathVariable final String cartId,
-                              @ApiParam(value = "Id of the cart item to delete", required = true) @PathVariable final String wishlistItemProductId) {
+                              @ApiParam(value = "Id of the cart item to delete", required = true) @PathVariable final String cartItemId) {
         incrementCounter();
         Cart cart = null;
         try {
@@ -243,7 +243,7 @@ public class HomeController {
             );
         }
         try {
-            cart.deleteFromCartItems(wishlistItemProductId);
+            cart.deleteFromCartItems(cartItemId);
         } catch (ResponseStatusException e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Cart item not found"

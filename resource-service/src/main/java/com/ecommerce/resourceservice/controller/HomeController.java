@@ -182,12 +182,6 @@ public class HomeController {
         return resource;
     }
 
-    @GetMapping("/admin")
-    public String homeAdmin() {
-        incrementCounter();
-        return "This is the admin area of resource service running at port: " + env.getProperty("local.server.port");
-    }
-
     @GetMapping("/{id}/download")
     @ApiOperation(value = "Download a resource", notes = "Provide the Id of the specific resource to download from the Database")
     public void downloadResource(@ApiParam(value = "Id of the resource to download", required = true) @PathVariable final String id,
@@ -223,5 +217,11 @@ public class HomeController {
         } catch (IOException ex) {
             throw new RuntimeException("Could not find the given file");
         }
+    }
+
+    @GetMapping("/admin")
+    public String homeAdmin() {
+        incrementCounter();
+        return "This is the admin area of resource service running at port: " + env.getProperty("local.server.port");
     }
 }

@@ -115,6 +115,25 @@ public class HomeController {
         return discountRepository.findAll();
     }
 
+    @GetMapping("/{discountId}")
+    @ApiOperation(value = "Get a specific discount", notes = "Provide the id of the discount to retrieve")
+    public Discount getDiscount(@ApiParam(value = "Id of the discount that has to be retrieved", required = true) @PathVariable final String discountId) {
+        incrementCounter();
+        Discount discount;
+        try {
+            try {
+                discount = discountRepository.findById(discountId).get();
+            } catch (Exception e) {
+                discount = discountRepository.findByCode(discountId).get();
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Discount not found"
+            );
+        }
+        return discount;
+    }
+
     @PostMapping("")
     @ApiOperation(value = "Create a discount", notes = "Provide information to create a discount")
     public Discount postDiscount(@ApiParam(value = "Information of the discount to create", required = true) @RequestBody Discount discount) {
@@ -133,25 +152,6 @@ public class HomeController {
         final ResponseEntity<String> res1 = restTemplate.exchange("http://account-service:8080/newDiscountEmail",
                 HttpMethod.POST, discountEntity, new ParameterizedTypeReference<String>() {
                 });
-        return discount;
-    }
-
-    @GetMapping("/{discountId}")
-    @ApiOperation(value = "Get a specific discount", notes = "Provide the id of the discount to retrieve")
-    public Discount getDiscount(@ApiParam(value = "Id of the discount that has to be retrieved", required = true) @PathVariable final String discountId) {
-        incrementCounter();
-        Discount discount;
-        try {
-            try {
-                discount = discountRepository.findById(discountId).get();
-            } catch (Exception e) {
-                discount = discountRepository.findByCode(discountId).get();
-            }
-        } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "Discount not found"
-            );
-        }
         return discount;
     }
 
