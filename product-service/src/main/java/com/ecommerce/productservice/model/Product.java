@@ -29,14 +29,17 @@ public class Product {
     @ApiModelProperty(notes = "Size of the product")
     @NotNull(message = "At least one size is required")
     Size size;
+    @ApiModelProperty(notes = "Type of the product")
+    String type;
 
-    public Product(String id, String name, String description, double price, List<Picture> pictures, Size size) {
+    public Product(String id, String name, String description, double price, List<Picture> pictures, Size size, String type) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.pictures = pictures;
         this.size = size;
+        this.type = type;
     }
 
     public String getId() {
@@ -83,11 +86,15 @@ public class Product {
         pictures.add(picture);
     }
 
-    public Size getSize() {
-        return size;
+    public void setSize(Size size) {
+        this.size = size;
     }
 
-    public void setSizes(Size size) {
-        this.size = size;
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

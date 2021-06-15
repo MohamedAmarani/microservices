@@ -220,12 +220,9 @@ public class HomeController {
         return "holas";
     }
 
-    // -------- Admin Area --------
-    // This method should only be accessed by users with role of 'admin'
-    // We'll add the logic of role based auth later
     @GetMapping("/admin")
     public String getAdmin() {
         incrementCounter();
-        return "This is the admin area of Product service running at port: " + env.getProperty("local.server.port");
+        return "This is the admin area of product service running at port: " + env.getProperty("local.server.port");
     }
 }

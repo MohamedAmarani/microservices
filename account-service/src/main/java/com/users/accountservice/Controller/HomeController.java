@@ -711,48 +711,6 @@ public class HomeController {
         return msg.getSubject();
     }
 
-    public String emailDeliveryUpdate(String receiver) throws MessagingException {
-        MimeMessage msg = javaMailSender.createMimeMessage();
-
-        // true = multipart message
-        MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-        helper.setTo(receiver);
-        helper.setBcc("saasecommerce@gmail.com");
-        helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
-        helper.setSubject("Te has registrado correctamente");
-        helper.setText( "<h2>Your delivery status has been updated!</h2>\n" +
-                "<p style=\"font-size: 1.5em;\">The delivery 'id' is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">type your text</strong> status. We will keep you updated of any new event.</p>\n" +
-                "<p style=\"font-size: 1.5em;\">Below you can find the details of your order 'id'.</p>\n" +
-                "<table class=\"editorDemoTable\" style=\"height: 88px;\" width=\"167\">\n" +
-                "<tbody>\n" +
-                "<tr>\n" +
-                "<td style=\"width: 58px;\"><strong>Product name</strong></td>\n" +
-                "<td style=\"width: 70px;\"><strong>Price</strong></td>\n" +
-                "<td style=\"width: 30px;\"><strong>Quantity</strong></td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td style=\"width: 58px;\">Camisetita guapa</td>\n" +
-                "<td style=\"width: 70px;\">Chicago</td>\n" +
-                "<td style=\"width: 30px;\">23</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td style=\"width: 58px;\">Lucy</td>\n" +
-                "<td style=\"width: 70px;\">Wisconsin</td>\n" +
-                "<td style=\"width: 30px;\">19</td>\n" +
-                "</tr>\n" +
-                "<tr>\n" +
-                "<td style=\"width: 58px;\">Amanda</td>\n" +
-                "<td style=\"width: 70px;\">Madison</td>\n" +
-                "<td style=\"width: 30px;\">22</td>\n" +
-                "</tr>\n" +
-                "</tbody>\n" +
-                "</table>\n" +
-                "<p>Regards.</p>",true);
-        //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
-        javaMailSender.send(msg);
-        return msg.getSubject();
-    }
-
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
