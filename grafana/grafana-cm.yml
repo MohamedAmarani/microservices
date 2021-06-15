@@ -476,7 +476,7 @@ data:
     allowed_domains =
     team_ids =
     allowed_organizations =
-    tls_skip_verify_insecure = false
+    tls_skip_verify_insecure = true
     tls_client_cert =
     tls_client_key =
     tls_client_ca =
@@ -828,7 +828,7 @@ data:
 
     [plugins]
     enable_alpha = false
-    app_tls_skip_verify_insecure = false
+    app_tls_skip_verify_insecure = true
     # Enter a comma-separated list of plugin identifiers to identify plugins that are allowed to be loaded even if they lack a valid signature.
     allow_loading_unsigned_plugins =
     marketplace_url = https://grafana.com/grafana/plugins/
