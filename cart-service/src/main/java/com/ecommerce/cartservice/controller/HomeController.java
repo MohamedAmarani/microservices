@@ -336,7 +336,6 @@ public class HomeController {
                                       @ApiParam(value = "Product Id and quantity of items available in the inventory to be added to the given cart", required = true) @RequestBody CartItem cartItem) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
-        System.out.println("Hola");
         JSONObject obj = new JSONObject();
         obj.put("numItems", cartItem.getQuantity());
         // set headers
@@ -644,9 +643,6 @@ public class HomeController {
         }
     }
 
-    // -------- Admin Area --------
-    // This method should only be accessed by users with role of 'admin'
-    // We'll add the logic of role based auth later
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
