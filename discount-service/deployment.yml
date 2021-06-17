@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: discountse
-          image: scaredste/discount-service:v4.0.4
+          image: scaredste/discount-service:v4.0.5
           ports:
           - containerPort: 8080
             protocol: TCP
