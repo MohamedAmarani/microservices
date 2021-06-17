@@ -15,6 +15,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -98,6 +99,30 @@ public class HomeController {
         String timeStamp = new SimpleDateFormat("ss").format(Calendar.getInstance().getTime());
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
+
+    @GetMapping("/hello")
+    public ResponseEntity<String> getHello() {
+        incrementCounter();
+        System.out.println(message);
+        System.out.println(env.getProperty("message"));
+        return new ResponseEntity<String>(env.getProperty("message"), HttpStatus.OK);
+    }
+
+    @GetMapping("/info")
+    @ApiOperation(value = "Get information from the resource-service instance", notes = "Retrieve information from a resource-service instance")
+    public String getInfo() {
+        incrementCounter();
+        // This is useful for debugging
+        // When having multiple instance of product service running at different ports.
+        // We load balance among them, and display which instance received the request.
+        int counter = 0;
+        for (String key: requestsLastMinute.keySet()) {
+            counter += requestsLastMinute.get(key);
+        }
+        return "Hello from Resource Service running at port: " + env.getProperty("local.server.port") +
+                " InstanceId " + instanceId + " " + counter;
+    }
+
 
     @GetMapping("")
     @ApiOperation(value = "Get all resources", notes = "Retrieve a specific resource from the Database")
