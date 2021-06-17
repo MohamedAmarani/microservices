@@ -30,9 +30,11 @@ public class Product {
     @NotNull(message = "At least one size is required")
     Size size;
     @ApiModelProperty(notes = "Type of the product")
-    String type;
+    Type type;
+    @ApiModelProperty(notes = "Target sex of the product")
+    Sex sex;
 
-    public Product(String id, String name, String description, double price, List<Picture> pictures, Size size, String type) {
+    public Product(String id, String name, String description, double price, List<Picture> pictures, Size size, Type type, Sex sex) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -90,11 +92,33 @@ public class Product {
         this.size = size;
     }
 
-    public String getType() {
+    public Size getSize() {
+        return size;
+    }
+
+    public Type getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Type type) {
         this.type = type;
     }
+
+    public Sex getSex() {
+        return sex;
+    }
+
+    public void setSex(Sex sex) {
+        this.sex = sex;
+    }
+}
+
+@ApiModel(description = "Details obout the possible product types")
+enum Type {
+    Shirt, Trouser, Sock, Shoes, Hat
+}
+
+@ApiModel(description = "Details obout the possible product types")
+enum Sex {
+    Male, Female, Unisex
 }
