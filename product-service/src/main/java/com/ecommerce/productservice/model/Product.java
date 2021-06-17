@@ -42,6 +42,7 @@ public class Product {
         this.pictures = pictures;
         this.size = size;
         this.type = type;
+        this.sex = sex;
     }
 
     public String getId() {
