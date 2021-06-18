@@ -137,7 +137,13 @@ public class HomeController {
     @ApiOperation(value = "Create a product", notes = "Provide information to create a product")
     public Product postProduct(@ApiParam(value = "Product to create", required = true) @RequestBody Product product) {
         incrementCounter();
-        return productRepository.save(product);
+        try{
+            return productRepository.save(product);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Product already exists"
+            );
+        }
     }
 
     @GetMapping("/{id}")
