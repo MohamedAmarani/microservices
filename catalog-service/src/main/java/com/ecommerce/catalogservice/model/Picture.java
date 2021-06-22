@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Details obout a picture")
 public class Picture {
-    @ApiModelProperty(notes = "URL of the resource of the product")
+    @ApiModelProperty(notes = "Id of the resource of the product")
     String resourceId;
 
     public Picture() {
