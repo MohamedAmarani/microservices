@@ -27,7 +27,7 @@ public class Product {
     @ApiModelProperty(notes = "Price of the product")
     double price;
     @ApiModelProperty(notes = "Size of the product")
-    @NotNull(message = "At least one size is required")
+    @NotNull(message = "Size is required")
     Size size;
     @ApiModelProperty(notes = "Type of the product")
     Type type;
@@ -114,9 +114,14 @@ public class Product {
     }
 }
 
+@ApiModel(description = "Details obout the possible sizes")
+enum Size {
+    S, M, L, XL, XXL
+}
+
 @ApiModel(description = "Details obout the possible product types")
 enum Type {
-    Shirt, Trouser, Sock, Shoes, Hat
+    Shirt, Trousers, Socks, Shoes, Hat
 }
 
 @ApiModel(description = "Details obout the possible product types")

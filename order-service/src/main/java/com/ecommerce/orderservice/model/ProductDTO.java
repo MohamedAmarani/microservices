@@ -111,9 +111,14 @@ public class ProductDTO {
     }
 }
 
+@ApiModel(description = "Details obout the possible sizes")
+enum Size {
+    S, M, L, XL, XXL
+}
+
 @ApiModel(description = "Details obout the possible product types")
 enum Type {
-    Shirt, Trouser, Sock, Shoes, Hat
+    Shirt, Trousers, Socks, Shoes, Hat
 }
 
 @ApiModel(description = "Details obout the possible product types")
