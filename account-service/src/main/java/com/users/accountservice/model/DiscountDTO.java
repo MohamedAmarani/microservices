@@ -17,7 +17,7 @@ public class DiscountDTO {
     @Indexed(unique=true)
     String code;
     @ApiModelProperty(notes = "Indicates whether it is a discount over the purchase or a EUR amount to subtract from the purchase price")
-    boolean isPercentage;
+    boolean percentage;
     @ApiModelProperty(notes = "Value of the discount. It could be either a percentage or a EUR amount, it depends on the 'percentage' boolean")
     double value;
     @ApiModelProperty(notes = "Minimum amount of money that the order has to be in order to apply the discount")
@@ -40,11 +40,11 @@ public class DiscountDTO {
     public DiscountDTO() {
     }
 
-    public DiscountDTO(String id, String code, boolean isPercentage, double value, double minimumAmount, Date startDate,
+    public DiscountDTO(String id, String code, boolean percentage, double value, double minimumAmount, Date startDate,
                        Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users, Date creationDate) {
         this.id = id;
         this.code = code;
-        this.isPercentage = isPercentage;
+        this.percentage = percentage;
         this.value = value;
         this.minimumAmount = minimumAmount;
         this.startDate = startDate;
@@ -72,12 +72,12 @@ public class DiscountDTO {
         this.code = code;
     }
 
-    public boolean isPercentage() {
-        return isPercentage;
+    public void setPercentage(boolean percentage) {
+        percentage = percentage;
     }
 
-    public void setPercentage(boolean percentage) {
-        isPercentage = percentage;
+    public boolean isPercentage() {
+        return percentage;
     }
 
     public double getValue() {

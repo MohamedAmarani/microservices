@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import java.util.Calendar;
 import java.util.Date;
 
-@ApiModel(description = "Details obout a product")
+@ApiModel(description = "Details obout a delivery")
 public class DeliveryDTO {
     @ApiModelProperty(notes = "Unique id of the delivery")
     @Id
@@ -28,8 +28,9 @@ public class DeliveryDTO {
     public DeliveryDTO() {
     }
 
-    public DeliveryDTO(String orderId, String deliveryAddress, DeliveryState deliveryState, DeliveryCompany deliveryCompany,
+    public DeliveryDTO(String id, String orderId, String deliveryAddress, DeliveryState deliveryState, DeliveryCompany deliveryCompany,
                        Date estimatedDateOfArrival, Date creationDate) {
+        this.id = id;
         this.orderId = orderId;
         this.deliveryAddress = deliveryAddress;
         this.deliveryState = deliveryState;

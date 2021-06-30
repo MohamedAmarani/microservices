@@ -8,9 +8,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Calendar;
 import java.util.Date;
 
-@ApiModel(description = "Details obout a product")
+@ApiModel(description = "Details obout a delivery")
 public class DeliveryDTO {
     @ApiModelProperty(notes = "Unique id of the delivery")
+    @Id
     String id;
     @ApiModelProperty(notes = "Unique id of the order that has to be delivered")
     String orderId;
@@ -25,15 +26,17 @@ public class DeliveryDTO {
     @ApiModelProperty(notes = "Creation date of the delivery")
     Date creationDate;
 
-    public DeliveryDTO(String orderId, String deliveryAddress, Date creationDate) {
+    public DeliveryDTO() {
+    }
+
+    public DeliveryDTO(String id, String orderId, String deliveryAddress, DeliveryState deliveryState, DeliveryCompany deliveryCompany,
+                       Date estimatedDateOfArrival, Date creationDate) {
+        this.id = id;
         this.orderId = orderId;
-        this.deliveryState = DeliveryState.pendingToSend;
-        this.deliveryCompany = DeliveryCompany.DHL;
         this.deliveryAddress = deliveryAddress;
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.DAY_OF_YEAR, 7);
-        this.estimatedDateOfArrival = cal.getTime();
+        this.deliveryState = deliveryState;
+        this.deliveryCompany = deliveryCompany;
+        this.estimatedDateOfArrival = estimatedDateOfArrival;
         this.creationDate = creationDate;
     }
 
@@ -85,24 +88,6 @@ public class DeliveryDTO {
         this.deliveryAddress = deliveryAddress;
     }
 
-    public void setNextDeliveryEvent()
-    {
-        int index = deliveryState.ordinal();
-        if (index != DeliveryState.values().length - 1) {
-            int nextIndex = index + 1;
-            DeliveryState[] deliveryStates = DeliveryState.values();
-            nextIndex %= deliveryStates.length;
-            deliveryState = deliveryStates[nextIndex];
-        }
-    }
-
-    public boolean isInLastState() {
-        int index = deliveryState.ordinal();
-        if (index == DeliveryState.values().length - 1)
-            return true;
-        return false;
-    }
-
     public Date getCreationDate() {
         return creationDate;
     }
@@ -121,3 +106,4 @@ enum DeliveryState {
 enum DeliveryCompany {
     MRW, SEUR, DHL
 }
+
