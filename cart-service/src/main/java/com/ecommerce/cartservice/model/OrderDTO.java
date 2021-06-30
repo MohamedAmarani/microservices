@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 
+import java.util.Date;
+
 @ApiModel(description = "Details of an order")
 public class OrderDTO {
     @ApiModelProperty(notes = "Unique id of the order")
@@ -12,12 +14,17 @@ public class OrderDTO {
     String deliveryId;
     @ApiModelProperty(notes = "Information about the ordered cart")
     CartDTO cart;
+    @ApiModelProperty(notes = "Creation date of the order")
+    Date creationDate;
 
     public OrderDTO() {
     }
 
-    public OrderDTO(CartDTO cart) {
+    public OrderDTO(String id, CartDTO cart, String deliveryId, Date creationDate) {
+        this.id = id;
         this.cart = cart;
+        this.deliveryId = deliveryId;
+        this.creationDate = creationDate;
     }
 
     public String getId() {
@@ -34,5 +41,21 @@ public class OrderDTO {
 
     public void setCart(CartDTO cart) {
         this.cart = cart;
+    }
+
+    public String getDeliveryId() {
+        return deliveryId;
+    }
+
+    public void setDeliveryId(String deliveryId) {
+        this.deliveryId = deliveryId;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

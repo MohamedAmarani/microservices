@@ -25,7 +25,6 @@ public class WishlistItem {
     }
 
     public WishlistItem(String id, String productId, String inventoryId, double targetPrice, Date creationDate) {
-        //this.id = id;
         this.productId = productId;
         this.inventoryId = inventoryId;
         this.targetPrice = targetPrice;

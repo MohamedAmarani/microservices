@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @ApiModel(description = "Details of a cart item")
@@ -15,13 +16,16 @@ public class Cart {
     String id;
     @ApiModelProperty(notes = "Information of the cart items of the cart")
     List<CartItem> cartItems = new ArrayList<>();
+    @ApiModelProperty(notes = "Creation date of the cart")
+    Date creationDate;
 
     public Cart() {
     }
 
-    public Cart(String id, List<CartItem> cartItems) {
+    public Cart(String id, List<CartItem> cartItems, Date creationDate) {
         this.id = id;
         this.cartItems = cartItems;
+        this.creationDate = creationDate;
     }
 
     public String getId() {
@@ -42,5 +46,13 @@ public class Cart {
 
     public void addCartItem(CartItem cartItems) {
         this.cartItems.add(cartItems);
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

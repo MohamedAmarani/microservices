@@ -36,11 +36,14 @@ public class DiscountDTO {
     boolean enabled = true;
     @ApiModelProperty(notes = "Indicates the accountId's of the users that can use the discount. If the list is null, then it will be available for everyone")
     List<AccountIdDTO> users;
+    @ApiModelProperty(notes = "Creation date of the account")
+    Date creationDate;
 
     public DiscountDTO() {
     }
 
-    public DiscountDTO(String id, String code, boolean isPercentage, double maxDiscount, double value, double minimumAmount, Date startDate, Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users) {
+    public DiscountDTO(String id, String code, boolean percentage, double maxDiscount, double value, double minimumAmount, Date startDate,
+                       Date endDate, int currentUses, int maxUses, List<AccountIdDTO> users, Date creationDate) {
         this.id = id;
         this.code = code;
         this.percentage = percentage;
@@ -49,9 +52,10 @@ public class DiscountDTO {
         this.minimumAmount = minimumAmount;
         this.startDate = startDate;
         this.endDate = endDate;
-        //this.currentUses = currentUses;
+        this.currentUses = currentUses;
         this.maxUses = maxUses;
         this.users = users;
+        this.creationDate = creationDate;
     }
 
     public String getId() {
@@ -152,5 +156,17 @@ public class DiscountDTO {
 
     public void setUsers(List<AccountIdDTO> users) {
         this.users = users;
+    }
+
+    public boolean isPercentage() {
+        return percentage;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

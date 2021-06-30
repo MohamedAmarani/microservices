@@ -3,6 +3,8 @@ package com.ecommerce.orderservice.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+
 @ApiModel(description = "Details of a cart item")
 public class CartItemDTO {
     @ApiModelProperty(notes = "Information of the cart item product")
@@ -13,15 +15,18 @@ public class CartItemDTO {
     String inventoryId;
     @ApiModelProperty(notes = "Availability of the cart item")
     boolean available = true;
+    @ApiModelProperty(notes = "Creation date of the cart item")
+    Date creationDate;
 
     public CartItemDTO() {
     }
 
-    public CartItemDTO(ProductDTO productDTO, int quantity, String inventoryId, boolean available) {
+    public CartItemDTO(ProductDTO productDTO, int quantity, String inventoryId, boolean available, Date creationDate) {
         this.product = productDTO;
         this.quantity = quantity;
         this.inventoryId = inventoryId;
         this.available = available;
+        this.creationDate = creationDate;
     }
 
     public ProductDTO getProduct() {
@@ -54,5 +59,13 @@ public class CartItemDTO {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

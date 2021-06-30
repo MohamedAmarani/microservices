@@ -113,7 +113,7 @@ public class HomeController {
         for (Order order: orders) {
             OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
             Cart cart = order.getCart();
-            CartDTO cartDTO = new CartDTO(cart.getId());
+            CartDTO cartDTO = new CartDTO(cart.getId(), cart.getCreationDate());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
             for (CartItem cartItem : cart.getCartItems()) {
                 final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
@@ -123,7 +123,8 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(),
+                        cartItem.isAvailable(), cartItem.getCreationDate());
                 cartDTO.addItems(cartItemDTO);
             }
             orderDTO.setCart(cartDTO);
@@ -140,7 +141,7 @@ public class HomeController {
         Order order = orderRepository.findById(id).get();
         OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
         try {
-            CartDTO cartDTO = new CartDTO(order.getCart().getId());
+            CartDTO cartDTO = new CartDTO(order.getCart().getId(), order.getCart().getCreationDate());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
             for (CartItem cartItem : order.getCart().getCartItems()) {
                 final ResponseEntity<String> res = restTemplate.exchange("http://product-service:8080/" + cartItem.getProductId(),
@@ -148,7 +149,8 @@ public class HomeController {
                         });
                 Gson gson = new Gson();
                 ProductDTO productDTO = gson.fromJson(res.getBody(), ProductDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(productDTO, cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(productDTO, cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable(),
+                        cartItem.getCreationDate());
                 cartDTO.addItems(cartItemDTO);
             }
             orderDTO.setCart(cartDTO);
@@ -167,7 +169,7 @@ public class HomeController {
         Order order = orderRepository.save(new Order(cart));
         OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
         try {
-            CartDTO cartDTO = new CartDTO(order.getCart().getId());
+            CartDTO cartDTO = new CartDTO(order.getCart().getId(), order.getCart().getCreationDate());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
             for (CartItem cartItem : order.getCart().getCartItems()) {
                 final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId()+
@@ -177,7 +179,8 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable(),
+                        cart.getCreationDate());
                 cartDTO.addItems(cartItemDTO);
             }
             orderDTO.setCart(cartDTO);
@@ -198,7 +201,7 @@ public class HomeController {
         Order order = orderRepository.findById(id).get();
         OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
         try {
-            CartDTO cartDTO = new CartDTO(order.getCart().getId());
+            CartDTO cartDTO = new CartDTO(order.getCart().getId(), order.getCart().getCreationDate());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
             for (CartItem cartItem : order.getCart().getCartItems()) {
                 final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
@@ -208,7 +211,8 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(),
+                        cartItem.isAvailable(), cartItem.getCreationDate());
                 cartDTO.addItems(cartItemDTO);
             }
             orderDTO.setCart(cartDTO);
@@ -238,7 +242,7 @@ public class HomeController {
         order = orderRepository.save(order);
         OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
         try {
-            CartDTO cartDTO = new CartDTO(order.getCart().getId());
+            CartDTO cartDTO = new CartDTO(order.getCart().getId(), order.getCart().getCreationDate());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
             for (CartItem cartItem : order.getCart().getCartItems()) {
                 final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
@@ -248,7 +252,8 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(),
+                        cartItem.isAvailable(), cartItem.getCreationDate());
                 cartDTO.addItems(cartItemDTO);
             }
             orderDTO.setCart(cartDTO);

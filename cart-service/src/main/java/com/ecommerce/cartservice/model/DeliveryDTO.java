@@ -22,18 +22,20 @@ public class DeliveryDTO {
     DeliveryCompany deliveryCompany;
     @ApiModelProperty(notes = "Estimated date on which the delivery will be carried out")
     Date estimatedDateOfArrival;
+    @ApiModelProperty(notes = "Creation date of the delivery")
+    Date creationDate;
 
     public DeliveryDTO() {
     }
 
-    public DeliveryDTO(String orderId, String deliveryAddress) {
+    public DeliveryDTO(String orderId, String deliveryAddress, DeliveryState deliveryState, DeliveryCompany deliveryCompany,
+                       Date estimatedDateOfArrival, Date creationDate) {
         this.orderId = orderId;
-        this.deliveryState = DeliveryState.pendingToSend;
-        this.deliveryCompany = DeliveryCompany.DHL;
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.DAY_OF_YEAR, 7);
-        this.estimatedDateOfArrival = cal.getTime();
+        this.deliveryAddress = deliveryAddress;
+        this.deliveryState = deliveryState;
+        this.deliveryCompany = deliveryCompany;
+        this.estimatedDateOfArrival = estimatedDateOfArrival;
+        this.creationDate = creationDate;
     }
 
     public String getId() {
@@ -84,15 +86,12 @@ public class DeliveryDTO {
         this.deliveryAddress = deliveryAddress;
     }
 
-    public void setNextDeliveryEvent()
-    {
-        int index = deliveryState.ordinal();
-        if (index != DeliveryState.values().length - 1) {
-            int nextIndex = index + 1;
-            DeliveryState[] deliveryStates = DeliveryState.values();
-            nextIndex %= deliveryStates.length;
-            deliveryState = deliveryStates[nextIndex];
-        }
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }
 

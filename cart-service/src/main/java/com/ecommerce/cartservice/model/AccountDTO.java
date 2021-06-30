@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 
+import java.util.Date;
+
 @ApiModel(description = "Details of an account")
 public class AccountDTO {
     @ApiModelProperty(notes = "Unique id of the account")
@@ -20,14 +22,17 @@ public class AccountDTO {
     String deliveryAddress;
     @ApiModelProperty(notes = "Available credit of the user")
     double credit;
+    @ApiModelProperty(notes = "Creation date of the account")
+    Date creationDate;
 
-    public AccountDTO(String username, String email, String password, String role, String deliveryAddress, double credit) {
+    public AccountDTO(String username, String email, String password, String role, String deliveryAddress, double credit, Date creationDate) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
         this.deliveryAddress = deliveryAddress;
         this.credit = credit;
+        this.creationDate = creationDate;
     }
 
     public String getId() {
@@ -84,5 +89,13 @@ public class AccountDTO {
 
     public void setCredit(double credit) {
         this.credit = credit;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }
