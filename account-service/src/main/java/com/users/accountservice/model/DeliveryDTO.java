@@ -80,6 +80,13 @@ public class DeliveryDTO {
         this.estimatedDateOfArrival = estimatedDateOfArrival;
     }
 
+    public boolean isInLastState() {
+        int index = deliveryState.ordinal();
+        if (index == DeliveryState.values().length - 1)
+            return true;
+        return false;
+    }
+
     public String getDeliveryAddress() {
         return deliveryAddress;
     }
