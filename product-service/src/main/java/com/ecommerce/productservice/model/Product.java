@@ -34,7 +34,7 @@ public class Product {
     @ApiModelProperty(notes = "Target sex of the product")
     Sex sex;
     @ApiModelProperty(notes = "Creation date of the product")
-    Date creationDate = new Date();
+    Date creationDate;
 
     public Product(String id, String name, String description, double price, List<Picture> pictures, Size size, Type type, Sex sex, Date creationDate) {
         this.id = id;
@@ -121,7 +121,7 @@ public class Product {
     }
 
     public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+        this.creationDate = new Date();
     }
 }
 
