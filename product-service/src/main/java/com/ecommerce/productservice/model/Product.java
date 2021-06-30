@@ -121,7 +121,7 @@ public class Product {
     }
 
     public void setCreationDate(Date creationDate) {
-        this.creationDate = new Date();
+        this.creationDate = creationDate;
     }
 }
 

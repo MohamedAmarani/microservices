@@ -138,6 +138,7 @@ public class HomeController {
     public Product postProduct(@ApiParam(value = "Product to create", required = true) @RequestBody Product product) {
         incrementCounter();
         try{
+            product.setCreationDate(new Date());
             return productRepository.save(product);
         } catch (Exception e) {
             throw new ResponseStatusException(
