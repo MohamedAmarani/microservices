@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @ApiModel(description = "Details obout a product")
@@ -29,11 +30,13 @@ public class ProductDTO {
     Type type;
     @ApiModelProperty(notes = "Target sex of the product")
     Sex sex;
+    @ApiModelProperty(notes = "Creation date of the product")
+    Date creationDate;
 
     public ProductDTO() {
     }
 
-    public ProductDTO(String id, String name, String description, double price, List<Picture> pictures, Size size, Type type, Sex sex) {
+    public ProductDTO(String id, String name, String description, double price, List<Picture> pictures, Size size, Type type, Sex sex, Date creationDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -41,6 +44,7 @@ public class ProductDTO {
         this.pictures = pictures;
         this.size = size;
         this.type = type;
+        this.creationDate = creationDate;
     }
 
     public String getId() {
@@ -109,6 +113,14 @@ public class ProductDTO {
 
     public void setSex(Sex sex) {
         this.sex = sex;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }
 

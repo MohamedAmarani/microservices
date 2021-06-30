@@ -17,7 +17,7 @@ public class Order {
     String deliveryId;
     @ApiModelProperty(notes = "Information about the ordered cart")
     Cart cart;
-    @ApiModelProperty(notes = "Creation date of the cart item")
+    @ApiModelProperty(notes = "Creation date of the order")
     Date creationDate = new Date();
 
     public Order() {

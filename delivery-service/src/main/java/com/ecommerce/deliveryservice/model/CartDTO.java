@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @ApiModel(description = "Details of a cart item")
@@ -12,13 +13,16 @@ public class CartDTO {
     String id;
     @ApiModelProperty(notes = "Information of the cart items of the cart")
     List<CartItemDTO> items = new ArrayList<>();
+    @ApiModelProperty(notes = "Creation date of the cart")
+    Date creationDate;
 
     public CartDTO() {
     }
 
-    public CartDTO(String id) {
+    public CartDTO(String id, Date creationDate) {
         this.id = id;
         this.items = new ArrayList<>();
+        this.creationDate = creationDate;
     }
 
     public String getId() {
@@ -39,5 +43,13 @@ public class CartDTO {
 
     public void addItems(CartItemDTO item) {
         this.items.add(item);
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

@@ -24,8 +24,10 @@ public class Delivery {
     DeliveryCompany deliveryCompany;
     @ApiModelProperty(notes = "Estimated date on which the delivery will be carried out")
     Date estimatedDateOfArrival;
+    @ApiModelProperty(notes = "Creation date of the delivery")
+    Date creationDate = new Date();
 
-    public Delivery(String orderId, String deliveryAddress) {
+    public Delivery(String orderId, String deliveryAddress, Date creationDate) {
         this.orderId = orderId;
         this.deliveryState = DeliveryState.pendingToSend;
         this.deliveryCompany = DeliveryCompany.DHL;
@@ -34,6 +36,7 @@ public class Delivery {
         cal.setTime(new Date());
         cal.add(Calendar.DAY_OF_YEAR, 7);
         this.estimatedDateOfArrival = cal.getTime();
+        this.creationDate = creationDate;
     }
 
     public String getId() {
@@ -100,6 +103,14 @@ public class Delivery {
             nextIndex %= deliveryStates.length;
             deliveryState = deliveryStates[nextIndex];
         }
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }
 

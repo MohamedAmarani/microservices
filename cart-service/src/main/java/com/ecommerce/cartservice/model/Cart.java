@@ -13,14 +13,14 @@ import java.util.Iterator;
 import java.util.List;
 
 @Document
-@ApiModel(description = "Details of a cart item")
+@ApiModel(description = "Details of a cart")
 public class Cart {
     @ApiModelProperty(notes = "Unique id of the cart")
     @Id
     String id;
     @ApiModelProperty(notes = "Information of the cart items of the cart")
     List<CartItem> cartItems = new ArrayList<>();
-    @ApiModelProperty(notes = "Creation date of the cart item")
+    @ApiModelProperty(notes = "Creation date of the cart")
     Date creationDate = new Date();
 
     public Cart() {

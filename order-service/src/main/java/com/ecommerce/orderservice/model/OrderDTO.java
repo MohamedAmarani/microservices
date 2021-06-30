@@ -17,7 +17,7 @@ public class OrderDTO {
     String deliveryId;
     @ApiModelProperty(notes = "Information about the ordered cart")
     CartDTO cart;
-    @ApiModelProperty(notes = "Creation date of the cart item")
+    @ApiModelProperty(notes = "Creation date of the order")
     Date creationDate;
 
     public OrderDTO() {

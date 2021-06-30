@@ -138,7 +138,7 @@ public class HomeController {
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
                 ProductDTO product = res.getBody();
-                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getCatalogId(), inventoryItem.getQuantity()));
+                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getCatalogId(), inventoryItem.getQuantity(), inventoryItem.getCreationDate()));
             }
             inventoryDTO.setItems(inventoryItemDTOs);
             inventoryDTOs.add(inventoryDTO);
@@ -172,7 +172,7 @@ public class HomeController {
                     HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                     });
             ProductDTO product = res.getBody();
-            inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getCatalogId(), inventoryItem.getQuantity()));
+            inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getCatalogId(), inventoryItem.getQuantity(), inventoryItem.getCreationDate()));
         }
         response.setItems(inventoryItemDTOs);
         return response;
@@ -199,7 +199,7 @@ public class HomeController {
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
                 ProductDTO product = res.getBody();
-                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getCatalogId(), inventoryItem.getQuantity()));
+                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getCatalogId(), inventoryItem.getQuantity(), inventoryItem.getCreationDate()));
             }
             response.setItems(inventoryItemDTOs);
             inventoryRepository.deleteById(id);
@@ -251,7 +251,7 @@ public class HomeController {
                                     + "/products/" + inventoryItem.getProductId(),
                             HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                             });
-                    return new InventoryItemDTO(res.getBody(), inventoryItem.getCatalogId(), inventoryItem.getQuantity());
+                    return new InventoryItemDTO(res.getBody(), inventoryItem.getCatalogId(), inventoryItem.getQuantity(), inventoryItem.getCreationDate());
                 }
             }
         } catch (Exception e) {
@@ -297,7 +297,7 @@ public class HomeController {
         Inventory inventory1 = inventoryRepository.save(inventory.get());
         for (InventoryItem inventoryItem1: inventory.get().getInventoryItems()) {
             if (inventoryItem1.getProductId().equals(inventoryItem.getProductId())) {
-                return new InventoryItemDTO(res.getBody(), inventoryItem1.getCatalogId(), inventoryItem1.getQuantity());
+                return new InventoryItemDTO(res.getBody(), inventoryItem1.getCatalogId(), inventoryItem1.getQuantity(), inventoryItem.getCreationDate());
             }
         }
         throw new ResponseStatusException(
@@ -330,7 +330,7 @@ public class HomeController {
                     restTemplate.exchange("http://cart-service:8080/update",
                             HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {
                             });
-                    return new InventoryItemDTO(res.getBody(), inventoryItem.getCatalogId(), inventoryItem.getQuantity());
+                    return new InventoryItemDTO(res.getBody(), inventoryItem.getCatalogId(), inventoryItem.getQuantity(), inventoryItem.getCreationDate());
 
                 } catch (Exception e) {
                     throw new ResponseStatusException(
@@ -368,7 +368,7 @@ public class HomeController {
                     restTemplate.exchange("http://cart-service:8080/update",
                             HttpMethod.PUT, null, new ParameterizedTypeReference<Object>() {
                             });
-                    return new InventoryItemDTO(res.getBody(), inventoryItem.getCatalogId(), inventoryItem.getQuantity());
+                    return new InventoryItemDTO(res.getBody(), inventoryItem.getCatalogId(), inventoryItem.getQuantity(), inventoryItem.getCreationDate());
 
                 } catch (Exception e) {
                     throw new ResponseStatusException(

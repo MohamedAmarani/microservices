@@ -3,6 +3,8 @@ package com.ecommerce.inventoryservice.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+
 public class InventoryItemDTO {
     @ApiModelProperty(notes = "Unique id of the inventory product")
     ProductDTO product;
@@ -10,14 +12,17 @@ public class InventoryItemDTO {
     String catalogId;
     @ApiModelProperty(notes = "Quantity of items of the inventory product")
     int quantity;
+    @ApiModelProperty(notes = "Creation date of the inventory")
+    Date creationDate;
 
     public InventoryItemDTO() {
     }
 
-    public InventoryItemDTO(ProductDTO product, String catalogId, int quantity) {
+    public InventoryItemDTO(ProductDTO product, String catalogId, int quantity, Date creationDate) {
         this.product = product;
         this.catalogId = catalogId;
         this.quantity = quantity;
+        this.creationDate = creationDate;
     }
 
     public ProductDTO getProduct() {
@@ -42,5 +47,13 @@ public class InventoryItemDTO {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @ApiModel(description = "Details obout an inventory")
@@ -14,6 +15,8 @@ public class InventoryDTO {
     String id;
     @ApiModelProperty(notes = "Information of the items of the inventory")
     List<InventoryItemDTO> items = new ArrayList<>();
+    @ApiModelProperty(notes = "Creation date of the inventory")
+    Date creationDate;
 
     public InventoryDTO() {
     }
@@ -22,9 +25,10 @@ public class InventoryDTO {
         this.id = id;
     }
 
-    public InventoryDTO(String id, List<InventoryItemDTO> items) {
+    public InventoryDTO(String id, List<InventoryItemDTO> items, Date creationDate) {
         this.id = id;
         this.items = items;
+        this.creationDate = creationDate;
     }
 
     public String getId() {
@@ -45,6 +49,14 @@ public class InventoryDTO {
 
     public void addItems(InventoryItemDTO items) {
         this.items.add(items);
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }
 

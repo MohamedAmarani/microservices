@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @ApiModel(description = "Details obout a product")
 public class ResourceDTO {
@@ -20,15 +21,18 @@ public class ResourceDTO {
     @ApiModelProperty(notes = "Data of the resource in String Base64 format")
     @NotNull(message = "Data is required")
     String data;
+    @ApiModelProperty(notes = "Creation date of the resource")
+    Date creationDate;
 
     public ResourceDTO() {
     }
 
-    public ResourceDTO(String id, String name, String description, String data) {
+    public ResourceDTO(String id, String name, String description, String data, Date creationDate) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.data = data;
+        this.creationDate = creationDate;
     }
 
     public String getId() {
@@ -61,6 +65,14 @@ public class ResourceDTO {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }
 

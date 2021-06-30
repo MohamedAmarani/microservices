@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @Document
 @ApiModel(description = "Details of an account")
 public class Account {
@@ -26,14 +28,17 @@ public class Account {
     String deliveryAddress;
     @ApiModelProperty(notes = "Available credit of the user")
     double credit;
+    @ApiModelProperty(notes = "Creation date of the account")
+    Date creationDate = new Date();
 
-    public Account(String username, String email, String password, String role, String deliveryAddress, double credit) {
+    public Account(String username, String email, String password, String role, String deliveryAddress, double credit, Date creationDate) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
         this.deliveryAddress = deliveryAddress;
         this.credit = credit;
+        this.creationDate = creationDate;
     }
 
     public String getId() {
@@ -101,5 +106,13 @@ public class Account {
             this.credit -= credit;
         else
             throw new Exception();
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

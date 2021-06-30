@@ -137,7 +137,7 @@ public class HomeController {
         List<CatalogDTO> catalogDTOs = new ArrayList<>();
         for (Catalog catalog: catalogRepository.findAll()) {
             List<ProductDTO> productDTOs = new ArrayList<>();
-            CatalogDTO catalogDTO = new CatalogDTO(catalog.getId());
+            CatalogDTO catalogDTO = new CatalogDTO(catalog.getId(), catalog.getCreationDate());
             List<CatalogItem> ids = catalog.getProductIdentifiers();
             List<ProductDTO> products = new ArrayList<ProductDTO>();
             for (CatalogItem productIdentifier : ids) {
@@ -165,7 +165,7 @@ public class HomeController {
         CatalogDTO result = null;
         try {
             catalog = catalogRepository.findById(id);
-            result = new CatalogDTO(catalog.get().getId());
+            result = new CatalogDTO(catalog.get().getId(), catalog.get().getCreationDate());
         } catch (Exception e){
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Catalog not found"
@@ -194,7 +194,7 @@ public class HomeController {
         CatalogDTO result = null;
         try {
             catalog = catalogRepository.findById(id);
-            result = new CatalogDTO(catalog.get().getId());
+            result = new CatalogDTO(catalog.get().getId(), catalog.get().getCreationDate());
         } catch (Exception e){
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Catalog not found"
@@ -234,7 +234,7 @@ public class HomeController {
                                           @ApiParam(value = "Id of the product to add", required = true) @RequestBody CatalogItem productIdentifier) {
         incrementCounter();
         Optional<Catalog> catalog = catalogRepository.findById(catalogId);
-        catalog.get().addProductIdentifier(new CatalogItem(productIdentifier.getProductId()));
+        catalog.get().addProductIdentifier(new CatalogItem(productIdentifier.getProductId(), new Date()));
         ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
                 HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                 });

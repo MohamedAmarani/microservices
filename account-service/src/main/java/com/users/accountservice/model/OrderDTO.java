@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @Document
 @ApiModel(description = "Details obout an order")
 public class OrderDTO {
@@ -15,13 +17,16 @@ public class OrderDTO {
     String deliveryId;
     @ApiModelProperty(notes = "Information about the ordered cart")
     CartDTO cart;
+    @ApiModelProperty(notes = "Creation date of the order")
+    Date creationDate;
 
     public OrderDTO() {
     }
 
-    public OrderDTO(String id, String deliveryId) {
+    public OrderDTO(String id, String deliveryId, Date creationDate) {
         this.id = id;
         this.deliveryId = deliveryId;
+        this.creationDate = creationDate;
     }
 
     public OrderDTO(CartDTO orderCart) {
@@ -50,6 +55,14 @@ public class OrderDTO {
 
     public void setDeliveryId(String deliveryId) {
         this.deliveryId = deliveryId;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }
 
