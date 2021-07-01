@@ -273,6 +273,7 @@ public class HomeController {
         incrementCounter();
         Optional<Inventory> inventory = inventoryRepository.findById(id);
         ResponseEntity<ProductDTO> res = null;
+        inventoryItem.setCreationDate(new Date());
         try {
             res = restTemplate.exchange("http://catalog-service:8080/" + inventoryItem.getCatalogId()
                             + "/products/" + inventoryItem.getProductId(),
