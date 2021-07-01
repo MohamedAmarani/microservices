@@ -23,7 +23,7 @@ public class Resource {
     @NotNull(message = "Data is required")
     String data;
     @ApiModelProperty(notes = "Creation date of the resource")
-    Date creationDate = new Date();
+    Date creationDate;
 
     public Resource() {
     }

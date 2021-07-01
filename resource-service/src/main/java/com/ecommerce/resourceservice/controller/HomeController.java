@@ -179,6 +179,7 @@ public class HomeController {
             data = resourceBody.get("data");
         }
         resource.setData(data);
+        resource.setCreationDate(new Date());
         try {
             resource = resourceRepository.save(resource);
         } catch (Exception e) {
