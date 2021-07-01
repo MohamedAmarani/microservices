@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: wishlistse
-          image: scaredste/wishlist-service:v5.0.2
+          image: scaredste/wishlist-service:v5.0.4
           ports:
           - containerPort: 8080
             protocol: TCP

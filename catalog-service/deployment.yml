@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: catalogse
-          image: scaredste/catalog-service:v4.0.3
+          image: scaredste/catalog-service:v4.0.7
           ports:
           - containerPort: 8080
             protocol: TCP

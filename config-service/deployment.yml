@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: configse
-          image: scaredste/config-service:v3.0.1
+          image: scaredste/config-service:v4.0.2
           ports:
           - containerPort: 8080
             protocol: TCP
