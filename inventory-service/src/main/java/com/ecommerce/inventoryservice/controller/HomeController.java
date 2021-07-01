@@ -127,7 +127,7 @@ public class HomeController {
         for (Inventory inventory: inventoryRepository.findAll()) {
             //la respuesta inicialiada con dos paramatros
             InventoryDTO inventoryDTO = null;
-            inventoryDTO = new InventoryDTO(inventory.getId());
+            inventoryDTO = new InventoryDTO(inventory.getId(), inventory.getCreationDate());
             List<InventoryItemDTO> inventoryItemDTOs = new ArrayList<>();
             List<InventoryItem> inventoryItems = inventory.getInventoryItems();
 
@@ -138,7 +138,8 @@ public class HomeController {
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
                 ProductDTO product = res.getBody();
-                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getCatalogId(), inventoryItem.getQuantity(), inventoryItem.getCreationDate()));
+                inventoryItemDTOs.add(new InventoryItemDTO(product, inventoryItem.getCatalogId(), inventoryItem.getQuantity(),
+                        inventoryItem.getCreationDate()));
             }
             inventoryDTO.setItems(inventoryItemDTOs);
             inventoryDTOs.add(inventoryDTO);
@@ -155,7 +156,7 @@ public class HomeController {
         //la respuesta inicialiada con dos paramatros
         InventoryDTO response = null;
         try {
-            response = new InventoryDTO(inventory.get().getId());
+            response = new InventoryDTO(inventory.get().getId(), inventory.get().getCreationDate());
         }
         catch (Exception e) {
             throw new ResponseStatusException(
@@ -188,7 +189,7 @@ public class HomeController {
             //throw new Exception("Images can't be fetched");
             inventory = inventoryRepository.findById(id).get();
             //la respuesta inicialiada con dos paramatros (pasar inventory a inventorydto)
-            response = new InventoryDTO(inventory.getId());
+            response = new InventoryDTO(inventory.getId(), inventory.getCreationDate());
             List<InventoryItemDTO> inventoryItemDTOs = new ArrayList<>();
             List<InventoryItem> inventoryItems = inventory.getInventoryItems();
 

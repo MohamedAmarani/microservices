@@ -21,8 +21,9 @@ public class InventoryDTO {
     public InventoryDTO() {
     }
 
-    public InventoryDTO(String id) {
+    public InventoryDTO(String id, Date creationDate) {
         this.id = id;
+        this.creationDate = creationDate;
     }
 
     public InventoryDTO(String id, List<InventoryItemDTO> items, Date creationDate) {
