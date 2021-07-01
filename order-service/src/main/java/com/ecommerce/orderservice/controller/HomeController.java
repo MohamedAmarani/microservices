@@ -170,7 +170,6 @@ public class HomeController {
         OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
         try {
             CartDTO cartDTO = new CartDTO(order.getCart().getId(), order.getCart().getCreationDate());
-            List<CartItemDTO> cartItemDTOS = new ArrayList<>();
             for (CartItem cartItem : order.getCart().getCartItems()) {
                 final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId()+
                                 "/products/" + cartItem.getProductId(),
@@ -179,8 +178,8 @@ public class HomeController {
 
                 Gson gson = new Gson();
                 InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(), cartItem.isAvailable(),
-                        cart.getCreationDate());
+                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(),
+                        cartItem.isAvailable(), cart.getCreationDate());
                 cartDTO.addItems(cartItemDTO);
             }
             orderDTO.setCart(cartDTO);

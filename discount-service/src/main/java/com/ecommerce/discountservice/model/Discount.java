@@ -38,7 +38,7 @@ public class Discount {
     @ApiModelProperty(notes = "Indicates the accountId's of the users that can use the discount. If the list is null, then it will be available for everyone")
     List<AccountIdDTO> users;
     @ApiModelProperty(notes = "Creation date of the discount")
-    Date creationDate = new Date();
+    Date creationDate;
 
     public Discount() {
     }
