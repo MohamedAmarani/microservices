@@ -18,13 +18,14 @@ public class Order {
     @ApiModelProperty(notes = "Information about the ordered cart")
     Cart cart;
     @ApiModelProperty(notes = "Creation date of the order")
-    Date creationDate = new Date();
+    Date creationDate;
 
     public Order() {
     }
 
-    public Order(Cart cart) {
+    public Order(Cart cart, Date creationDate) {
         this.cart = cart;
+        this.creationDate = creationDate;
     }
 
     public String getId() {

@@ -321,6 +321,7 @@ public class HomeController {
     @ApiOperation(value = "Create a cart", notes = "Provide information to create a cart")
     public Cart createCart(@ApiParam(value = "Information of the cart to create", required = true) @RequestBody Cart cart) {
         incrementCounter();
+        cart.setCreationDate(new Date());
         return cartRepository.save(cart);
     }
 

@@ -175,6 +175,7 @@ public class HomeController {
     @ApiOperation(value = "Create a wishlist", notes = "Provide information to create a wishlist in the database")
     public Wishlist postWishlist(@ApiParam(value = "Information of the wishlist to create", required = true) @RequestBody (required = false) Wishlist wishlist) {
         incrementCounter();
+        wishlist.setCreationDate(new Date());
         try {
             wishlist = wishlistRepository.save(wishlist);
         } catch (Exception e) {

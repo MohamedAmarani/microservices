@@ -15,9 +15,10 @@ public class CatalogDTO {
     @ApiModelProperty(notes = "Creation date of the catalog")
     Date creationDate;
 
-    public CatalogDTO(String id, List<ProductDTO> productDTOs) {
+    public CatalogDTO(String id, List<ProductDTO> productDTOs, Date creationDate) {
         this.id = id;
         this.products = productDTOs;
+        this.creationDate = creationDate;
     }
 
     public CatalogDTO(String id, Date creationDate) {

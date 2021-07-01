@@ -166,7 +166,7 @@ public class HomeController {
     @ApiOperation(value = "Create an order", notes = "Provide information to create an order")
     public OrderDTO createInventory(@ApiParam(value = "Information of the order to create", required = true) @RequestBody Cart cart) {
         incrementCounter();
-        Order order = orderRepository.save(new Order(cart));
+        Order order = orderRepository.save(new Order(cart, new Date()));
         OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
         try {
             CartDTO cartDTO = new CartDTO(order.getCart().getId(), order.getCart().getCreationDate());

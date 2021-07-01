@@ -224,6 +224,7 @@ public class HomeController {
     @ApiOperation(value = "Create an inventory", notes = "Provide information to create an inventory")
     public Inventory createInventory(@ApiParam(value = "Information of the inventory to create", required = true) @RequestBody Inventory inventory) {
         incrementCounter();
+        inventory.setCreationDate(new Date());
         return inventoryRepository.save(inventory);
     }
 

@@ -190,6 +190,7 @@ public class HomeController {
         incrementCounter();
         //encriptar contraseña
         account.setPassword(new BCryptPasswordEncoder().encode(account.getPassword()));
+        account.setCreationDate(new Date());
         if (userRepository.findByUsername(account.getUsername()).size() == 0) {
             Account account1 = userRepository.save(account);
             //crear carrito

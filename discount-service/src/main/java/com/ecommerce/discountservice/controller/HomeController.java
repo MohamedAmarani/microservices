@@ -138,6 +138,7 @@ public class HomeController {
     @ApiOperation(value = "Create a discount", notes = "Provide information to create a discount")
     public Discount postDiscount(@ApiParam(value = "Information of the discount to create", required = true) @RequestBody Discount discount) {
         incrementCounter();
+        discount.setCreationDate(new Date());
         try {
             discount = discountRepository.save(discount);
         } catch (Exception e) {

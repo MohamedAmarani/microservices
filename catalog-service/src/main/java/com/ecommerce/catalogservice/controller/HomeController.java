@@ -218,9 +218,9 @@ public class HomeController {
     @ApiOperation(value = "Create a catalog", notes = "Provide information to create a catalog")
     public CatalogDTO createCatalog() {
         incrementCounter();
-        Catalog catalog = new Catalog();
+        Catalog catalog = new Catalog(new Date());
         catalogRepository.save(catalog);
-        return new CatalogDTO(catalog.getId(), new ArrayList<>());
+        return new CatalogDTO(catalog.getId(), new ArrayList<>(), catalog.getCreationDate());
     }
 
     // a fallback method to be called if failure happened

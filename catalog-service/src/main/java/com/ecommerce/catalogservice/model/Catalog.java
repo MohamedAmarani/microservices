@@ -27,6 +27,10 @@ public class Catalog {
     public Catalog() {
     }
 
+    public Catalog(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
     public String getId() {
         return id;
     }
