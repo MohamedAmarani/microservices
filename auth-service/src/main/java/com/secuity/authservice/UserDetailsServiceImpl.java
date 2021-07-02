@@ -7,7 +7,9 @@ import com.google.common.util.concurrent.AtomicDouble;
 import com.secuity.authservice.model.AccountDTO;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,13 +20,23 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 
+@RestController
+@RequestMapping("/")
 @Service   // It has to be annotated with @Service.
 public class UserDetailsServiceImpl implements UserDetailsService  {
+
+    @Autowired
+    private Environment env;
+
+    @Value("${eureka.instance.instance-id}")
+    private String instanceId;
 
     @Autowired
     private BCryptPasswordEncoder encoder;
@@ -81,6 +93,20 @@ public class UserDetailsServiceImpl implements UserDetailsService  {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
+    @GetMapping("/info")
+    public String getInfo() {
+        incrementCounter();
+        // This is useful for debugging
+        // When having multiple instance of product service running at different ports.
+        // We load balance among them, and display which instance received the request.
+        int counter = 0;
+        for (String key: requestsLastMinute.keySet()) {
+            counter += requestsLastMinute.get(key);
+        }
+        return "Hello from Auth Service running at port: " + env.getProperty("local.server.port") +
+                " InstanceId " + instanceId + " " + counter;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         incrementCounter();
@@ -90,18 +116,12 @@ public class UserDetailsServiceImpl implements UserDetailsService  {
 
         for (AccountDTO accountDTO: users) {
             if (accountDTO.getUsername().equals(username) && accountDTO.getRole().equals("ADMIN")) {
-
-                // Remember that Spring needs roles to be in this format: "ROLE_" + userRole (i.e. "ROLE_ADMIN")
-                // So, we need to set it to that format, so we can verify and compare roles (i.e. hasRole("ADMIN")).
                 List<GrantedAuthority> grantedAuthorities = AuthorityUtils
                         .commaSeparatedStringToAuthorityList("ROLE_" + accountDTO.getRole());
 
-                // The "User" class is provided by Spring and represents a model class for user to be returned by UserDetailsService
-                // And used by auth manager to verify and check user authentication.
                 return new User(accountDTO.getUsername(), accountDTO.getPassword(), grantedAuthorities);
             }
         }
-        // If user not found. Throw this exception.
         throw new UsernameNotFoundException("Username: " + username + " not found");
     }
 
