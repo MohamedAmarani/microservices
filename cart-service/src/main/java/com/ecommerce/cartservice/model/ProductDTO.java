@@ -19,10 +19,14 @@ public class ProductDTO {
     String name;
     @ApiModelProperty(notes = "Description of the product")
     String description;
+    @ApiModelProperty(notes = "Name of the color of the product")
+    String color;
     @ApiModelProperty(notes = "Pictures of the product")
     List<Picture> pictures = new ArrayList<>();
-    @ApiModelProperty(notes = "Price of the product")
-    double price;
+    @ApiModelProperty(notes = "Original price of the product")
+    double originalPrice;
+    @ApiModelProperty(notes = "Current price of the product")
+    double currentPrice;
     @ApiModelProperty(notes = "Size of the product")
     Size size;
     @ApiModelProperty(notes = "Type of the product")
@@ -35,14 +39,18 @@ public class ProductDTO {
     public ProductDTO() {
     }
 
-    public ProductDTO(String id, String name, String description, double price, List<Picture> pictures, Size size, Type type, Sex sex, Date creationDate) {
+    public ProductDTO(String id, String name, String description, String color, double originalPrice, double currentPrice, List<Picture> pictures,
+                      Size size, Type type, Sex sex, Date creationDate) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.price = price;
+        this.color = color;
+        this.originalPrice = originalPrice;
+        this.currentPrice = currentPrice;
         this.pictures = pictures;
         this.size = size;
         this.type = type;
+        this.sex = sex;
         this.creationDate = creationDate;
     }
 
@@ -62,12 +70,28 @@ public class ProductDTO {
         this.name = name;
     }
 
-    public double getPrice() {
-        return price;
+    public String getColor() {
+        return color;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public double getOriginalPrice() {
+        return originalPrice;
+    }
+
+    public void setOriginalPrice(double originalPrice) {
+        this.originalPrice = originalPrice;
+    }
+
+    public double getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice = currentPrice;
     }
 
     public String getDescription() {

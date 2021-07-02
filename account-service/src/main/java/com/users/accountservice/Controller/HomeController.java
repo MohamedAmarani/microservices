@@ -389,7 +389,7 @@ public class HomeController {
         helper.setSubject("A product of your wishlist has matched the target price");
         String text = "<h2>Hi " + receiver.getUsername() + ", a product that you wish has now a price within your target price!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The product " + productDTO.getName() + " of size " + productDTO.getSize() + " and id <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + productDTO.getId() + "</strong> " +
-                "has changed its price from " + updatedProductInfo.get("oldPrice") + " EUR to " + productDTO.getPrice() + " EUR, matching the target price restriction of " +
+                "has changed its price from " + updatedProductInfo.get("oldPrice") + " EUR to " + productDTO.getCurrentPrice() + " EUR, matching the target price restriction of " +
                 updatedProductInfo.get("targetPrice") + " EUR that you established on your wishlist.</p>\n" +
                 "Below you can find attached the pics of the product. We will keep you updated of any new event.</p>\n" +
                 "<p>Regards.</p>\n";
@@ -538,9 +538,12 @@ public class HomeController {
         OrderDTO orderDTO = gson.fromJson(res4.getBody(), OrderDTO.class);
         //iterar sobre todos los elementos del cart del order
         for (CartItemDTO cartItemDTO : orderDTO.getCart().getItems()) {
+            double reducedPercentage = 100 * ((cartItemDTO.getProduct().getCurrentPrice() - cartItemDTO.getProduct().getOriginalPrice()) / (double) cartItemDTO.getProduct().getOriginalPrice());
+            DecimalFormat df = new DecimalFormat("#.##");
+            reducedPercentage = Double.valueOf(df.format(reducedPercentage));
             text += "<tr>\n" +
                     "<td>" + cartItemDTO.getProduct().getName() + "</td>\n" +
-                    "<td>" + cartItemDTO.getProduct().getPrice() + "</td>\n" +
+                    "<td>" + cartItemDTO.getProduct().getCurrentPrice() + " (" + reducedPercentage + "%)" + "</td>\n" +
                     "<td>" + cartItemDTO.getQuantity() + "</td>\n" +
                     "</tr>\n";
         }
@@ -582,9 +585,12 @@ public class HomeController {
         OrderDTO orderDTO = gson.fromJson(res4.getBody(), OrderDTO.class);
         //iterar sobre todos los elementos del cart del order
         for (CartItemDTO cartItemDTO : orderDTO.getCart().getItems()) {
+            double reducedPercentage = 100 * ((cartItemDTO.getProduct().getCurrentPrice() - cartItemDTO.getProduct().getOriginalPrice()) / (double) cartItemDTO.getProduct().getOriginalPrice());
+            DecimalFormat df = new DecimalFormat("#.##");
+            reducedPercentage = Double.valueOf(df.format(reducedPercentage));
             text += "<tr>\n" +
                     "<td>" + cartItemDTO.getProduct().getName() + "</td>\n" +
-                    "<td>" + cartItemDTO.getProduct().getPrice() + "</td>\n" +
+                    "<td>" + cartItemDTO.getProduct().getCurrentPrice() + " (" + reducedPercentage + "%)" + "</td>\n" +
                     "<td>" + cartItemDTO.getQuantity() + "</td>\n" +
                     "</tr>\n";
         }
@@ -627,9 +633,12 @@ public class HomeController {
         OrderDTO orderDTO = gson.fromJson(res4.getBody(), OrderDTO.class);
         //iterar sobre todos los elementos del cart del order
         for (CartItemDTO cartItemDTO : orderDTO.getCart().getItems()) {
+            double reducedPercentage = 100 * ((cartItemDTO.getProduct().getCurrentPrice() - cartItemDTO.getProduct().getOriginalPrice()) / (double) cartItemDTO.getProduct().getOriginalPrice());
+            DecimalFormat df = new DecimalFormat("#.##");
+            reducedPercentage = Double.valueOf(df.format(reducedPercentage));
             text += "<tr>\n" +
                     "<td>" + cartItemDTO.getProduct().getName() + "</td>\n" +
-                    "<td>" + cartItemDTO.getProduct().getPrice() + "</td>\n" +
+                    "<td>" + cartItemDTO.getProduct().getCurrentPrice() + " (" + reducedPercentage + "%)" + "</td>\n" +
                     "<td>" + cartItemDTO.getQuantity() + "</td>\n" +
                     "</tr>\n";
         }
@@ -672,12 +681,14 @@ public class HomeController {
         double totalPrice = 0.0;
         //iterar sobre todos los elementos del cart del order
         for (CartItemDTO cartItemDTO : orderDTO.getCart().getItems()) {
+            double reducedPercentage = 100 * ((cartItemDTO.getProduct().getCurrentPrice() - cartItemDTO.getProduct().getOriginalPrice()) / (double) cartItemDTO.getProduct().getOriginalPrice());
+            DecimalFormat df = new DecimalFormat("#.##");
+            reducedPercentage = Double.valueOf(df.format(reducedPercentage));
             text += "<tr>\n" +
                     "<td>" + cartItemDTO.getProduct().getName() + "</td>\n" +
-                    "<td>" + cartItemDTO.getProduct().getPrice() + "</td>\n" +
+                    "<td>" + cartItemDTO.getProduct().getCurrentPrice() + " (" + reducedPercentage + "%)" + "</td>\n" +
                     "<td>" + cartItemDTO.getQuantity() + "</td>\n" +
                     "</tr>\n";
-            totalPrice += cartItemDTO.getProduct().getPrice() * (double) cartItemDTO.getQuantity();
         }
         //dos decimales a totalPrice
         DecimalFormat df = new DecimalFormat("#.##");

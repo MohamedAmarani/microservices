@@ -431,7 +431,7 @@ public class HomeController {
             Gson gson = new Gson();
             InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
 
-            totalPrice += inventoryItemDTO.getProduct().getPrice() * (double) cartItem.getQuantity();
+            totalPrice += inventoryItemDTO.getProduct().getCurrentPrice() * (double) cartItem.getQuantity();
 
         }
         //formatear el precio total a dos decimales
