@@ -392,7 +392,7 @@ public class HomeController {
         reducedPercentage = Double.valueOf(df.format(reducedPercentage));
         String text = "<h2>Hi " + receiver.getUsername() + ", a product that you wish has now a price within your target price!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The product " + productDTO.getName() + " of size " + productDTO.getSize() + " and id <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + productDTO.getId() + "</strong> " +
-                "has changed its price from " + updatedProductInfo.get("oldPrice") + " EUR to " + productDTO.getCurrentPrice() + " EUR" + (productDTO.getCurrentPrice() != productDTO.getOriginalPrice() ? " (" + reducedPercentage + "% from its original price of " + productDTO.getOriginalPrice() + " EUR)" : "") + ", matching the target price restriction of " +
+                "has changed its price from " + updatedProductInfo.get("oldPrice") + " EUR to " + productDTO.getCurrentPrice() + " EUR" + (Double.parseDouble(updatedProductInfo.get("oldPrice")) != productDTO.getOriginalPrice() ? " (" + reducedPercentage + "% from its original price of " + productDTO.getOriginalPrice() + " EUR)" : "") + ", matching the target price restriction of " +
                 updatedProductInfo.get("targetPrice") + " EUR that you established on your wishlist.</p>\n" +
                 "Below you can find attached the pics of the product. We will keep you updated of any new event.</p>\n" +
                 "<p>Regards.</p>\n";
