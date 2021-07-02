@@ -93,7 +93,7 @@ public class UserDetailsServiceImpl implements UserDetailsService  {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
-    @GetMapping("/info")
+    @GetMapping("/auth/info")
     public String getInfo() {
         incrementCounter();
         // This is useful for debugging
