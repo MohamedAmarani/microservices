@@ -38,7 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // allow all POST requests
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
                 // allow GET info
-                .antMatchers(HttpMethod.GET, "/info").permitAll()
+                .antMatchers(HttpMethod.GET, "/auth/info").permitAll()
                 // allow GET metrics
                 .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                 .anyRequest().authenticated();
