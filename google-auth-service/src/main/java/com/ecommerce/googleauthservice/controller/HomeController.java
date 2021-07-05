@@ -126,7 +126,7 @@ public class HomeController {
         String url = "https://www.googleapis.com/oauth2/v4/token?code=" + code +
                 "&client_id=414019806790-jqgjsrumpblu7q9mjvsum7gb72racm7q.apps.googleusercontent.com&" +
                 "client_secret=zX5Ua2O_0KfRyZsPjTaCd-m8&" +
-                "redirect_uri=http://ec2-35-180-204-28.eu-west-3.compute.amazonaws.com/api/v1.0/googleAuth/return&" +
+                "redirect_uri=http://ec2-35-180-204-28.eu-west-3.compute.amazonaws.com/api/latest/googleAuth/return&" +
                 "grant_type=authorization_code";
 
         ResponseEntity<String> res = restTemplate1.exchange(url,
