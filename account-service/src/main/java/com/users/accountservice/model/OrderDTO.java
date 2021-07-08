@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Document
 @ApiModel(description = "Details obout an order")
 public class OrderDTO {
     @ApiModelProperty(notes = "Unique id of the order")

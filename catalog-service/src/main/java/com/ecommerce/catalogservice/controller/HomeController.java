@@ -138,7 +138,7 @@ public class HomeController {
         for (Catalog catalog: catalogRepository.findAll()) {
             List<ProductDTO> productDTOs = new ArrayList<>();
             CatalogDTO catalogDTO = new CatalogDTO(catalog.getId(), catalog.getCreationDate());
-            List<CatalogItem> ids = catalog.getProductIdentifiers();
+            List<CatalogItem> ids = catalog.getCatalogItems();
             List<ProductDTO> products = new ArrayList<ProductDTO>();
             for (CatalogItem productIdentifier : ids) {
                 ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
@@ -171,7 +171,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Catalog not found"
             );
         }
-        List<CatalogItem> ids = catalog.get().getProductIdentifiers();
+        List<CatalogItem> ids = catalog.get().getCatalogItems();
         List<ProductDTO> products = new ArrayList<ProductDTO>();
         for (CatalogItem productIdentifier: ids) {
             ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
@@ -234,11 +234,11 @@ public class HomeController {
                                           @ApiParam(value = "Id of the product to add", required = true) @RequestBody CatalogItem productIdentifier) {
         incrementCounter();
         Optional<Catalog> catalog = catalogRepository.findById(catalogId);
-        catalog.get().addProductIdentifier(new CatalogItem(productIdentifier.getProductId(), new Date()));
+        catalog.get().addCatalogItem(new CatalogItem(productIdentifier.getProductId(), new Date()));
+        catalogRepository.save(catalog.get());
         ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
                 HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                 });
-        catalogRepository.save(catalog.get());
         return  res.getBody();
     }
 
@@ -257,9 +257,7 @@ public class HomeController {
                                         @ApiParam(value = "Id of the product to retrieve from the catalog", required = true) @PathVariable final String productId) {
         incrementCounter();
         Optional<Catalog> catalog = catalogRepository.findById(catalogId);
-        List<CatalogItem> ids = catalog.get().getProductIdentifiers();
-        System.out.println(catalogId);
-        List<ProductDTO> products = new ArrayList<ProductDTO>();
+        List<CatalogItem> ids = catalog.get().getCatalogItems();
         for (CatalogItem productIdentifier: ids) {
             if (productIdentifier.getProductId().equals(productId)) {
                 ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
@@ -273,8 +271,6 @@ public class HomeController {
         );
     }
 
-    // -------- Admin Area --------
-    // This method should only be accessed by users with role of 'admin'
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();

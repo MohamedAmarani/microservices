@@ -285,7 +285,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Product not found in the given catalog"
             );
         }
-        //si ya esta en el inventoario sumar cantidades, si no crear de nuevo
+        //si ya esta en el inventario sumar cantidades, si no crear de nuevo
         boolean alreadyExists = false;
         for (InventoryItem inventoryItem1: inventory.get().getInventoryItems()) {
             if (inventoryItem1.getProductId().equals(inventoryItem.getProductId())) {
@@ -317,7 +317,7 @@ public class HomeController {
                                              @ApiParam(value = "Quantity of items to reduce from the inventory stock", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
         incrementCounter();
         Optional<Inventory> inventory = inventoryRepository.findById(id);
-        int num = myJsonRequest.get("numItems");
+        int num = myJsonRequest.get("quantity");
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())
             //si es el inventory item que buscamos
             if  (inventoryItem.getProductId().equals(productId)) {
@@ -349,13 +349,13 @@ public class HomeController {
     //add stock
     //HAY QUE LLAMAR A UPDATEAVAILABILITY
     @PutMapping("/{id}/products/{productId}/addStock")
-    @ApiOperation(value = "Increment stock of a product of an inventory", notes = "Reduce product stock from an inventory")
+    @ApiOperation(value = "Increment stock of a product of an inventory", notes = "Increase product stock from an inventory")
     public InventoryItemDTO addStock(@ApiParam(value = "Id of the inventory for which a product stock has to be incremented", required = true) @PathVariable final String id,
                                      @ApiParam(value = "Id of the inventory product for which the stock has to be incremented", required = true) @PathVariable final String productId,
                                      @ApiParam(value = "Quantity of items to increment to the inventory stock", required = true) @RequestBody Map<String, Integer> myJsonRequest) {
         incrementCounter();
         Optional<Inventory> inventory = inventoryRepository.findById(id);
-        int num = myJsonRequest.get("numItems");
+        int num = myJsonRequest.get("quantity");
         for (InventoryItem inventoryItem : inventory.get().getInventoryItems())
             //si es el inventory item que buscamos
             if  (inventoryItem.getProductId().equals(productId)) {
@@ -384,9 +384,6 @@ public class HomeController {
         );
     }
 
-    // -------- Admin Area --------
-    // This method should only be accessed by users with role of 'admin'
-    // We'll add the logic of role based auth later
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();

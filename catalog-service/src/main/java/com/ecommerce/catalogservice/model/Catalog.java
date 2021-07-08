@@ -10,13 +10,13 @@ import java.util.List;
 public class Catalog {
     @Id
     String id;
-    List<CatalogItem> productIdentifiers = new ArrayList<>();
+    List<CatalogItem> catalogItems = new ArrayList<>();
     @ApiModelProperty(notes = "Creation date of the catalog")
     Date creationDate = new Date();
 
-    public Catalog(String id, List<CatalogItem> productIdenitifiers, Date creationDate) {
+    public Catalog(String id, List<CatalogItem> catalogItems, Date creationDate) {
         this.id = id;
-        this.productIdentifiers = productIdenitifiers;
+        this.catalogItems = catalogItems;
         this.creationDate = creationDate;
     }
 
@@ -39,16 +39,16 @@ public class Catalog {
         this.id = id;
     }
 
-    public List<CatalogItem> getProductIdentifiers() {
-        return productIdentifiers;
+    public List<CatalogItem> getCatalogItems() {
+        return catalogItems;
     }
 
-    public void setProductIdentifiers(List<CatalogItem> productIdentifiers) {
-        this.productIdentifiers = productIdentifiers;
+    public void setCatalogItems(List<CatalogItem> productIdentifiers) {
+        this.catalogItems = catalogItems;
     }
 
-    public void addProductIdentifier(CatalogItem productIdentifier) {
-        this.productIdentifiers.add(productIdentifier);
+    public void addCatalogItem(CatalogItem catalogItem) {
+        this.catalogItems.add(catalogItem);
     }
 
     public Date getCreationDate() {

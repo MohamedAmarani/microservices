@@ -541,7 +541,7 @@ public class HomeController {
         //eliminar items del inventario
         for (CartItem cartItem: cart.get().getCartItems()) {
             JSONObject obj = new JSONObject();
-            obj.put("numItems", cartItem.getQuantity());
+            obj.put("quantity", cartItem.getQuantity());
             // set headers
             headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
