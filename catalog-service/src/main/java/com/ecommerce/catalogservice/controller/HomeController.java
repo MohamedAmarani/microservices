@@ -232,8 +232,15 @@ public class HomeController {
     @ApiOperation(value = "Add product to a catalog", notes = "Add a product to a catalog")
     public ProductDTO addProductToCatalog(@ApiParam(value = "Id of the catalog for which a product has to be added", required = true) @PathVariable final String catalogId,
                                           @ApiParam(value = "Id of the product to add", required = true) @RequestBody CatalogItem productIdentifier) {
+        Optional<Catalog> catalog = null;
+        try {
         incrementCounter();
-        Optional<Catalog> catalog = catalogRepository.findById(catalogId);
+        catalog = catalogRepository.findById(catalogId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Catalog not found"
+            );
+        }
         catalog.get().addCatalogItem(new CatalogItem(productIdentifier.getProductId(), new Date()));
         catalogRepository.save(catalog.get());
         ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),

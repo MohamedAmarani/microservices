@@ -271,8 +271,15 @@ public class HomeController {
     //añadir un producto a un inventario
     public InventoryItemDTO addProductToInventory(@ApiParam(value = "Id of the inventory for which a product has to be inserted", required = true) @PathVariable final String id,
                                                   @ApiParam(value = "Information of the product to insert into the inventory", required = true) @RequestBody InventoryItem inventoryItem) {
+        Optional<Inventory> inventory = null;
+        try {
         incrementCounter();
-        Optional<Inventory> inventory = inventoryRepository.findById(id);
+        inventory = inventoryRepository.findById(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Inventory not found"
+            );
+        }
         ResponseEntity<ProductDTO> res = null;
         inventoryItem.setCreationDate(new Date());
         try {
