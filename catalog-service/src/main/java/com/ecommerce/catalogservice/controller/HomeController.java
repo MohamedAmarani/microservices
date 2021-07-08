@@ -200,7 +200,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Catalog not found"
             );
         }
-        List<CatalogItem> ids = catalog.get().getProductIdentifiers();
+        List<CatalogItem> ids = catalog.get().getCatalogItems();
         List<ProductDTO> products = new ArrayList<ProductDTO>();
         for (CatalogItem productIdentifier: ids) {
             ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
