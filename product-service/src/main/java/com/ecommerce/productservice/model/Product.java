@@ -115,6 +115,10 @@ public class Product {
         pictures.add(picture);
     }
 
+    public void setSizeFromString(String size) {
+        this.size = Size.valueOf(size);
+    }
+
     public void setSize(Size size) {
         this.size = size;
     }
@@ -131,12 +135,20 @@ public class Product {
         this.type = type;
     }
 
+    public void setTypeFromString(String type) {
+        this.size = Size.valueOf(type);
+    }
+
     public Sex getSex() {
         return sex;
     }
 
     public void setSex(Sex sex) {
         this.sex = sex;
+    }
+
+    public void setSexFromString(String sex) {
+        this.size = Size.valueOf(sex);
     }
 
     public Date getCreationDate() {

@@ -607,7 +607,7 @@ public class HomeController {
                 HttpMethod.POST, deliveryEntity, new ParameterizedTypeReference<String>() {
                 });
 
-        //devolver envio
+        //retornar envio
         //return res2.getBody();
         JSONObject jo = new JSONObject();
         jo.put("paymentStatus", "success");

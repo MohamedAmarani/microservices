@@ -154,7 +154,6 @@ public class HomeController {
         Product product = null;
         //si no existe ningun producto con ese id retornamos null
         try {
-            //throw new Exception("Images can't be fetched");
             product = productRepository.findById(id).get();
         } catch (Exception e) {
             throw new ResponseStatusException(
@@ -162,6 +161,119 @@ public class HomeController {
             );
         }
         incrementCounter();
+        return product;
+    }
+
+    @PatchMapping("/{id}/description")
+    @ApiOperation(value = "Change a product description", notes = "Provide the Id of the product for which the description has to be changed")
+    public Product patchProductDescription(@ApiParam(value = "Id of the product for which the description has to be changed", required = true) @PathVariable final String id,
+                                            @ApiParam(value = "New product description", required = true) @RequestBody Map<String, String> newProductDescription) throws Exception {
+        incrementCounter();
+        Product product = null;
+        //si no existe ningun producto con ese id retornamos null
+        try {
+            product = productRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found"
+            );
+        }
+        product.setDescription(newProductDescription.get("description"));
+        product = productRepository.save(product);
+        return product;
+    }
+
+    @PatchMapping("/{id}/color")
+    @ApiOperation(value = "Change a product color", notes = "Provide the Id of the product for which the color has to be changed")
+    public Product patchProductColor(@ApiParam(value = "Id of the product for which the color has to be changed", required = true) @PathVariable final String id,
+                                            @ApiParam(value = "New product color", required = true) @RequestBody Map<String, String> newProductColor) throws Exception {
+        incrementCounter();
+        Product product = null;
+        //si no existe ningun producto con ese id retornamos null
+        try {
+            product = productRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found"
+            );
+        }
+        product.setDescription(newProductColor.get("color"));
+        product = productRepository.save(product);
+        return product;
+    }
+
+    @PatchMapping("/{id}/size")
+    @ApiOperation(value = "Change a product size", notes = "Provide the Id of the product for which the size has to be changed")
+    public Product patchProductSize(@ApiParam(value = "Id of the product for which the size has to be changed", required = true) @PathVariable final String id,
+                                            @ApiParam(value = "New product size", required = true) @RequestBody Map<String, String> newProductSize) throws Exception {
+        incrementCounter();
+        Product product = null;
+        //si no existe ningun producto con ese id retornamos null
+        try {
+            product = productRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found"
+            );
+        }
+        try {
+            product.setSizeFromString(newProductSize.get("size"));
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT, "Not a valid size"
+            );
+        }
+        product = productRepository.save(product);
+        return product;
+    }
+
+    @PatchMapping("/{id}/type")
+    @ApiOperation(value = "Change a product current price", notes = "Provide the Id of the product for which the type has to be changed")
+    public Product patchProductType(@ApiParam(value = "Id of the product for which the type has to be changed", required = true) @PathVariable final String id,
+                                            @ApiParam(value = "New product type", required = true) @RequestBody Map<String, String> newProductType) throws Exception {
+        incrementCounter();
+        Product product = null;
+        //si no existe ningun producto con ese id retornamos null
+        try {
+            product = productRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found"
+            );
+        }
+        try {
+            product.setTypeFromString(newProductType.get("type"));
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Not a valid type"
+            );
+        }
+        product = productRepository.save(product);
+        return product;
+    }
+
+    @PatchMapping("/{id}/sex")
+    @ApiOperation(value = "Change a product sex", notes = "Provide the Id of the product for which the sex has to be changed")
+    public Product patchProductSex(@ApiParam(value = "Id of the product for which the type has to be changed", required = true) @PathVariable final String id,
+                                            @ApiParam(value = "New product sex", required = true) @RequestBody Map<String, String> newProductSex) throws Exception {
+        incrementCounter();
+        Product product = null;
+        //si no existe ningun producto con ese id retornamos null
+        try {
+            product = productRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found"
+            );
+        }
+        try {
+            product.setSexFromString(newProductSex.get("sex"));
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Not a valid sex"
+            );
+        }
+        product = productRepository.save(product);
         return product;
     }
 
@@ -174,7 +286,6 @@ public class HomeController {
         Product product = null;
         //si no existe ningun producto con ese id retornamos null
         try {
-            //throw new Exception("Images can't be fetched");
             product = productRepository.findById(id).get();
         } catch (Exception e) {
             throw new ResponseStatusException(
@@ -209,7 +320,6 @@ public class HomeController {
         Product product = null;
         //si no existe ningun producto con ese id retornamos null
         try {
-            //throw new Exception("Images can't be fetched");
             product = productRepository.findById(id).get();
             productRepository.deleteById(id);
         } catch (Exception e) {
