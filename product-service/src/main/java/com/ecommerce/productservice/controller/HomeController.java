@@ -178,7 +178,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Product not found"
             );
         }
-        product.setDescription(newProductDescription.get("description"));
+        product.setDescription(newProductDescription.get("newDescription"));
         product = productRepository.save(product);
         return product;
     }
@@ -197,7 +197,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Product not found"
             );
         }
-        product.setDescription(newProductColor.get("color"));
+        product.setDescription(newProductColor.get("newColor"));
         product = productRepository.save(product);
         return product;
     }
@@ -217,7 +217,7 @@ public class HomeController {
             );
         }
         try {
-            product.setSizeFromString(newProductSize.get("size"));
+            product.setSizeFromString(newProductSize.get("newSize"));
         } catch (Exception e) {
             throw new ResponseStatusException(
                 HttpStatus.CONFLICT, "Not a valid size"
@@ -242,7 +242,7 @@ public class HomeController {
             );
         }
         try {
-            product.setTypeFromString(newProductType.get("type"));
+            product.setTypeFromString(newProductType.get("nweType"));
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, "Not a valid type"
@@ -267,7 +267,7 @@ public class HomeController {
             );
         }
         try {
-            product.setSexFromString(newProductSex.get("sex"));
+            product.setSexFromString(newProductSex.get("newSex"));
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, "Not a valid sex"
