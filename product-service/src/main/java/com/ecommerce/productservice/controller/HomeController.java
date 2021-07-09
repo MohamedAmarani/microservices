@@ -197,7 +197,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Product not found"
             );
         }
-        product.setDescription(newProductColor.get("newColor"));
+        product.setColor(newProductColor.get("newColor"));
         product = productRepository.save(product);
         return product;
     }
