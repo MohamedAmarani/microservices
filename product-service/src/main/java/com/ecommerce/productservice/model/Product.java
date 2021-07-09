@@ -136,7 +136,7 @@ public class Product {
     }
 
     public void setTypeFromString(String type) {
-        this.size = Size.valueOf(type);
+        this.type = Type.valueOf(type);
     }
 
     public Sex getSex() {
@@ -148,7 +148,7 @@ public class Product {
     }
 
     public void setSexFromString(String sex) {
-        this.size = Size.valueOf(sex);
+        this.sex = Sex.valueOf(sex);
     }
 
     public Date getCreationDate() {

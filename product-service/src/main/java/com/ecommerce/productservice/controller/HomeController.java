@@ -242,7 +242,7 @@ public class HomeController {
             );
         }
         try {
-            product.setTypeFromString(newProductType.get("nweType"));
+            product.setTypeFromString(newProductType.get("newType"));
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, "Not a valid type"
