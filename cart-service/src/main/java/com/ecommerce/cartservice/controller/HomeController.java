@@ -337,12 +337,11 @@ public class HomeController {
                                       @ApiParam(value = "Product Id and quantity of items available in the inventory to be added to the given cart", required = true) @RequestBody CartItem cartItem) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
-        JSONObject obj = new JSONObject();
-        obj.put("numItems", cartItem.getQuantity());
+
         // set headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
+        HttpEntity<String> entity;
         // send request and parse result
         //añadir al carrito si hay numero suficiente de items del producto en el inventario y no existe ya en el carrito (si ya existe se suman items)
         final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
@@ -377,11 +376,11 @@ public class HomeController {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, "Not enough stock"
             );
+
         //pasar cart a cartDTO
         Cart cart1 = cartRepository.save(cart.get());
 
         CartDTO cartDTO = new CartDTO(cart1.getId(), cart1.getCreationDate());
-        List<CartItemDTO> cartItemDTOs = new ArrayList<>();
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         entity = new HttpEntity<String>(null, headers);
@@ -412,7 +411,10 @@ public class HomeController {
         System.out.println(discountCodeBody);
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
-        double totalPrice = 0.0;
+        double originalPrice = 0.0;
+        String dC = "";
+        double discountedAmount = 0.0;
+        double finalPrice = 0.0;
 
         //obtener precio total
         for (CartItem cartItem: cart.get().getCartItems()) {
@@ -431,18 +433,20 @@ public class HomeController {
             Gson gson = new Gson();
             InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
 
-            totalPrice += inventoryItemDTO.getProduct().getCurrentPrice() * (double) cartItem.getQuantity();
+            finalPrice += inventoryItemDTO.getProduct().getCurrentPrice() * (double) cartItem.getQuantity();
 
         }
         //formatear el precio total a dos decimales
         JSONObject obj = new JSONObject();
         DecimalFormat df = new DecimalFormat("#.##");
-        totalPrice = Double.valueOf(df.format(totalPrice));
+        finalPrice = Double.valueOf(df.format(finalPrice));
+        originalPrice = finalPrice;
         System.out.println("discountCodeBody");
         //comprovar que el codigo de descuento, si hay, es valido, y aplicarlo
         if (discountCodeBody != null) {
             System.out.println("discountCodeBody");
             String discountCode = discountCodeBody.get("discountCode");
+            dC = discountCode;
             final ResponseEntity<String> res;
             //consultar informacion del descuento Y COMPROVAR QUE EXISTE
             try {
@@ -474,7 +478,7 @@ public class HomeController {
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT, "The discount code is not in its active date interval"
                 );
-            if (discountDTO.getMinimumAmount() > totalPrice)
+            if (discountDTO.getMinimumAmount() > finalPrice)
                 //no ha llegado al precio minimo para usar el cupon
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT, "The minimum amount of the purchase to use the discount code is not reached"
@@ -501,23 +505,31 @@ public class HomeController {
 
             //reducir el precio total aplicando el descuento
             if (!discountDTO.getPercentage()) {
-                totalPrice -= discountDTO.getValue();
+                finalPrice -= discountDTO.getValue();
+                discountedAmount = discountDTO.getValue();
             }
             else {
                 double percentage = 100 - discountDTO.getValue();
                 percentage /= 100;
                 //ver si hay limite de descuento y aplicarlo si es necesario
-                if ((discountDTO.getMaxDiscount() > 0.0) && ((totalPrice * (1 - percentage)) > discountDTO.getMaxDiscount()))
-                    totalPrice -= discountDTO.getMaxDiscount();
-                else
-                    totalPrice *= percentage;
+                if ((discountDTO.getMaxDiscount() > 0.0) && ((finalPrice * (1 - percentage)) > discountDTO.getMaxDiscount())) {
+                    finalPrice -= discountDTO.getMaxDiscount();
+                    discountedAmount = discountDTO.getMaxDiscount();
+                }
+                else {
+                    finalPrice *= percentage;
+                    finalPrice = Double.valueOf(df.format(finalPrice));
+                    discountedAmount = originalPrice - finalPrice;
+                }
             }
-            totalPrice = Double.valueOf(df.format(totalPrice));
+            finalPrice = Double.valueOf(df.format(finalPrice));
         }
 
         //realizar el pago
-        obj.put("totalPrice", totalPrice);
-        System.out.println(obj.get("totalPrice"));
+        obj.put("originalPrice", originalPrice);
+        obj.put("discountCode", dC);
+        obj.put("discountedAmount", discountedAmount);
+        obj.put("finalPrice", finalPrice);
         // set headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

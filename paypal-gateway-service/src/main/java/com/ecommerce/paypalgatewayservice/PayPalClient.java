@@ -22,11 +22,11 @@ public class PayPalClient {
     @Autowired
     Environment environment;
 
-    public Map<String, Object> createPayment(String accountId, String sum) throws PayPalRESTException {
+    public Map<String, Object> createPayment(String accountId, String originalPrice, String discountCode, String discountedAmount, String finalPrice) throws PayPalRESTException {
         Map<String, Object> response = new HashMap<String, Object>();
         Amount amount = new Amount();
         amount.setCurrency("EUR");
-        amount.setTotal(sum);
+        amount.setTotal(finalPrice);
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
         List<Transaction> transactions = new ArrayList<Transaction>();
@@ -61,10 +61,14 @@ public class PayPalClient {
                     }
                 }
                 response.put("status", "success");
-                response.put("redirect_url", redirectUrl);
+                response.put("paymentUrl", redirectUrl);
+                response.put("originalPrice", originalPrice);
+                response.put("discountCode", discountCode);
+                response.put("discountedAmount", discountedAmount);
+                response.put("finalPrice", finalPrice);
             }
         } catch (PayPalRESTException e) {
-            System.out.println("Error happened during payment creation!");
+            System.out.println("An error happened during payment creation!");
         }
         return response;
     }
@@ -79,7 +83,7 @@ public class PayPalClient {
         try {
             APIContext context = new APIContext(clientId, clientSecret, "sandbox");
             Payment createdPayment = payment.execute(context, paymentExecution);
-            if(createdPayment!=null){
+            if (createdPayment!=null){
                 response.put("status", "success");
                 response.put("payment", createdPayment);
             }

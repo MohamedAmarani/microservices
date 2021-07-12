@@ -151,9 +151,10 @@ public class HomeController {
     @PostMapping(value = "/make/payment/{accountId}")
     @ApiOperation(value = "Create a payment", notes = "A payment will be created and its amount of money will be passed as a parameter.")
     public Map<String, Object> makePayment(@ApiParam(value = "Id of the client that wants to check out", required = true) @PathVariable final String accountId,
-                                           @ApiParam(value = "Amount of money to be payed, in Euros.", required = true) @RequestBody Map<String, Double> totalPrice) throws PayPalRESTException {
+                                           @ApiParam(value = "Amount of money to be payed, in Euros.", required = true) @RequestBody Map<String, Double> priceInformation) throws PayPalRESTException {
         incrementCounter();
-        return payPalClient.createPayment(accountId, totalPrice.get("totalPrice").toString());
+        return payPalClient.createPayment(accountId, priceInformation.get("originalPrice").toString(), priceInformation.get("discountCode").toString(),
+                priceInformation.get("discountedAmount").toString(), priceInformation.get("finalPrice").toString());
     }
 
     //complete the payment

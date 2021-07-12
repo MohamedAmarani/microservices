@@ -264,10 +264,10 @@ public class HomeController {
                                         @ApiParam(value = "Id of the product to retrieve from the catalog", required = true) @PathVariable final String productId) {
         incrementCounter();
         Optional<Catalog> catalog = catalogRepository.findById(catalogId);
-        List<CatalogItem> ids = catalog.get().getCatalogItems();
-        for (CatalogItem productIdentifier: ids) {
-            if (productIdentifier.getProductId().equals(productId)) {
-                ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
+        List<CatalogItem> catalogItems = catalog.get().getCatalogItems();
+        for (CatalogItem catalogItem: catalogItems) {
+            if (catalogItem.getProductId().equals(productId)) {
+                ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + catalogItem.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
                         });
                 return res.getBody();
