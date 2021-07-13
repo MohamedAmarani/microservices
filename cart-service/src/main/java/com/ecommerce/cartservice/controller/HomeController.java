@@ -152,7 +152,6 @@ public class HomeController {
     @ApiOperation(value = "Get a cart", notes = "Provide an Id to retrieve a specific cart from the Database and all its cart items")
     public CartDTO getCart(@ApiParam(value = "Id of the cart to get", required = true) @PathVariable final String cartId) {
         incrementCounter();
-        System.out.println("Starting " + env.getProperty("local.server.port"));
         Optional<Cart> cart = cartRepository.findById(cartId);
         List<CartItem> cartItems = null;
         try {
@@ -408,7 +407,6 @@ public class HomeController {
     @ApiOperation(value = "Checkout a cart", notes = "Proceed to do the checkout of a given cart, paying with Paypal")
     public Object doCheckoutPart1(@ApiParam(value = "Id of the cart for which the checkout has to be done", required = true) @PathVariable final String cartId,
                                   @ApiParam(value = "Discount code, if any", required = false) @RequestBody (required=false) Map<String, String> discountCodeBody) {
-        System.out.println(discountCodeBody);
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
         double originalPrice = 0.0;
@@ -441,10 +439,8 @@ public class HomeController {
         DecimalFormat df = new DecimalFormat("#.##");
         finalPrice = Double.valueOf(df.format(finalPrice));
         originalPrice = finalPrice;
-        System.out.println("discountCodeBody");
         //comprovar que el codigo de descuento, si hay, es valido, y aplicarlo
         if (discountCodeBody != null) {
-            System.out.println("discountCodeBody");
             String discountCode = discountCodeBody.get("discountCode");
             dC = discountCode;
             final ResponseEntity<String> res;
@@ -486,7 +482,7 @@ public class HomeController {
             if (discountDTO.getCurrentUses() >= discountDTO.getMaxUses())
                 //se ha llegado al limite de usos del cupon
                 throw new ResponseStatusException(
-                        HttpStatus.CONFLICT, "The maximum uses of the discount code has been reached"
+                        HttpStatus.CONFLICT, "The maximum number of uses of the discount code has been reached"
                 );
             if (!discountDTO.isEnabled())
                 //el cupon esta desactivado
@@ -572,7 +568,6 @@ public class HomeController {
         final ResponseEntity<OrderDTO> res1 = restTemplate.exchange("http://order-service:8080",
                 HttpMethod.POST, orderEntity, new ParameterizedTypeReference<OrderDTO>() {
                 });
-        System.out.println(res1.getBody().getId());
 
         //vaciar carrito
         cart = cartRepository.findById(cartId);
@@ -587,12 +582,10 @@ public class HomeController {
         final ResponseEntity<String> res4 = restTemplate.exchange("http://account-service:8080/" + cartId,
                 HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                 });
-        System.out.println(res4.toString());
         Gson gson = new Gson();
         AccountDTO accountDTO = gson.fromJson(res4.getBody(), AccountDTO.class);
         obj.put("deliveryAddress", accountDTO.getDeliveryAddress());
-        System.out.println(res1.getBody().getId());
-        System.out.println(accountDTO.getDeliveryAddress());
+
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);

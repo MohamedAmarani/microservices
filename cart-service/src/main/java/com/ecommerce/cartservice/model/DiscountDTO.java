@@ -130,10 +130,6 @@ public class DiscountDTO {
         this.currentUses = currentUses;
     }
 
-    public void incrementCurrentUses() {
-        ++this.currentUses;
-    }
-
     public int getMaxUses() {
         return maxUses;
     }
