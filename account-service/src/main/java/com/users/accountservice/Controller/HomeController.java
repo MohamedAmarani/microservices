@@ -395,7 +395,7 @@ public class HomeController {
                 "has changed its price from " + updatedProductInfo.get("oldPrice") + " EUR to " + productDTO.getCurrentPrice() + " EUR" + (Double.parseDouble(updatedProductInfo.get("oldPrice")) != productDTO.getOriginalPrice() ? " (" + reducedPercentage + "% from its original price of " + productDTO.getOriginalPrice() + " EUR)" : "") + ", matching the target price restriction of " +
                 updatedProductInfo.get("targetPrice") + " EUR that you established on your wishlist.</p>\n" +
                 "Below you can find attached the pics of the product. We will keep you updated of any new event.</p>\n" +
-                "<p>Regards.</p>\n";
+                "<p>Regards.</p></center>\n";
 
         helper.setText(text,true);
         /*//descargar y añadir fotos de product
@@ -458,13 +458,12 @@ public class HomeController {
         helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("A discount code has been enabled again");
-        String text = "<h2>Hi " + receiver.getUsername() + ", a discount is back enabled!</h2>\n" +
+        String text = "<center><h2>Hi " + receiver.getUsername() + ", a discount is back enabled!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">You can now use the discount code <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + discountDTO.getCode() + "</strong> " +
                 "again to get a " + discountDTO.getValue() + (discountDTO.isPercentage() ? "%" : " EUR") + " discount on every order of " + discountDTO.getMinimumAmount() + " EUR or more.</p>\n" +
                 "You will be able to use it from "+ discountDTO.getStartDate() + " to " + discountDTO.getEndDate() + ", and it is only available for the first "
                 + discountDTO.getMaxUses() + " uses. We will keep you updated of any new event.</p>\n" +
-                "<p>Regards.</p>\n";
-
+                "<p>Regards.</p></center>\n";
         helper.setText(text,true);
         //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
         javaMailSender.send(msg);
@@ -480,10 +479,10 @@ public class HomeController {
         helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("A discount code has been disabled");
-        String text = "<h2>Hi " + receiver.getUsername() + ", a discount code has been disabled!</h2>\n" +
+        String text = "<center><h2>Hi " + receiver.getUsername() + ", a discount code has been disabled!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">Due to technical issues, the discount code <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + discountDTO.getCode() + "</strong> " +
                 "has been disabled, thus, it can not be redeemed at the moment. We will keep you updated of any new event.</p>\n" +
-                "<p>Regards.</p>\n";
+                "<p>Regards.</p></center>\n";
 
         helper.setText(text,true);
         //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
@@ -500,12 +499,12 @@ public class HomeController {
         helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("New discount code available for you");
-        String text = "<h2>Hi " + receiver.getUsername() + ", a new discount code has been created for you!</h2>\n" +
+        String text = "<center><h2>Hi " + receiver.getUsername() + ", a new discount code has been created for you!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">You can use the discount code <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + discountDTO.getCode() + "</strong> " +
                 "to get a " + discountDTO.getValue() + (discountDTO.isPercentage() ? "%" : " EUR") + " discount on every order of " + discountDTO.getMinimumAmount() + " EUR or more.</p>\n" +
                 "You will be able to use it from "+ discountDTO.getStartDate() + " to " + discountDTO.getEndDate() + ", and it is only available for the "
                 + discountDTO.getMaxUses() + " first uses. We will keep you updated of any new event.</p>\n" +
-                "<p>Regards.</p>\n";
+                "<p>Regards.</p></center>\n";
 
         helper.setText(text,true);
         //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
@@ -522,7 +521,7 @@ public class HomeController {
         helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
-        String text = "<h2>Hi " + receiver.getUsername() + ", a delivery status has been updated!</h2>\n" +
+        String text = "<center><h2>Hi " + receiver.getUsername() + ", a delivery status has been updated!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() + " is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
                 "and you will receive it at "+ deliveryDTO.getDeliveryAddress() + ", the " + deliveryDTO.getEstimatedDateOfArrival() + ". We will keep you updated of any new event.</p>\n" +
                 "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ".</p>\n" +
@@ -552,7 +551,7 @@ public class HomeController {
         }
         text += "</tbody>\n" +
                 "</table>\n" +
-                "<p>Regards.</p>\n";
+                "<p>Regards.</p></center>\n";
 
         helper.setText(text,true);
         //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
@@ -569,7 +568,7 @@ public class HomeController {
         helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
-        String text = "<h2>Hi " + receiver.getUsername() + ", a delivery has successfully arrived at its destination!</h2>\n" +
+        String text = "<center><h2>Hi " + receiver.getUsername() + ", a delivery has successfully arrived at its destination!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">" + "The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() +
                 " has now arrived at " + deliveryDTO.getDeliveryAddress() + ".\n" +
                 "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ".</p>\n" +
@@ -600,7 +599,7 @@ public class HomeController {
         text += "</tbody>\n" +
                 "</table>\n\n" +
                 "Thank you for the purchase, enjoy it!\n" +
-                "<p>Regards.</p>\n";
+                "<p>Regards.</p></center>\n";
 
         helper.setText(text,true);
         //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
@@ -617,7 +616,7 @@ public class HomeController {
         helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("News on the delivery " + deliveryDTO.getId());
-        String text = "<h2>Hi " + receiver.getUsername() + ", a delivery date has been updated!</h2>\n" +
+        String text = "<center><h2>Hi " + receiver.getUsername() + ", a delivery date has been updated!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The delivery " + deliveryDTO.getId() + " managed by " + deliveryDTO.getDeliveryCompany() +
                 " has changed its delivery date to " + deliveryDTO.getEstimatedDateOfArrival() + ". Remember that it is in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state and you will receive it at " + deliveryDTO.getDeliveryAddress() + ". We will keep you updated of any new event.</p>\n" +
                 "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ".</p>\n" +
@@ -647,7 +646,7 @@ public class HomeController {
         }
         text += "</tbody>\n" +
                 "</table>\n" +
-                "<p>Regards.</p>\n";
+                "<p>Regards.</p></center>\n";
 
         helper.setText(text,true);
         //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
@@ -664,7 +663,7 @@ public class HomeController {
         helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("Order done successfully " + deliveryDTO.getOrderId());
-        String text = "<h2>Hi " + receiver.getUsername() + ", you have just paid and confirmed an order!</h2>\n" +
+        String text = "<center><h2>Hi " + receiver.getUsername() + ", you have just paid and confirmed an order!</h2>\n" +
                 "<p style=\"font-size: 1.5em;\">The order "+ deliveryDTO.getOrderId() +", whose delivery  " + deliveryDTO.getId() + " is managed by " + deliveryDTO.getDeliveryCompany() + ", is now in the <strong style=\"background-color: #317399; padding: 0 5px; color: #fff;\">" + deliveryDTO.getDeliveryState() + "</strong> state, " +
                 "and you will receive it at "+ deliveryDTO.getDeliveryAddress() + ", the " + deliveryDTO.getEstimatedDateOfArrival() + ". We will notify you when " + deliveryDTO.getDeliveryCompany() + " ships your order.</p>\n" +
                 "<p style=\"font-size: 1.5em;\">Below you can find the details of your order " + deliveryDTO.getOrderId() + ".</p>\n" +
@@ -699,7 +698,7 @@ public class HomeController {
         text += "</tbody>\n" +
                 "</table>\n" +
                 //"<p>The total price that you have paid is " + totalPrice + " euros.</p>\n" +
-                "<p>Thank you and regards.</p>\n";
+                "<p>Thank you and regards.</p></center>\n";
 
         helper.setText(text,true);
         //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
@@ -716,10 +715,10 @@ public class HomeController {
         helper.setBcc("saasecommerce@gmail.com");
         helper.setFrom("eCommerce SaaS <saasecommerce@gmail.com>");
         helper.setSubject("Welcome");
-        String text = "<h2>Hi " + receiver.getUsername() + ", you have been signed up successfully!</h2>\n";
+        String text = "<center><h2>Hi " + receiver.getUsername() + ", you have been signed up successfully!</h2>\n";
         text += "</tbody>\n" +
                 "</table>\n" +
-                "<p>Regards.</p>\n";
+                "<p>Regards.</p></center>\n";
         helper.setText(text,true);
         //helper.addAttachment("my_photo.png", new ClassPathResource("android.png"));
         javaMailSender.send(msg);
