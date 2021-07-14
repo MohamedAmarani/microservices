@@ -22,8 +22,8 @@ public class PayPalClient {
     @Autowired
     Environment environment;
 
-    public Map<String, Object> createPayment(String accountId, String originalPrice, String discountCode, String discountedAmount, String finalPrice) throws PayPalRESTException {
-        Map<String, Object> response = new HashMap<String, Object>();
+    public Map<String, String> createPayment(String accountId, String originalPrice, String discountCode, String discountedAmount, String finalPrice) throws PayPalRESTException {
+        HashMap<String, String> response = new HashMap<>();
         Amount amount = new Amount();
         amount.setCurrency("EUR");
         amount.setTotal(finalPrice);
