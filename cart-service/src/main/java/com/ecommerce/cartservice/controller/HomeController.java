@@ -522,10 +522,10 @@ public class HomeController {
         }
 
         //realizar el pago
-        obj.put("originalPrice", originalPrice);
+        obj.put("originalPrice", Double.toString(originalPrice));
         obj.put("discountCode", dC);
-        obj.put("discountedAmount", discountedAmount);
-        obj.put("finalPrice", finalPrice);
+        obj.put("discountedAmount", Double.toString(discountedAmount));
+        obj.put("finalPrice", Double.toString(finalPrice));
         // set headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
