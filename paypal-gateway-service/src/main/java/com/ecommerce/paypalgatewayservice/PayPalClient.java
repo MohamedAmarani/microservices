@@ -1,15 +1,10 @@
 package com.ecommerce.paypalgatewayservice;
 
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.EurekaClient;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +39,7 @@ public class PayPalClient {
         
         redirectUrls.setCancelUrl("http://ec2-35-180-204-28.eu-west-3.compute.amazonaws.com/api/latest/paypal/cancel/" + accountId);
         redirectUrls.setReturnUrl("http://ec2-35-180-204-28.eu-west-3.compute.amazonaws.com/api/latest/paypal/success/" + accountId);
-        
+
         payment.setRedirectUrls(redirectUrls);
 
         Payment createdPayment;
@@ -52,10 +47,10 @@ public class PayPalClient {
             String redirectUrl = "";
             APIContext context = new APIContext(clientId, clientSecret, "sandbox");
             createdPayment = payment.create(context);
-            if(createdPayment!=null){
+            if (createdPayment!=null) {
                 List<Links> links = createdPayment.getLinks();
                 for (Links link:links) {
-                    if(link.getRel().equals("approval_url")){
+                    if (link.getRel().equals("approval_url")){
                         redirectUrl = link.getHref();
                         break;
                     }

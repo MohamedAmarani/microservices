@@ -541,9 +541,6 @@ public class HomeController {
     public Object doCheckoutPart2(@ApiParam(value = "Id of the cart for which the second part of the checkout has to be done", required = true) @PathVariable final String cartId) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
-        /*final ResponseEntity<ProductDTO> res = restTemplate.exchange("http://account-service/" + accountId + "/buy",
-                HttpMethod.PUT, entity, new ParameterizedTypeReference<ProductDTO>() {
-                });*/
 
         HttpHeaders headers = new HttpHeaders();
         //eliminar items del inventario
@@ -574,7 +571,7 @@ public class HomeController {
         cart.get().setCartItems(new ArrayList<>());
         cartRepository.save(cart.get());
 
-        //llamar al micro de transporte
+        //llamar al micro de transporte y pasarle la deliveryAddress del usuario
         // set headers
         JSONObject obj = new JSONObject();
         obj.put("orderId", res1.getBody().getId());
