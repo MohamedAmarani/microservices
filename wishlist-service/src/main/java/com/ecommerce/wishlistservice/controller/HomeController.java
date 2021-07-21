@@ -252,11 +252,11 @@ public class HomeController {
         return wishlist;
     }
 
-    @PatchMapping("/{wishlistId}/items/{productId}/targetPrice")
+    @PatchMapping("/{wishlistId}/items/{wishlistItemProductId}/targetPrice")
     @ApiOperation(value = "Change the target price of a wishlist item", notes = "Provide the Id of the wishlist where a wishlist item target price has to be changed" +
             "of the wishlist item to add")
     public Wishlist changeTargetPriceOfWishlistItem(@ApiParam(value = "Id of the wishlist where a wishlist item target price has to be changed", required = true) @PathVariable final String wishlistId,
-                                                    @ApiParam(value = "Id of the productId of the wishlist item for which the target price has to be changed", required = true) @PathVariable final String productId,
+                                                    @ApiParam(value = "Id of the productId of the wishlist item for which the target price has to be changed", required = true) @PathVariable final String wishlistItemProductId,
                                                     @ApiParam(value = "New target price for the wishlist item", required = true) @RequestBody Map<String, Double> newTargetPrice) {
         incrementCounter();
         Wishlist wishlist;
@@ -269,7 +269,7 @@ public class HomeController {
         }
         //comprovar que no existe ya otro wishlistitem con este productId en esta wishlist
         for (WishlistItem wishlistItem1: wishlist.getWishlistItems())
-            if (wishlistItem1.getProductId() == productId) {
+            if (wishlistItem1.getProductId() == wishlistItemProductId) {
                 wishlistItem1.setTargetPrice(newTargetPrice.get("newTargetPrice"));
                 wishlist = wishlistRepository.save(wishlist);
             }
