@@ -242,11 +242,13 @@ public class HomeController {
             );
         }
         //comprovar que no existe ya otro wishlistitem con este productId en esta wishlist
-        for (WishlistItem wishlistItem1: wishlist.getWishlistItems())
+        for (WishlistItem wishlistItem1: wishlist.getWishlistItems()) {
             if (wishlistItem1.getProductId() == wishlistItem.getProductId())
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT, "The product is already in the wishlist"
                 );
+        }
+        //una vez hechas las comprovaciones, añado el wishlistitem a la wishlist
         wishlist.addToWishlistItems(wishlistItem);
         wishlist = wishlistRepository.save(wishlist);
         return wishlist;
@@ -268,12 +270,12 @@ public class HomeController {
             );
         }
         //comprovar que no existe ya otro wishlistitem con este productId en esta wishlist
-        for (WishlistItem wishlistItem1: wishlist.getWishlistItems())
+        for (WishlistItem wishlistItem1: wishlist.getWishlistItems()) {
             if (wishlistItem1.getProductId() == wishlistItemProductId) {
                 wishlistItem1.setTargetPrice(newTargetPrice.get("newTargetPrice"));
                 wishlist = wishlistRepository.save(wishlist);
             }
-
+        }
         throw new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Wishlist item not found in the wishlist"
         );
