@@ -253,11 +253,11 @@ public class HomeController {
     }
 
     @PatchMapping("/{wishlistId}/items/{productId}/targetPrice")
-    @ApiOperation(value = "Add a wishlist item to a wishlist", notes = "Provide the Id of the wishlist where a wishlist item has to be added and the information" +
+    @ApiOperation(value = "Change the target price of a wishlist item", notes = "Provide the Id of the wishlist where a wishlist item target price has to be changed" +
             "of the wishlist item to add")
     public Wishlist changeTargetPriceOfWishlistItem(@ApiParam(value = "Id of the wishlist where a wishlist item target price has to be changed", required = true) @PathVariable final String wishlistId,
-                                                    @ApiParam(value = "Id of the wishlist item where a wishlist item has to be added", required = true) @PathVariable final String productId,
-                                                    @ApiParam(value = "Information of the wishlist item to be added", required = true) @RequestBody Map<String, Double> newTargetPrice) {
+                                                    @ApiParam(value = "Id of the productId of the wishlist item for which the target price has to be changed", required = true) @PathVariable final String productId,
+                                                    @ApiParam(value = "New target price for the wishlist item", required = true) @RequestBody Map<String, Double> newTargetPrice) {
         incrementCounter();
         Wishlist wishlist;
         try {
@@ -279,9 +279,6 @@ public class HomeController {
         );
     }
 
-    // -------- Admin Area --------
-    // This method should only be accessed by users with role of 'admin'
-    // We'll add the logic of role based auth later
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
