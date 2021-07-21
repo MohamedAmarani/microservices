@@ -241,9 +241,42 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Wishlist not found"
             );
         }
+        //comprovar que no existe ya otro wishlistitem con este productId en esta wishlist
+        for (WishlistItem wishlistItem1: wishlist.getWishlistItems())
+            if (wishlistItem1.getProductId() == wishlistItem.getProductId())
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT, "The product is already in the wishlist"
+                );
         wishlist.addToWishlistItems(wishlistItem);
         wishlist = wishlistRepository.save(wishlist);
         return wishlist;
+    }
+
+    @PatchMapping("/{wishlistId}/items/{productId}/targetPrice")
+    @ApiOperation(value = "Add a wishlist item to a wishlist", notes = "Provide the Id of the wishlist where a wishlist item has to be added and the information" +
+            "of the wishlist item to add")
+    public Wishlist changeTargetPriceOfWishlistItem(@ApiParam(value = "Id of the wishlist where a wishlist item target price has to be changed", required = true) @PathVariable final String wishlistId,
+                                                    @ApiParam(value = "Id of the wishlist item where a wishlist item has to be added", required = true) @PathVariable final String productId,
+                                                    @ApiParam(value = "Information of the wishlist item to be added", required = true) @RequestBody Map<String, Double> newTargetPrice) {
+        incrementCounter();
+        Wishlist wishlist;
+        try {
+            wishlist = wishlistRepository.findById(wishlistId).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Wishlist not found"
+            );
+        }
+        //comprovar que no existe ya otro wishlistitem con este productId en esta wishlist
+        for (WishlistItem wishlistItem1: wishlist.getWishlistItems())
+            if (wishlistItem1.getProductId() == productId) {
+                wishlistItem1.setTargetPrice(newTargetPrice.get("newTargetPrice"));
+                wishlist = wishlistRepository.save(wishlist);
+            }
+
+        throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Wishlist item not found in the wishlist"
+        );
     }
 
     // -------- Admin Area --------

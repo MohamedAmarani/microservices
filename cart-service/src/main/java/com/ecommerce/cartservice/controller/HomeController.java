@@ -600,7 +600,7 @@ public class HomeController {
                 HttpMethod.PUT, entity, new ParameterizedTypeReference<OrderDTO>() {
                 });
 
-        //enviar email de confirmacion de pedido
+        //enviar email de confirmacion del pedido realizado
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<DeliveryDTO> deliveryEntity = new HttpEntity<DeliveryDTO>(res2.getBody(), headers);
