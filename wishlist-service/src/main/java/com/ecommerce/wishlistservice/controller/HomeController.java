@@ -274,7 +274,6 @@ public class HomeController {
             if (wishlistItem1.getProductId().equals(wishlistItemProductId)) {
                 wishlistItem1.setTargetPrice(newTargetPrice.get("newTargetPrice"));
                 wishlist = wishlistRepository.save(wishlist);
-                
                 return wishlist;
             }
         }
