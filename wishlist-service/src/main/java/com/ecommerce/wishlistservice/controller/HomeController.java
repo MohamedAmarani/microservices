@@ -159,7 +159,7 @@ public class HomeController {
                         headers.setContentType(MediaType.APPLICATION_JSON);
                         Map<String, String> updatedProductPriceInfo = new HashMap<>();
                         updatedProductPriceInfo.put("productId", wishlistItem.getProductId());
-                        System.out.println("productId: " + wishlistItem.getProductId());
+
                         updatedProductPriceInfo.put("oldPrice", updatedProductInfo.get("oldPrice"));
                         DecimalFormat df = new DecimalFormat("#.##");
                         //update solo 2 decimales
@@ -243,7 +243,7 @@ public class HomeController {
         }
         //comprovar que no existe ya otro wishlistitem con este productId en esta wishlist
         for (WishlistItem wishlistItem1: wishlist.getWishlistItems()) {
-            if (wishlistItem1.getProductId() == wishlistItem.getProductId())
+            if (wishlistItem1.getProductId().equals(wishlistItem.getProductId()))
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT, "The product is already in the wishlist"
                 );
@@ -271,7 +271,7 @@ public class HomeController {
         }
         //comprovar que no existe ya otro wishlistitem con este productId en esta wishlist
         for (WishlistItem wishlistItem1: wishlist.getWishlistItems()) {
-            if (wishlistItem1.getProductId() == wishlistItemProductId) {
+            if (wishlistItem1.getProductId().equals(wishlistItemProductId)) {
                 wishlistItem1.setTargetPrice(newTargetPrice.get("newTargetPrice"));
                 wishlist = wishlistRepository.save(wishlist);
                 return wishlist;
