@@ -168,7 +168,7 @@ public class HomeController {
             File file = new File("C:/Users/moha1/Pictures/eCommerceSaas/" + resource.getName());
             FileUtils.copyURLToFile(new URL(resourceBody.get("url")), file, 0, 0);
 
-            //codificar archivo temporal a base64
+            //codificar archivo temporal a base64 y asignarlo a la variable data
             byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
             data = new String(encoded, StandardCharsets.US_ASCII);
 
@@ -178,6 +178,7 @@ public class HomeController {
         else {
             data = resourceBody.get("data");
         }
+        //settear el campo data y creationDate al nuevo recurso
         resource.setData(data);
         resource.setCreationDate(new Date());
         try {
