@@ -275,7 +275,6 @@ public class HomeController {
                 wishlistItem1.setTargetPrice(newTargetPrice.get("newTargetPrice"));
                 wishlist = wishlistRepository.save(wishlist);
                 return wishlist;
-
             }
         }
         throw new ResponseStatusException(
