@@ -26,13 +26,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                // usamos sesiones sin estado (stateless)
+                // uso sesiones sin estado (stateless)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                // gestionamos intentos de autenticacion
+                // gestiono intentos de autenticacion
                 .exceptionHandling().authenticationEntryPoint((req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
-                // se añade un filtro para verificar las credenciales del usuario y se añade el token en la cabecera de la respesta
+                // añado un filtro para verificar las credenciales del usuario y se añade el token en la cabecera de la respesta
                 .addFilter(new CredentialValidator(authenticationManager(), jwtConfig))
                 .authorizeRequests()
                 // allow all POST requests
@@ -44,7 +44,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated();
     }
 
-    // Spring has UserDetailsService interface, which can be overriden to provide our implementation for fetching user from database (or any other source).
     // Implemento la interfaz UserDetailsService de Spring para definir mi propia implementacion para la extracciond e usuarios de mi base de datos
     // Tambien hace falta añadir el algortimo con el que he encriptado las contraseñas de los usarios, para poder utilizarlo para verificar las credenciales
     @Override

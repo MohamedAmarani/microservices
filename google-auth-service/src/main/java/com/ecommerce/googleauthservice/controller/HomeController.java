@@ -120,7 +120,7 @@ public class HomeController {
             notes = "Retrieve a Google access token out of the authorization code and generate own JWT access token for the user. " +
                     "If the user does not exist in the system, they will be added. At the end, a JWT access token will be returned for the user for which" +
                     " the authorization code was created.")
-    public String hello(@ApiParam(value = "Authorization code of the user requesting access to the system", required = true) @RequestParam("code") final String code) {
+    public String returnCallback(@ApiParam(value = "Authorization code of the user requesting access to the system", required = true) @RequestParam("code") final String code) {
         incrementCounter();
         //obtener token a partir de authorization code
         String url = "https://www.googleapis.com/oauth2/v4/token?code=" + code +
@@ -132,6 +132,7 @@ public class HomeController {
         ResponseEntity<String> res = restTemplate1.exchange(url,
                 HttpMethod.POST, null, new ParameterizedTypeReference<String>() {
                 });
+
         //obtener info del usuario loggeado con token
         JSONObject jo = new JSONObject(res.getBody());
         System.out.println(jo.getString("access_token"));
@@ -167,7 +168,7 @@ public class HomeController {
                     });
         }
 
-        //llamar al micro de auth para obtener token JWT (contraseña null?) que pasa si te registras con username igual que el de google despues?
+        //llamar al micro de auth para obtener token JWT
         JSONObject obj = new JSONObject();
         obj.put("username", jo.getString("email").split("@")[0]); //username tiene que ser null mejor
         obj.put("password", jo.getString("id"));

@@ -34,8 +34,8 @@ public class CredentialValidator extends UsernamePasswordAuthenticationFilter   
         this.authManager = authManager;
         this.jwtConfig = jwtConfig;
 
-        // By default, UsernamePasswordAuthenticationFilter listens to "/login" path.
-        // In our case, we use "/auth". So, we need to override the defaults.
+        // Por defecto UsernamePasswordAuthenticationFilter escucha al path "/login".
+        // Necesito que escuche al path /auth, por lo que tengo que sobreescribir los valores por defecto
         this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(jwtConfig.getUri(), "POST"));
     }
 
