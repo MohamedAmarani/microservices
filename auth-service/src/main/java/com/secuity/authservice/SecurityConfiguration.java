@@ -37,7 +37,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // allow all POST requests
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
-                // allow GET info
+                // allow GET info from inside the cluster
+                .antMatchers(HttpMethod.GET, "/info").permitAll()
+                // allow GET info from outside the cluster
                 .antMatchers(HttpMethod.GET, "/auth/info").permitAll()
                 // allow GET metrics
                 .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
