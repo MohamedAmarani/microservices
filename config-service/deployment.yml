@@ -34,7 +34,12 @@ spec:
     spec:
       containers:
         - name: configse
-          image: scaredste/config-service:v4.0.2
+          image: scaredste/config-service:v5.0.1
+          readinessProbe:
+            httpGet:
+              path: /info
+              port: 8080
+            initialDelaySeconds: 5
           ports:
           - containerPort: 8080
             protocol: TCP

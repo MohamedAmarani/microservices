@@ -32,9 +32,23 @@ spec:
         prometheus.io/scrape: 'true'
         prometheus.io/path: 'actuator/prometheus'
     spec:
+      initContainers:
+      - name: wait-for-mongo-service
+        image: curlimages/curl:7.78.0
+        command: ["/bin/sh","-c"]
+        args: ["while [ $(curl -sw '%{http_code}' http://mongo-service.default.svc:27017 -o /dev/null --max-time 3) -ne 200 ]; do sleep 1; echo 'Waiting for the webserver...'; done"]
+      - name: wait-for-config-service
+        image: curlimages/curl:7.78.0
+        command: ["/bin/sh","-c"]
+        args: ["while [ $(curl -sw '%{http_code}' http://config-service.default.svc:8080/info -o /dev/null --max-time 3) -ne 200 ]; do sleep 1; echo 'Waiting for the webserver...'; done"]
       containers:
         - name: paypalgatewayse
           image: scaredste/paypal-gateway-service:v5.0.4
+          readinessProbe:
+            httpGet:
+              path: /info
+              port: 8080
+            initialDelaySeconds: 5
           ports:
           - containerPort: 8080
             protocol: TCP
