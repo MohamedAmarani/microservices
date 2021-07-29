@@ -29,7 +29,7 @@ import javax.annotation.PostConstruct;
 
 @RestController
 @RequestMapping("/")
-@Service   // It has to be annotated with @Service.
+@Service
 public class UserDetailsServiceImpl implements UserDetailsService  {
 
     @Autowired
