@@ -175,29 +175,6 @@ public class HomeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("")
-    @ApiOperation(value = "Get all catalogs", notes = "Retrieve all catalogs from the Database")
-    public List<CatalogDTO> getCatalog() {
-        incrementCounter();
-        List<CatalogDTO> catalogDTOs = new ArrayList<>();
-        for (Catalog catalog: catalogRepository.findAll()) {
-            List<ProductDTO> productDTOs = new ArrayList<>();
-            CatalogDTO catalogDTO = new CatalogDTO(catalog.getId(), catalog.getCreationDate());
-            List<CatalogItem> ids = catalog.getCatalogItems();
-            List<ProductDTO> products = new ArrayList<ProductDTO>();
-            for (CatalogItem productIdentifier : ids) {
-                ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
-                        HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
-                        });
-                ProductDTO product = res.getBody();
-                productDTOs.add(product);
-            }
-            catalogDTO.setProducts(productDTOs);
-            catalogDTOs.add(catalogDTO);
-        }
-        return catalogDTOs;
-    }
-
     //@HystrixCommand(fallbackMethod = "fallback")
     //poner escalera de llamadas a todos los servicios
     @GetMapping("/{id}")
