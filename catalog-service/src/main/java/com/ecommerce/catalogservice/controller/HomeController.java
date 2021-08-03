@@ -137,41 +137,15 @@ public class HomeController {
     @ApiOperation(value = "Get all catalogs", notes = "Retrieve all catalogs from the Database")
     public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(defaultValue = "", required = false) String id,
                                                            @RequestParam(defaultValue = "", required = false) String productId,
-                                                           @RequestParam(defaultValue = "", required = false) String color,
-                                                           @RequestParam(defaultValue = "0", required = false) double minOriginalPrice,
-                                                           @RequestParam(defaultValue = "999999", required = false) double maxOriginalPrice,
-                                                           @RequestParam(defaultValue = "0", required = false) double minCurrentPrice,
-                                                           @RequestParam(defaultValue = "999999", required = false) double maxCurrentPrice,
-                                                           @RequestParam(defaultValue = "", required = false) String productSize,
-                                                           @RequestParam(defaultValue = "", required = false) String type,
-                                                           @RequestParam(defaultValue = "", required = false) String sex,
-                                                           @RequestParam(defaultValue = "01/01/1970", required = false) Date minCreationDateDate,
+                                                           @RequestParam(defaultValue = "01/01/1970", required = false) Date minCreationDate,
                                                            @RequestParam(defaultValue = "today", required = false) Date maxCreationDate,
                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                            @RequestParam(value = "size", defaultValue = "5", required = false) int size,
                                                            @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
         List<Catalog> catalogs;
-        PageRequest request = PageRequest.of(page, size, Sort.by(sort));
-        //Page<Product> pagedProducts = productRepository.findAll(request);
-        Page<Catalog> pagedProducts = catalogRepository.findByFilters(id, productId, maxCreationDate, request);
-        /*if (name != null)
-            pagedProducts = productRepository.findByNameContainingIgnoreCase(name, request);
-
-        if (description != null)
-            pagedProducts = productRepository.findByDescriptionContainingIgnoreCase(name, request);
-
-        if (color != null)
-            pagedProducts = productRepository.findByColorContainingIgnoreCase(color, request);
-
-        if (productSize != null)
-            pagedProducts = productRepository.findBySize(productSize, request);
-
-        if (type != null)
-            pagedProducts = productRepository.findByType(type, request);
-
-        if (sex != null)
-            pagedProducts = productRepository.findBySex(sex, request);*/
+        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        Page<Catalog> pagedProducts = catalogRepository.findByFilters(id, productId, minCreationDate, maxCreationDate, request);
 
         catalogs = pagedProducts.getContent();
 
