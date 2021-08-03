@@ -162,7 +162,7 @@ public class HomeController {
         List<Product> products;
         PageRequest request = PageRequest.of(page, size, Sort.by(sort));
         //Page<Product> pagedProducts = productRepository.findAll(request);
-        Page<Product> pagedProducts = productRepository.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndColorContainingIgnoreCaseAndSizeAndTypeAndSexAndOriginalPriceBetweenAndCurrentPriceBetween(name, description, color, productSize, type, sex, minOriginalPrice, maxOriginalPrice, minCurrentPrice, maxCurrentPrice, request);
+        Page<Product> pagedProducts = productRepository.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndColorContainingIgnoreCaseAndSizeContainingIgnoreCaseAndTypeContainingIgnoreCaseAndSexContainingIgnoreCaseAndOriginalPriceBetweenAndCurrentPriceBetweenAndCreationDateBetween(name, description, color, productSize, type, sex, minOriginalPrice, maxOriginalPrice, minCurrentPrice, maxCurrentPrice, minCreationDate, maxCreationDate, request);
         /*if (name != null)
             pagedProducts = productRepository.findByNameContainingIgnoreCase(name, request);
 
