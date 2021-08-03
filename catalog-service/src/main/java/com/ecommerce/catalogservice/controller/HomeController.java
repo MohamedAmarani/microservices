@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -128,6 +131,74 @@ public class HomeController {
         // We load balance among them, and display which instance received the request.
         return "Hello from Catalog Service running at port: " + env.getProperty("local.server.port") +
                 " InstanceId " + instanceId;
+    }
+
+    @GetMapping("")
+    @ApiOperation(value = "Get all catalogs", notes = "Retrieve all catalogs from the Database")
+    public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(defaultValue = "", required = false) String name,
+                                                           @RequestParam(defaultValue = "", required = false) String description,
+                                                           @RequestParam(defaultValue = "", required = false) String color,
+                                                           @RequestParam(defaultValue = "0", required = false) double minOriginalPrice,
+                                                           @RequestParam(defaultValue = "999999", required = false) double maxOriginalPrice,
+                                                           @RequestParam(defaultValue = "0", required = false) double minCurrentPrice,
+                                                           @RequestParam(defaultValue = "999999", required = false) double maxCurrentPrice,
+                                                           @RequestParam(defaultValue = "", required = false) String productSize,
+                                                           @RequestParam(defaultValue = "", required = false) String type,
+                                                           @RequestParam(defaultValue = "", required = false) String sex,
+                                                           @RequestParam(defaultValue = "01/01/1970", required = false) Date minCreationDateDate,
+                                                           @RequestParam(defaultValue = "today", required = false) Date maxCreationDate,
+                                                           @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                           @RequestParam(value = "size", defaultValue = "5", required = false) int size,
+                                                           @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
+        incrementCounter();
+        List<Catalog> catalogs;
+        PageRequest request = PageRequest.of(page, size, Sort.by(sort));
+        //Page<Product> pagedProducts = productRepository.findAll(request);
+        Page<Catalog> pagedProducts = catalogRepository.findByIdAndProductIdAndCreationDateGreaterThanEqualAndCreationDateLessThanEqual(id, productId, maxCreationDate, request);
+        /*if (name != null)
+            pagedProducts = productRepository.findByNameContainingIgnoreCase(name, request);
+
+        if (description != null)
+            pagedProducts = productRepository.findByDescriptionContainingIgnoreCase(name, request);
+
+        if (color != null)
+            pagedProducts = productRepository.findByColorContainingIgnoreCase(color, request);
+
+        if (productSize != null)
+            pagedProducts = productRepository.findBySize(productSize, request);
+
+        if (type != null)
+            pagedProducts = productRepository.findByType(type, request);
+
+        if (sex != null)
+            pagedProducts = productRepository.findBySex(sex, request);*/
+
+        catalogs = pagedProducts.getContent();
+
+        List<CatalogDTO> catalogDTOs = new ArrayList<>();
+        for (Catalog catalog: catalogs) {
+            List<ProductDTO> productDTOs = new ArrayList<>();
+            CatalogDTO catalogDTO = new CatalogDTO(catalog.getId(), catalog.getCreationDate());
+            List<CatalogItem> ids = catalog.getCatalogItems();
+            List<ProductDTO> products = new ArrayList<ProductDTO>();
+            for (CatalogItem productIdentifier : ids) {
+                ResponseEntity<ProductDTO> res = restTemplate.exchange("http://product-service:8080/" + productIdentifier.getProductId(),
+                        HttpMethod.GET, null, new ParameterizedTypeReference<ProductDTO>() {
+                        });
+                ProductDTO product = res.getBody();
+                productDTOs.add(product);
+            }
+            catalogDTO.setProducts(productDTOs);
+            catalogDTOs.add(catalogDTO);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentPage", pagedProducts.getNumber());
+        response.put("totalItems", pagedProducts.getTotalElements());
+        response.put("totalPages", pagedProducts.getTotalPages());
+        response.put("catalogs", catalogDTOs);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("")

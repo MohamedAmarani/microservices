@@ -153,7 +153,7 @@ public class HomeController {
                                                            @RequestParam(defaultValue = "", required = false) String productSize,
                                                            @RequestParam(defaultValue = "", required = false) String type,
                                                            @RequestParam(defaultValue = "", required = false) String sex,
-                                                           @RequestParam(defaultValue = "01/01/1970", required = false) Date minCreationDateDate,
+                                                           @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDateDate,
                                                            @RequestParam(defaultValue = "today", required = false) Date maxCreationDate,
                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                            @RequestParam(value = "size", defaultValue = "5", required = false) int size,
