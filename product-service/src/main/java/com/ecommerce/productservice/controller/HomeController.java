@@ -124,20 +124,43 @@ public class HomeController {
 
     @GetMapping("")
     @ApiOperation(value = "Get all products", notes = "Retrieve all products from the Database")
-    public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(required = false) String name,
+    public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(defaultValue = "", required = false) String name,
+                                                           @RequestParam(defaultValue = "", required = false) String description,
+                                                           @RequestParam(defaultValue = "", required = false) String color,
+                                                           @RequestParam(defaultValue = "", required = false) double minOriginalPrice,
+                                                           @RequestParam(defaultValue = "", required = false) double maxOriginalPrice,
+                                                           @RequestParam(defaultValue = "", required = false) double minCurrentPrice,
+                                                           @RequestParam(defaultValue = "", required = false) double maxCurrentPrice,
+                                                           @RequestParam(defaultValue = "", required = false) String productSize,
+                                                           @RequestParam(defaultValue = "", required = false) String type,
+                                                           @RequestParam(defaultValue = "", required = false) String sex,
+                                                           @RequestParam(defaultValue = "", required = false) Date minCreationDateDate,
+                                                           @RequestParam(defaultValue = "", required = false) Date maxCreationDate,
                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-                                                           @RequestParam(value = "size", defaultValue = "2", required = false) int size,
-                                                           @RequestParam(value = "sort", defaultValue = "creationDate,ASC", required = false) String sort) {
+                                                           @RequestParam(value = "size", defaultValue = "5", required = false) int size,
+                                                           @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
         List<Product> products;
         PageRequest request = PageRequest.of(page, size, Sort.by(sort));
-
-        Page<Product> pagedProducts;
-
-        if (name == null)
-            pagedProducts = productRepository.findAll(request);
-        else
+        //Page<Product> pagedProducts = productRepository.findAll(request);
+        Page<Product> pagedProducts = productRepository.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndColorContainingIgnoreCaseAndSizeAndTypeAndSexAndOriginalPriceGreaterThanEqualAndOriginalPriceLessThanEqualAndCurrentPriceGreaterThanEqualAndCurrentPriceLessThanEqualAndCreationDateGreaterThanEqualAndCreationDateLessThanEqual(name, description, color, productSize, type, sex, minOriginalPrice, maxOriginalPrice, minCurrentPrice, maxCurrentPrice, minCreationDateDate, maxCreationDate, request);
+        /*if (name != null)
             pagedProducts = productRepository.findByNameContainingIgnoreCase(name, request);
+
+        if (description != null)
+            pagedProducts = productRepository.findByDescriptionContainingIgnoreCase(name, request);
+
+        if (color != null)
+            pagedProducts = productRepository.findByColorContainingIgnoreCase(color, request);
+
+        if (productSize != null)
+            pagedProducts = productRepository.findBySize(productSize, request);
+
+        if (type != null)
+            pagedProducts = productRepository.findByType(type, request);
+
+        if (sex != null)
+            pagedProducts = productRepository.findBySex(sex, request);*/
 
         products = pagedProducts.getContent();
         Map<String, Object> response = new HashMap<>();
