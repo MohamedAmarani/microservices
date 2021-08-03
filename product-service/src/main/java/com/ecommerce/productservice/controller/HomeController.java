@@ -160,26 +160,8 @@ public class HomeController {
                                                            @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
         List<Product> products;
-        PageRequest request = PageRequest.of(page, size, Sort.by(sort));
-        //Page<Product> pagedProducts = productRepository.findAll(request);
+        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
         Page<Product> pagedProducts = productRepository.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndColorContainingIgnoreCaseAndSizeContainingIgnoreCaseAndTypeContainingIgnoreCaseAndSexContainingIgnoreCaseAndOriginalPriceBetweenAndCurrentPriceBetweenAndCreationDateBetween(name, description, color, productSize, type, sex, minOriginalPrice, maxOriginalPrice, minCurrentPrice, maxCurrentPrice, minCreationDate, maxCreationDate, request);
-        /*if (name != null)
-            pagedProducts = productRepository.findByNameContainingIgnoreCase(name, request);
-
-        if (description != null)
-            pagedProducts = productRepository.findByDescriptionContainingIgnoreCase(name, request);
-
-        if (color != null)
-            pagedProducts = productRepository.findByColorContainingIgnoreCase(color, request);
-
-        if (productSize != null)
-            pagedProducts = productRepository.findBySize(productSize, request);
-
-        if (type != null)
-            pagedProducts = productRepository.findByType(type, request);
-
-        if (sex != null)
-            pagedProducts = productRepository.findBySex(sex, request);*/
 
         products = pagedProducts.getContent();
         Map<String, Object> response = new HashMap<>();
