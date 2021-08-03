@@ -3,32 +3,29 @@ package com.ecommerce.productservice.controller;
 import com.ecommerce.productservice.model.Product;
 import com.ecommerce.productservice.repository.ProductRepository;
 import com.google.common.util.concurrent.AtomicDouble;
-import com.google.gson.Gson;
-import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
-
 import javax.annotation.PostConstruct;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RefreshScope
 @RestController
@@ -126,11 +123,30 @@ public class HomeController {
     }
 
     @GetMapping("")
-    @ApiOperation(value = "Get all products", notes = "Retrieve a specific product from the Database")
-    public List<Product> getProducts() {
+    @ApiOperation(value = "Get all products", notes = "Retrieve all products from the Database")
+    public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(required = false) String name,
+                                                           @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                           @RequestParam(value = "size", defaultValue = "2", required = false) int size,
+                                                           @RequestParam(value = "sort", defaultValue = "creationDate,ASC", required = false) String sort) {
         incrementCounter();
-        List<Product> products = productRepository.findAll();
-        return products;
+        List<Product> products;
+        PageRequest request = PageRequest.of(page, size, Sort.by(sort));
+
+        Page<Product> pagedProducts;
+
+        if (name == null)
+            pagedProducts = productRepository.findAll(request);
+        else
+            pagedProducts = productRepository.findByNameContainingIgnoreCase(name, request);
+
+        products = pagedProducts.getContent();
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentPage", pagedProducts.getNumber());
+        response.put("totalItems", pagedProducts.getTotalElements());
+        response.put("totalPages", pagedProducts.getTotalPages());
+        response.put("products", products);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("")
