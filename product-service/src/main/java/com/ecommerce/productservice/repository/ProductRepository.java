@@ -28,5 +28,5 @@ public interface ProductRepository extends MongoRepository<Product, String> {
     public Page<Product> findBySex(String sex, Pageable pageable);
     public Page<Product> findByCreationDateGreaterThanEqual(Date creationDate, Pageable pageable);
     public Page<Product> findByCreationDateLessThanEqual(Date creationDate, Pageable pageable);
-    public Page<Product> findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndColorContainingIgnoreCaseAndSizeAndTypeAndSexAndOriginalPriceBetweenAndCurrentPriceBetweenAndCreationDateBetween(String name, String description, String color, String productSize, String type, String sex, double minOriginalPrice, double maxOriginalPrice, double minCurrentPrice, double maxCurrentPrice, Date minCreationDateDate, Pageable pageable);
+    public Page<Product> findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndColorContainingIgnoreCaseAndSizeAndTypeAndSexAndOriginalPriceBetweenAndCurrentPriceBetween(String name, String description, String color, String productSize, String type, String sex, double minOriginalPrice, double maxOriginalPrice, double minCurrentPrice, double maxCurrentPrice, Date minCreationDateDate, Date maxCreationDateDate, Pageable pageable);
 }
