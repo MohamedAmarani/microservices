@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface CatalogRepository extends MongoRepository<Catalog, String> {
     public Optional<Catalog> findById(String email);
 
-    @Query(value = "{ 'id' : ?0, 'catalogItems.productId' : ?1, 'creationDate }")
-    public Page<Catalog> findByIdAndCreationDateGreaterThanEqualAndCreationDateLessThanEqual(String id, String productId, Date minCreationDate, Date maxCreationate)
+    @Query(value = "{ 'id' : ?0, 'catalogItems.productId' : ?1, 'creationDate: {$gte: ?2, $lte:?3 }}")
+    public Page<Catalog> findByFilters(String id, String productId, Date minCreationDate, Date maxCreationDate);
 }
 

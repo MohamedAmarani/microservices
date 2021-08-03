@@ -135,8 +135,8 @@ public class HomeController {
 
     @GetMapping("")
     @ApiOperation(value = "Get all catalogs", notes = "Retrieve all catalogs from the Database")
-    public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(defaultValue = "", required = false) String name,
-                                                           @RequestParam(defaultValue = "", required = false) String description,
+    public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(defaultValue = "", required = false) String id,
+                                                           @RequestParam(defaultValue = "", required = false) String productId,
                                                            @RequestParam(defaultValue = "", required = false) String color,
                                                            @RequestParam(defaultValue = "0", required = false) double minOriginalPrice,
                                                            @RequestParam(defaultValue = "999999", required = false) double maxOriginalPrice,
@@ -154,7 +154,7 @@ public class HomeController {
         List<Catalog> catalogs;
         PageRequest request = PageRequest.of(page, size, Sort.by(sort));
         //Page<Product> pagedProducts = productRepository.findAll(request);
-        Page<Catalog> pagedProducts = catalogRepository.findByIdAndProductIdAndCreationDateGreaterThanEqualAndCreationDateLessThanEqual(id, productId, maxCreationDate, request);
+        Page<Catalog> pagedProducts = catalogRepository.findByFilters(id, productId, maxCreationDate, request);
         /*if (name != null)
             pagedProducts = productRepository.findByNameContainingIgnoreCase(name, request);
 
