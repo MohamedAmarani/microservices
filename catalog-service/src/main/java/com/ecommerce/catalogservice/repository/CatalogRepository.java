@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface CatalogRepository extends MongoRepository<Catalog, String> {
     public Optional<Catalog> findById(String email);
 
-    @Query(value = "{ 'catalogItems.$productId' : ?1}")
+    @Query(value = "{ 'catalogItems.$productId' : ?0}")
     public Page<Catalog> findByFilters(String productId, Pageable pageable);
 }
 
