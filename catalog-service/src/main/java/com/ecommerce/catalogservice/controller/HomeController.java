@@ -164,7 +164,7 @@ public class HomeController {
         incrementCounter();
         List<Catalog> catalogs;
         PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
-        Page<Catalog> pagedProducts = catalogRepository.findByFilters(id, productId, minCreationDate, maxCreationDate, request);
+        Page<Catalog> pagedProducts = catalogRepository.findByFilters(productId, request);
 
         catalogs = pagedProducts.getContent();
 
