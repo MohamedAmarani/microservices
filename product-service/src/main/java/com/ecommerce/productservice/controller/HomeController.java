@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.ParameterizedTypeReference;
@@ -19,10 +20,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import javax.annotation.PostConstruct;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -99,6 +102,22 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) throws Exception {
+        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        final CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                if ("today".equals(text)) {
+                    setValue(new Date());
+                } else {
+                    super.setAsText(text);
+                }
+            }
+        };
+        binder.registerCustomEditor(Date.class, dateEditor);
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -127,15 +146,15 @@ public class HomeController {
     public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(defaultValue = "", required = false) String name,
                                                            @RequestParam(defaultValue = "", required = false) String description,
                                                            @RequestParam(defaultValue = "", required = false) String color,
-                                                           @RequestParam(defaultValue = "", required = false) double minOriginalPrice,
-                                                           @RequestParam(defaultValue = "", required = false) double maxOriginalPrice,
-                                                           @RequestParam(defaultValue = "", required = false) double minCurrentPrice,
-                                                           @RequestParam(defaultValue = "", required = false) double maxCurrentPrice,
+                                                           @RequestParam(defaultValue = "0", required = false) double minOriginalPrice,
+                                                           @RequestParam(defaultValue = "999999", required = false) double maxOriginalPrice,
+                                                           @RequestParam(defaultValue = "0", required = false) double minCurrentPrice,
+                                                           @RequestParam(defaultValue = "999999", required = false) double maxCurrentPrice,
                                                            @RequestParam(defaultValue = "", required = false) String productSize,
                                                            @RequestParam(defaultValue = "", required = false) String type,
                                                            @RequestParam(defaultValue = "", required = false) String sex,
-                                                           @RequestParam(defaultValue = "", required = false) Date minCreationDateDate,
-                                                           @RequestParam(defaultValue = "", required = false) Date maxCreationDate,
+                                                           @RequestParam(defaultValue = "01/01/1970", required = false) Date minCreationDateDate,
+                                                           @RequestParam(defaultValue = "today", required = false) Date maxCreationDate,
                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                            @RequestParam(value = "size", defaultValue = "5", required = false) int size,
                                                            @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
