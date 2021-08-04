@@ -168,7 +168,7 @@ public class HomeController {
         Page<Catalog> pagedProducts = catalogRepository.findByIdAndCreationDateBetween(id, minCreationDate, maxCreationDate, request);
         List<Catalog> list = new ArrayList<>();
         Page<Catalog> catalogsRes = new PageImpl<>(list);
-
+        System.out.println(pagedProducts.getTotalElements());
         if (!productId.equals("")) {
             //solo las que tengan el productId si se ha especificado
             for (int i = 0; i < pagedProducts.getContent().size(); ++i) {
