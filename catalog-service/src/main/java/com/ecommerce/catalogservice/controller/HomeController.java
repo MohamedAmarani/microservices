@@ -166,7 +166,6 @@ public class HomeController {
         PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
         Page<Catalog> pagedProducts = catalogRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
         List<Catalog> list = new ArrayList<>();
-        Page<Catalog> catalogsRes = new PageImpl<>(list);
 
         if (!productId.equals("")) {
             //solo las que tengan el productId si se ha especificado
@@ -177,14 +176,13 @@ public class HomeController {
                         found = true;
                 }
                 if (found)
-                    catalogsRes.getContent().add(pagedProducts.getContent().get(i));
+                    list.add(pagedProducts.getContent().get(i));
             }
+            pagedProducts = new PageImpl<>(list, PageRequest.of(page, size), list.size());
         }
-        else
-            catalogsRes = pagedProducts;
 
         List<CatalogDTO> catalogDTOs = new ArrayList<>();
-        for (Catalog catalog: catalogsRes.getContent()) {
+        for (Catalog catalog: pagedProducts.getContent()) {
             List<ProductDTO> productDTOs = new ArrayList<>();
             CatalogDTO catalogDTO = new CatalogDTO(catalog.getId(), catalog.getCreationDate());
             List<CatalogItem> ids = catalog.getCatalogItems();
