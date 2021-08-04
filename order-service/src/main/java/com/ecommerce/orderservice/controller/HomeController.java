@@ -7,10 +7,15 @@ import com.google.gson.Gson;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -106,10 +111,30 @@ public class HomeController {
 
     @GetMapping("")
     @ApiOperation(value = "Get all orders", notes = "Retrieve all orders from the Database")
-    public List<OrderDTO> getDeliveries()    {
+    public ResponseEntity<Map<String, Object>> getOrders(@RequestParam(defaultValue = "", required = false) String deliveryId,
+                                                         @RequestParam(defaultValue = "", required = false) String cartId,
+                                                         @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
+                                                         @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
+                                                         @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                         @RequestParam(value = "size", defaultValue = "5", required = false) int size,
+                                                         @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
+        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        Page<Order> pagedOrders = orderRepository.findByDeliveryIdContainingIgnoreCaseAndCreationDateBetween(deliveryId, minCreationDate, maxCreationDate, request);
+        List<Order> list = new ArrayList<>();
+
+        //seleccionar solo los pedidos cuyo cartId coincida con el especificado
+        if (!cartId.equals("")) {
+            //solo las que tengan el cartId si se ha especificado
+            for (int i = 0; i < pagedOrders.getContent().size(); ++i) {
+                if (pagedOrders.getContent().get(i).getCart().getId().equals(cartId))
+                        list.add(pagedOrders.getContent().get(i));
+            }
+            pagedOrders = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+
         List<OrderDTO> result = new ArrayList<>();
-        List<Order> orders = orderRepository.findAll();
+        List<Order> orders = pagedOrders.getContent();
         for (Order order: orders) {
             OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());
             Cart cart = order.getCart();
@@ -130,7 +155,14 @@ public class HomeController {
             orderDTO.setCart(cartDTO);
             result.add(orderDTO);
         }
-        return result;
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentPage", pagedOrders.getNumber());
+        response.put("totalItems", pagedOrders.getTotalElements());
+        response.put("totalPages", pagedOrders.getTotalPages());
+        response.put("carts", result);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     //@HystrixCommand(fallbackMethod = "fallback")
@@ -164,7 +196,7 @@ public class HomeController {
 
     @PostMapping("")
     @ApiOperation(value = "Create an order", notes = "Provide information to create an order")
-    public OrderDTO createInventory(@ApiParam(value = "Information of the order to create", required = true) @RequestBody Cart cart) {
+    public OrderDTO createOrder(@ApiParam(value = "Information of the order to create", required = true) @RequestBody Cart cart) {
         incrementCounter();
         Order order = orderRepository.save(new Order(cart, new Date()));
         OrderDTO orderDTO = new OrderDTO(order.getId(), order.getDeliveryId(), order.getCreationDate());

@@ -17,6 +17,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -137,11 +140,29 @@ public class HomeController {
     }
 
     @GetMapping("")
-    @ApiOperation(value = "Get all accounts", notes = "Retrieve a specific account from the Database")
-    public List<Account> getAccounts() {
+    @ApiOperation(value = "Get all accounts", notes = "Retrieve all accounts from the Database")
+    public ResponseEntity<Map<String, Object>> getAccounts(@RequestParam(defaultValue = "", required = false) String username,
+                                                            @RequestParam(defaultValue = "", required = false) String email,
+                                                            @RequestParam(defaultValue = "", required = false) String role,
+                                                            @RequestParam(defaultValue = "", required = false) String deliveryAddress,
+                                                            @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
+                                                            @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
+                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                            @RequestParam(value = "size", defaultValue = "5", required = false) int size,
+                                                            @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
-        List<Account> accounts = userRepository.findAll();
-        return accounts;
+        List<Account> accounts;
+        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        Page<Account> pagedAccounts = userRepository.findByUsernameContainingIgnoreCaseAndEmailContainingIgnoreCaseAndRoleContainingIgnoreCaseAndDeliveryAddressContainingIgnoreCaseAndCreationDateBetween(username,email, role, deliveryAddress, minCreationDate, maxCreationDate, request);
+
+        accounts = pagedAccounts.getContent();
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentPage", pagedAccounts.getNumber());
+        response.put("totalItems", pagedAccounts.getTotalElements());
+        response.put("totalPages", pagedAccounts.getTotalPages());
+        response.put("accounts", accounts);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

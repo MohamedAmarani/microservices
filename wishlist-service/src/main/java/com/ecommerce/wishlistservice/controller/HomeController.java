@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -113,11 +117,69 @@ public class HomeController {
     }
 
     @GetMapping("")
-    @ApiOperation(value = "Get all wishlists", notes = "Retrieve all wishlists from the database")
-    public List<Wishlist> getWishlists() {
+    @ApiOperation(value = "Get all wishlists", notes = "Retrieve all wishlists from the Database")
+    public ResponseEntity<Map<String, Object>> getWishlists(@RequestParam(defaultValue = "", required = false) String productId,
+                                                            @RequestParam(defaultValue = "", required = false) String targetPrice,
+                                                            @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
+                                                            @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
+                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                            @RequestParam(value = "size", defaultValue = "5", required = false) int size,
+                                                            @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
-        Wishlist wishlist;
-        return wishlistRepository.findAll();
+        List<Wishlist> wishlists;
+        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        Page<Wishlist> pagedWishlists = wishlistRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
+        List<Wishlist> list = new ArrayList<>();
+
+        //seleccionar solo los wishlist que contengan algun item con productId que coincida con el especificado
+        if (!productId.equals("")) {
+            //solo las que tengan el productId especificado
+            for (int i = 0; i < pagedWishlists.getContent().size(); ++i) {
+                boolean found = false;
+                for (int j = 0; !found && j < pagedWishlists.getContent().get(i).getWishlistItems().size(); ++j) {
+                    if (pagedWishlists.getContent().get(i).getWishlistItems().get(j).getProductId().equals(productId))
+                        found = true;
+                }
+                if (found) {
+                    //seleccionar solo los wishlist que contengan algun item con targetPrice que coincida con el especificado
+                    if (!targetPrice.equals("")) {
+                        //solo las que tengan el targetPrice especificado
+                        for (int i1 = 0; i1 < pagedWishlists.getContent().size(); ++i1) {
+                            found = false;
+                            for (int j = 0; !found && j < pagedWishlists.getContent().get(i1).getWishlistItems().size(); ++j) {
+                                if (pagedWishlists.getContent().get(i1).getWishlistItems().get(j).getTargetPrice() == Double.parseDouble(targetPrice))
+                                    found = true;
+                            }
+                            if (found)
+                                list.add(pagedWishlists.getContent().get(i));
+                        }
+                    }
+                }
+            }
+                pagedWishlists = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+        else if (!targetPrice.equals("")) {
+            //solo las que tengan el targetPrice especificado
+            for (int i = 0; i < pagedWishlists.getContent().size(); ++i) {
+                boolean found = false;
+                for (int j = 0; !found && j < pagedWishlists.getContent().get(i).getWishlistItems().size(); ++j) {
+                    if (pagedWishlists.getContent().get(i).getWishlistItems().get(j).getTargetPrice() == Double.parseDouble(targetPrice))
+                        found = true;
+                }
+                if (found)
+                    list.add(pagedWishlists.getContent().get(i));
+            }
+            pagedWishlists = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+
+        wishlists = pagedWishlists.getContent();
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentPage", pagedWishlists.getNumber());
+        response.put("totalItems", pagedWishlists.getTotalElements());
+        response.put("totalPages", pagedWishlists.getTotalPages());
+        response.put("wishlists", wishlists);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{wishlistId}")

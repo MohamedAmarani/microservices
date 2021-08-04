@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -110,9 +113,31 @@ public class HomeController {
     }
 
     @GetMapping("")
-    public List<Discount> getDiscounts() {
+    @ApiOperation(value = "Get all discounts", notes = "Retrieve all discounts from the Database")
+    public ResponseEntity<Map<String, Object>> getDiscounts(@RequestParam(defaultValue = "", required = false) String code,
+                                                            /*@RequestParam(defaultValue = "", required = false) String percentage,
+                                                            @RequestParam(defaultValue = "", required = false) String minimumAmount,
+                                                            @RequestParam(defaultValue = "", required = false) String currentUses,
+                                                            @RequestParam(defaultValue = "", required = false) String maxUses,
+                                                            @RequestParam(defaultValue = "", required = false) String enabled,*/
+                                                            @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
+                                                            @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
+                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                            @RequestParam(value = "size", defaultValue = "5", required = false) int size,
+                                                            @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
-        return discountRepository.findAll();
+        List<Discount> discounts;
+        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        Page<Discount> pagedDiscounts = discountRepository.findByCodeContainingIgnoreCaseAndCreationDateBetween(code, minCreationDate, maxCreationDate, request);
+
+        discounts = pagedDiscounts.getContent();
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentPage", pagedDiscounts.getNumber());
+        response.put("totalItems", pagedDiscounts.getTotalElements());
+        response.put("totalPages", pagedDiscounts.getTotalPages());
+        response.put("discounts", discounts);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{discountId}")

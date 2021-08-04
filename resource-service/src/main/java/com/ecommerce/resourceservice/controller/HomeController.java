@@ -14,6 +14,9 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -125,11 +128,27 @@ public class HomeController {
 
 
     @GetMapping("")
-    @ApiOperation(value = "Get all resources", notes = "Retrieve a specific resource from the Database")
-    public List<Resource> getResources() {
+    @ApiOperation(value = "Get all resources", notes = "Retrieve all resources from the Database")
+    public ResponseEntity<Map<String, Object>> getResources(@RequestParam(defaultValue = "", required = false) String name,
+                                                            @RequestParam(defaultValue = "", required = false) String description,
+                                                            @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
+                                                            @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
+                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                            @RequestParam(value = "size", defaultValue = "5", required = false) int size,
+                                                            @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
-        List<Resource> resources = resourceRepository.findAll();
-        return resources;
+        List<Resource> resources;
+        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        Page<Resource> pagedResources = resourceRepository.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndCreationDateBetween(name, description, minCreationDate, maxCreationDate, request);
+
+        resources = pagedResources.getContent();
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentPage", pagedResources.getNumber());
+        response.put("totalItems", pagedResources.getTotalElements());
+        response.put("totalPages", pagedResources.getTotalPages());
+        response.put("resources", resources);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

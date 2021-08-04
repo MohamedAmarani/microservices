@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -104,9 +107,26 @@ public class HomeController {
 
     @GetMapping("")
     @ApiOperation(value = "Get all deliveries", notes = "Retrieve all deliveries from the Database")
-    public List<Delivery> getDeliveries()    {
+    public ResponseEntity<Map<String, Object>> getDeliveries(@RequestParam(defaultValue = "", required = false) String orderId,
+                                                             @RequestParam(defaultValue = "", required = false) String deliveryAddress,
+                                                             @RequestParam(defaultValue = "", required = false) String deliveryState,
+                                                             @RequestParam(defaultValue = "", required = false) String deliveryCompany,
+                                                             @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
+                                                             @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
+                                                             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                             @RequestParam(value = "size", defaultValue = "5", required = false) int size,
+                                                             @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
-        return deliveryRepository.findAll();
+        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        Page<Delivery> pagedDeliveries = deliveryRepository.findByOrderIdContainingIgnoreCaseAnDeliveryAddressContainingIgnoreCaseAndDeliveryStateContainingIgnoreCaseAndDeliveryCompanyContainingIgnoreCaseAndCreationDateBetween(orderId, deliveryAddress, deliveryState, deliveryCompany, minCreationDate, maxCreationDate, request);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentPage", pagedDeliveries.getNumber());
+        response.put("totalItems", pagedDeliveries.getTotalElements());
+        response.put("totalPages", pagedDeliveries.getTotalPages());
+        response.put("carts", pagedDeliveries.getContent());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     //@HystrixCommand(fallbackMethod = "fallback")

@@ -15,6 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -122,11 +126,66 @@ public class HomeController {
     }
 
     @GetMapping("")
-    @ApiOperation(value = "Get all carts", notes = "Retrieve all carts from the Database and all their cart items")
-    public List<CartDTO> getCarts() {
+    @ApiOperation(value = "Get all carts", notes = "Retrieve all carts from the Database")
+    public ResponseEntity<Map<String, Object>> getCarts(@RequestParam(defaultValue = "", required = false) String productId,
+                                                        @RequestParam(defaultValue = "", required = false) String inventoryId,
+                                                        @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
+                                                        @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
+                                                        @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                        @RequestParam(value = "size", defaultValue = "5", required = false) int size,
+                                                        @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
+        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        Page<Cart> pagedCarts = cartRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
+        List<Cart> list = new ArrayList<>();
+
+        //seleccionar solo los carritos con algun productId como el especificado
+        if (!productId.equals("")) {
+            //solo las que tengan el productId si se ha especificado
+            for (int i = 0; i < pagedCarts.getContent().size(); ++i) {
+                boolean found = false;
+                for (int j = 0; !found && j < pagedCarts.getContent().get(i).getCartItems().size(); ++j) {
+                    if (pagedCarts.getContent().get(i).getCartItems().get(j).getProductId().equals(productId))
+                        found = true;
+                }
+                if (found) {
+                    //seleccionar solo los carritos con algun catalogId como el especificado
+                    if (!inventoryId.equals("")) {
+                        //solo las que tengan el productId si se ha especificado
+                        for (int i1 = 0; i1 < pagedCarts.getContent().size(); ++i1) {
+                            found = false;
+                            for (int j = 0; !found && j < pagedCarts.getContent().get(i1).getCartItems().size(); ++j) {
+                                if (pagedCarts.getContent().get(i1).getCartItems().get(j).getInventoryId().equals(inventoryId))
+                                    found = true;
+                            }
+                            if (found) {
+                                list.add(pagedCarts.getContent().get(i));
+                            }
+                        }
+                        pagedCarts = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+                    }
+                }
+            }
+            pagedCarts = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+        else if (!inventoryId.equals("")) {
+            //solo las que tengan el productId si se ha especificado
+            for (int i1 = 0; i1 < pagedCarts.getContent().size(); ++i1) {
+                boolean found = false;
+                for (int j = 0; !found && j < pagedCarts.getContent().get(i1).getCartItems().size(); ++j) {
+                    if (pagedCarts.getContent().get(i1).getCartItems().get(j).getInventoryId().equals(inventoryId))
+                        found = true;
+                }
+                if (found) {
+                    list.add(pagedCarts.getContent().get(i1));
+                }
+            }
+            pagedCarts = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+
         List<CartDTO> result = new ArrayList<>();
-        List<Cart> carts = cartRepository.findAll();
+
+        List<Cart> carts = pagedCarts.getContent();
         for (Cart cart: carts) {
             CartDTO cartDTO = new CartDTO(cart.getId(), cart.getCreationDate());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
@@ -144,7 +203,14 @@ public class HomeController {
             }
             result.add(cartDTO);
         }
-        return result;
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentPage", pagedCarts.getNumber());
+        response.put("totalItems", pagedCarts.getTotalElements());
+        response.put("totalPages", pagedCarts.getTotalPages());
+        response.put("carts", result);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @HystrixCommand(fallbackMethod = "fallback")

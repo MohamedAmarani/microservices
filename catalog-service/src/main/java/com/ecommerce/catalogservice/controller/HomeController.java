@@ -169,7 +169,7 @@ public class HomeController {
 
         //seleccionar solo los catalogos con algun productId como el especificado
         if (!productId.equals("")) {
-            //solo las que tengan el productId si se ha especificado
+            //solo las que tengan el productId especificado
             for (int i = 0; i < pagedCatalogs.getContent().size(); ++i) {
                 boolean found = false;
                 for (int j = 0; !found && j < pagedCatalogs.getContent().get(i).getCatalogItems().size(); ++j) {

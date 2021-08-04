@@ -133,7 +133,6 @@ public class HomeController {
                                                               @RequestParam(value = "size", defaultValue = "5", required = false) int size,
                                                               @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
-        List<Inventory> catalogs;
         PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
         Page<Inventory> pagedInventories = inventoryRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
         List<Inventory> list = new ArrayList<>();
@@ -147,25 +146,36 @@ public class HomeController {
                     if (pagedInventories.getContent().get(i).getInventoryItems().get(j).getProductId().equals(productId))
                         found = true;
                 }
+                if (found) {
+                    //seleccionar solo los inventarios con algun catalogId como el especificado
+                    if (!catalogId.equals("")) {
+                        //solo las que tengan el productId si se ha especificado
+                        for (int i1 = 0; i1 < pagedInventories.getContent().size(); ++i1) {
+                            found = false;
+                            for (int j = 0; !found && j < pagedInventories.getContent().get(i1).getInventoryItems().size(); ++j) {
+                                if (pagedInventories.getContent().get(i1).getInventoryItems().get(j).getCatalogId().equals(catalogId))
+                                    found = true;
+                            }
+                            if (found)
+                                list.add(pagedInventories.getContent().get(i));
+                        }
+                    }
+                }
+            }
+            pagedInventories = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+        else if (!catalogId.equals("")) {
+                //solo las que tengan el productId si se ha especificado
+            for (int i = 0; i < pagedInventories.getContent().size(); ++i) {
+                boolean found = false;
+                for (int j = 0; !found && j < pagedInventories.getContent().get(i).getInventoryItems().size(); ++j) {
+                    if (pagedInventories.getContent().get(i).getInventoryItems().get(j).getCatalogId().equals(catalogId))
+                        found = true;
+                }
                 if (found)
                     list.add(pagedInventories.getContent().get(i));
             }
             pagedInventories = new PageImpl<>(list, PageRequest.of(page, size), list.size());
-
-            //seleccionar solo los catalogos con algun catalogId como el especificado
-            if (!catalogId.equals("")) {
-                //solo las que tengan el productId si se ha especificado
-                for (int i = 0; i < pagedInventories.getContent().size(); ++i) {
-                    boolean found = false;
-                    for (int j = 0; !found && j < pagedInventories.getContent().get(i).getInventoryItems().size(); ++j) {
-                        if (pagedInventories.getContent().get(i).getInventoryItems().get(j).getCatalogId().equals(catalogId))
-                            found = true;
-                    }
-                    if (found)
-                        list.add(pagedInventories.getContent().get(i));
-                }
-                pagedInventories = new PageImpl<>(list, PageRequest.of(page, size), list.size());
-            }
         }
 
         List<InventoryDTO> inventoryDTOs = new ArrayList<>();
