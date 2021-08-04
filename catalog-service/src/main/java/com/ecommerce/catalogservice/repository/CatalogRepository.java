@@ -14,7 +14,6 @@ import java.util.Optional;
 public interface CatalogRepository extends MongoRepository<Catalog, String> {
     public Optional<Catalog> findById(String email);
 
-    @Query(value = "{ 'id' : ?0, 'catalogItems.$productId' : ?1, creationDate : {$gte: ?2, $lte: ?3 }}")
     public Page<Catalog> findByIdAndCreationDateBetween(String id, Date minCreationDate, Date maxCreationDate, Pageable pageable);
 }
 
