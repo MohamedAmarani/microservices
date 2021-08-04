@@ -16,6 +16,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
@@ -164,12 +165,25 @@ public class HomeController {
         incrementCounter();
         List<Catalog> catalogs;
         PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
-        Page<Catalog> pagedProducts = catalogRepository.findByFilters(id, productId, minCreationDate, maxCreationDate, request);
+        Page<Catalog> pagedProducts = catalogRepository.findByIdAndCreationDateBetween(id, minCreationDate, maxCreationDate, request);
+        List<Catalog> list = new ArrayList<>();
+        Page<Catalog> catalogsRes = new PageImpl<>(list);
 
-        catalogs = pagedProducts.getContent();
+        if (!productId.equals("")) {
+            //solo las que tengan el productId si se ha especificado
+            for (int i = 0; i < pagedProducts.getContent().size(); ++i) {
+                boolean found = false;
+                for (int j = 0; !found && j < pagedProducts.getContent().get(i).getCatalogItems().size(); ++j) {
+                    if (pagedProducts.getContent().get(i).getCatalogItems().get(j).getProductId().equals(productId))
+                        found = true;
+                }
+                if (found)
+                    catalogsRes.getContent().add(pagedProducts.getContent().get(i));
+            }
+        }
 
         List<CatalogDTO> catalogDTOs = new ArrayList<>();
-        for (Catalog catalog: catalogs) {
+        for (Catalog catalog: catalogsRes.getContent()) {
             List<ProductDTO> productDTOs = new ArrayList<>();
             CatalogDTO catalogDTO = new CatalogDTO(catalog.getId(), catalog.getCreationDate());
             List<CatalogItem> ids = catalog.getCatalogItems();
