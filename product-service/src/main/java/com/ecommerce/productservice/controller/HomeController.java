@@ -101,22 +101,6 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
-    @InitBinder
-    public void initBinder(WebDataBinder binder) throws Exception {
-        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        final CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
-            @Override
-            public void setAsText(String text) throws IllegalArgumentException {
-                if ("today".equals(text)) {
-                    setValue(new Date());
-                } else {
-                    super.setAsText(text);
-                }
-            }
-        };
-        binder.registerCustomEditor(Date.class, dateEditor);
-    }
-
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -153,7 +137,7 @@ public class HomeController {
                                                            @RequestParam(defaultValue = "", required = false) String type,
                                                            @RequestParam(defaultValue = "", required = false) String sex,
                                                            @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
-                                                           @RequestParam(defaultValue = "today", required = false) Date maxCreationDate,
+                                                           @RequestParam(defaultValue = "2025-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                            @RequestParam(value = "size", defaultValue = "5", required = false) int size,
                                                            @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
