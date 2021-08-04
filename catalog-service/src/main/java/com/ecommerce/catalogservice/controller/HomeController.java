@@ -200,9 +200,9 @@ public class HomeController {
         }
 
         Map<String, Object> response = new HashMap<>();
-        response.put("currentPage", pagedProducts.getNumber());
-        response.put("totalItems", pagedProducts.getTotalElements());
-        response.put("totalPages", pagedProducts.getTotalPages());
+        response.put("currentPage", catalogsRes.getNumber());
+        response.put("totalItems", catalogsRes.getTotalElements());
+        response.put("totalPages", catalogsRes.getTotalPages());
         response.put("catalogs", catalogDTOs);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
