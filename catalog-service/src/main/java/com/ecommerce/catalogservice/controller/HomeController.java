@@ -155,8 +155,7 @@ public class HomeController {
 
     @GetMapping("")
     @ApiOperation(value = "Get all catalogs", notes = "Retrieve all catalogs from the Database")
-    public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(defaultValue = "", required = false) String id,
-                                                           @RequestParam(defaultValue = "", required = false) String productId,
+    public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(defaultValue = "", required = false) String productId,
                                                            @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
                                                            @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -165,7 +164,7 @@ public class HomeController {
         incrementCounter();
         List<Catalog> catalogs;
         PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
-        Page<Catalog> pagedProducts = catalogRepository.findByIdContainingIgnoreCaseAndCreationDateBetween(id, minCreationDate, maxCreationDate, request);
+        Page<Catalog> pagedProducts = catalogRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
         List<Catalog> list = new ArrayList<>();
         Page<Catalog> catalogsRes = new PageImpl<>(list);
         System.out.println(productId);
