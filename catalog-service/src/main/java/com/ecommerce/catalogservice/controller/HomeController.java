@@ -169,6 +169,7 @@ public class HomeController {
         Page<Catalog> catalogsRes = new PageImpl<>(list);
         System.out.println(productId);
         System.out.println(pagedProducts.getTotalElements());
+
         if (!productId.equals("")) {
             //solo las que tengan el productId si se ha especificado
             for (int i = 0; i < pagedProducts.getContent().size(); ++i) {
@@ -181,6 +182,8 @@ public class HomeController {
                     catalogsRes.getContent().add(pagedProducts.getContent().get(i));
             }
         }
+        else
+            catalogsRes = pagedProducts;
 
         List<CatalogDTO> catalogDTOs = new ArrayList<>();
         for (Catalog catalog: catalogsRes.getContent()) {
