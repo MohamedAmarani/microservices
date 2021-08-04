@@ -155,7 +155,7 @@ public class HomeController {
 
     @GetMapping("")
     @ApiOperation(value = "Get all catalogs", notes = "Retrieve all catalogs from the Database")
-    public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(defaultValue = "", required = false) String productId,
+    public ResponseEntity<Map<String, Object>> getCatalogs(@RequestParam(defaultValue = "", required = false) String productId,
                                                            @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
                                                            @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
@@ -164,25 +164,26 @@ public class HomeController {
         incrementCounter();
         List<Catalog> catalogs;
         PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
-        Page<Catalog> pagedProducts = catalogRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
+        Page<Catalog> pagedCatalogs = catalogRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
         List<Catalog> list = new ArrayList<>();
 
+        //seleccionar solo los catalogos con algun productId como el especificado
         if (!productId.equals("")) {
             //solo las que tengan el productId si se ha especificado
-            for (int i = 0; i < pagedProducts.getContent().size(); ++i) {
+            for (int i = 0; i < pagedCatalogs.getContent().size(); ++i) {
                 boolean found = false;
-                for (int j = 0; !found && j < pagedProducts.getContent().get(i).getCatalogItems().size(); ++j) {
-                    if (pagedProducts.getContent().get(i).getCatalogItems().get(j).getProductId().equals(productId))
+                for (int j = 0; !found && j < pagedCatalogs.getContent().get(i).getCatalogItems().size(); ++j) {
+                    if (pagedCatalogs.getContent().get(i).getCatalogItems().get(j).getProductId().equals(productId))
                         found = true;
                 }
                 if (found)
-                    list.add(pagedProducts.getContent().get(i));
+                    list.add(pagedCatalogs.getContent().get(i));
             }
-            pagedProducts = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+            pagedCatalogs = new PageImpl<>(list, PageRequest.of(page, size), list.size());
         }
 
         List<CatalogDTO> catalogDTOs = new ArrayList<>();
-        for (Catalog catalog: pagedProducts.getContent()) {
+        for (Catalog catalog: pagedCatalogs.getContent()) {
             List<ProductDTO> productDTOs = new ArrayList<>();
             CatalogDTO catalogDTO = new CatalogDTO(catalog.getId(), catalog.getCreationDate());
             List<CatalogItem> ids = catalog.getCatalogItems();
@@ -199,9 +200,9 @@ public class HomeController {
         }
 
         Map<String, Object> response = new HashMap<>();
-        response.put("currentPage", pagedProducts.getNumber());
-        response.put("totalItems", pagedProducts.getTotalElements());
-        response.put("totalPages", pagedProducts.getTotalPages());
+        response.put("currentPage", pagedCatalogs.getNumber());
+        response.put("totalItems", pagedCatalogs.getTotalElements());
+        response.put("totalPages", pagedCatalogs.getTotalPages());
         response.put("catalogs", catalogDTOs);
 
         return new ResponseEntity<>(response, HttpStatus.OK);

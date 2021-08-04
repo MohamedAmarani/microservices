@@ -11,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -120,11 +124,52 @@ public class HomeController {
     }
 
     @GetMapping("")
-    @ApiOperation(value = "Get all inventories", notes = "Retrieve all inventory from the Database")
-    public List<InventoryDTO> getInventories() {
+    @ApiOperation(value = "Get all inventories", notes = "Retrieve all inventories from the Database")
+    public ResponseEntity<Map<String, Object>> getInventories(@RequestParam(defaultValue = "", required = false) String productId,
+                                                              @RequestParam(defaultValue = "", required = false) String catalogId,
+                                                              @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
+                                                              @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
+                                                              @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                              @RequestParam(value = "size", defaultValue = "5", required = false) int size,
+                                                              @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
+        List<Inventory> catalogs;
+        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        Page<Inventory> pagedInventories = inventoryRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
+        List<Inventory> list = new ArrayList<>();
+
+        //seleccionar solo los inventarios con algun productId como el especificado
+        if (!productId.equals("")) {
+            //solo las que tengan el productId si se ha especificado
+            for (int i = 0; i < pagedInventories.getContent().size(); ++i) {
+                boolean found = false;
+                for (int j = 0; !found && j < pagedInventories.getContent().get(i).getInventoryItems().size(); ++j) {
+                    if (pagedInventories.getContent().get(i).getInventoryItems().get(j).getProductId().equals(productId))
+                        found = true;
+                }
+                if (found)
+                    list.add(pagedInventories.getContent().get(i));
+            }
+            pagedInventories = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+
+            //seleccionar solo los catalogos con algun catalogId como el especificado
+            if (!catalogId.equals("")) {
+                //solo las que tengan el productId si se ha especificado
+                for (int i = 0; i < pagedInventories.getContent().size(); ++i) {
+                    boolean found = false;
+                    for (int j = 0; !found && j < pagedInventories.getContent().get(i).getInventoryItems().size(); ++j) {
+                        if (pagedInventories.getContent().get(i).getInventoryItems().get(j).getCatalogId().equals(catalogId))
+                            found = true;
+                    }
+                    if (found)
+                        list.add(pagedInventories.getContent().get(i));
+                }
+                pagedInventories = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+            }
+        }
+
         List<InventoryDTO> inventoryDTOs = new ArrayList<>();
-        for (Inventory inventory: inventoryRepository.findAll()) {
+        for (Inventory inventory: pagedInventories.getContent()) {
             //la respuesta inicialiada con dos paramatros
             InventoryDTO inventoryDTO = null;
             inventoryDTO = new InventoryDTO(inventory.getId(), inventory.getCreationDate());
@@ -144,7 +189,14 @@ public class HomeController {
             inventoryDTO.setItems(inventoryItemDTOs);
             inventoryDTOs.add(inventoryDTO);
         }
-        return inventoryDTOs;
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentPage", pagedInventories.getNumber());
+        response.put("totalItems", pagedInventories.getTotalElements());
+        response.put("totalPages", pagedInventories.getTotalPages());
+        response.put("inventories", inventoryDTOs);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @HystrixCommand(fallbackMethod = "fallback")
