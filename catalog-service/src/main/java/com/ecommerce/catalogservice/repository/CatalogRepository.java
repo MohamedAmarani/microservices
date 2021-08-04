@@ -14,6 +14,6 @@ import java.util.Optional;
 public interface CatalogRepository extends MongoRepository<Catalog, String> {
     public Optional<Catalog> findById(String email);
 
-    public Page<Catalog> findByIdAndCreationDateBetween(String id, Date minCreationDate, Date maxCreationDate, Pageable pageable);
+    public Page<Catalog> findByIdContainingIgnoreCaseAndCreationDateBetween(String id, Date minCreationDate, Date maxCreationDate, Pageable pageable);
 }
 

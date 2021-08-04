@@ -158,16 +158,17 @@ public class HomeController {
     public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(defaultValue = "", required = false) String id,
                                                            @RequestParam(defaultValue = "", required = false) String productId,
                                                            @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
-                                                           @RequestParam(defaultValue = "today", required = false) Date maxCreationDate,
+                                                           @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
                                                            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                            @RequestParam(value = "size", defaultValue = "5", required = false) int size,
                                                            @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
         List<Catalog> catalogs;
         PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
-        Page<Catalog> pagedProducts = catalogRepository.findByIdAndCreationDateBetween(id, minCreationDate, maxCreationDate, request);
+        Page<Catalog> pagedProducts = catalogRepository.findByIdContainingIgnoreCaseAndCreationDateBetween(id, minCreationDate, maxCreationDate, request);
         List<Catalog> list = new ArrayList<>();
         Page<Catalog> catalogsRes = new PageImpl<>(list);
+        System.out.println(productId);
         System.out.println(pagedProducts.getTotalElements());
         if (!productId.equals("")) {
             //solo las que tengan el productId si se ha especificado
