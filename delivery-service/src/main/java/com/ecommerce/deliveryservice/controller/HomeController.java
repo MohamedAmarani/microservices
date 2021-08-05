@@ -10,17 +10,20 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -87,6 +90,22 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) throws Exception {
+        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        final CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                if ("today".equals(text)) {
+                    setValue(new Date());
+                } else {
+                    super.setAsText(text);
+                }
+            }
+        };
+        binder.registerCustomEditor(Date.class, dateEditor);
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -120,7 +139,7 @@ public class HomeController {
         PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
         Page<Delivery> pagedDeliveries = deliveryRepository.findByOrderIdContainingIgnoreCaseAnDeliveryAddressContainingIgnoreCaseAndDeliveryStateContainingIgnoreCaseAndDeliveryCompanyContainingIgnoreCaseAndCreationDateBetween(orderId, deliveryAddress, deliveryState, deliveryCompany, minCreationDate, maxCreationDate, request);
 
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("currentPage", pagedDeliveries.getNumber());
         response.put("totalItems", pagedDeliveries.getTotalElements());
         response.put("totalPages", pagedDeliveries.getTotalPages());
