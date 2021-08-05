@@ -310,7 +310,7 @@ public class HomeController {
                         HttpStatus.CONFLICT, "The product is already in the wishlist"
                 );
         }
-        //una vez hechas las comprovaciones, añado el wishlistitem a la wishlist
+        //una vez hechas las comprobaciones, añado el wishlistitem a la wishlist
         wishlist.addToWishlistItems(wishlistItem);
         wishlist = wishlistRepository.save(wishlist);
         return wishlist;
