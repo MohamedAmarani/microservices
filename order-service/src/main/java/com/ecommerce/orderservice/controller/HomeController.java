@@ -160,8 +160,7 @@ public class HomeController {
             CartDTO cartDTO = new CartDTO(cart.getId(), cart.getCreationDate());
             List<CartItemDTO> cartItemDTOS = new ArrayList<>();
             for (CartItem cartItem : cart.getCartItems()) {
-                final ResponseEntity<String> res = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
-                                "/products/" + cartItem.getProductId(),
+                final ResponseEntity<String> res = restTemplate.exchange("http://product-service:8080/" + cartItem.getProductId(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<String>() {
                         });
 
