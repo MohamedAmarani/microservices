@@ -14,6 +14,6 @@ import java.util.Optional;
 @Repository
 public interface DeliveryRepository extends MongoRepository<Delivery, String> {
     public Optional<Delivery> findById(String id);
-    public Page<Delivery> findByOrderIdContainingIgnoreCaseAnDeliveryAddressContainingIgnoreCaseAndDeliveryStateContainingIgnoreCaseAndDeliveryCompanyContainingIgnoreCaseAndCreationDateBetween(String orderId, String deliveryAddress, String deliveryState, String deliveryCompany, Date minCreationDate, Date maxCreationDate, Pageable pageable);
+    public Page<Delivery> findByOrderIdContainingIgnoreCaseAndDeliveryAddressContainingIgnoreCaseAndDeliveryStateContainingIgnoreCaseAndDeliveryCompanyContainingIgnoreCaseAndCreationDateBetween(String orderId, String deliveryAddress, String deliveryState, String deliveryCompany, Date minCreationDate, Date maxCreationDate, Pageable pageable);
 }
 

@@ -137,7 +137,7 @@ public class HomeController {
                                                              @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
         PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
-        Page<Delivery> pagedDeliveries = deliveryRepository.findByOrderIdContainingIgnoreCaseAnDeliveryAddressContainingIgnoreCaseAndDeliveryStateContainingIgnoreCaseAndDeliveryCompanyContainingIgnoreCaseAndCreationDateBetween(orderId, deliveryAddress, deliveryState, deliveryCompany, minCreationDate, maxCreationDate, request);
+        Page<Delivery> pagedDeliveries = deliveryRepository.findByOrderIdContainingIgnoreCaseAndDeliveryAddressContainingIgnoreCaseAndDeliveryStateContainingIgnoreCaseAndDeliveryCompanyContainingIgnoreCaseAndCreationDateBetween(orderId, deliveryAddress, deliveryState, deliveryCompany, minCreationDate, maxCreationDate, request);
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("currentPage", pagedDeliveries.getNumber());
