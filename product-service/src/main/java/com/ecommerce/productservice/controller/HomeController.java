@@ -163,7 +163,7 @@ public class HomeController {
         Page<Product> pagedProducts = productRepository.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndColorContainingIgnoreCaseAndSizeContainingIgnoreCaseAndTypeContainingIgnoreCaseAndSexContainingIgnoreCaseAndOriginalPriceBetweenAndCurrentPriceBetweenAndCreationDateBetween(name, description, color, productSize, type, sex, minOriginalPrice, maxOriginalPrice, minCurrentPrice, maxCurrentPrice, minCreationDate, maxCreationDate, request);
 
         products = pagedProducts.getContent();
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("currentPage", pagedProducts.getNumber());
         response.put("totalItems", pagedProducts.getTotalElements());
         response.put("totalPages", pagedProducts.getTotalPages());

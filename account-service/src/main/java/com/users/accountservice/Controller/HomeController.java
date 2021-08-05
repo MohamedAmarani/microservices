@@ -172,7 +172,7 @@ public class HomeController {
         Page<Account> pagedAccounts = userRepository.findByUsernameContainingIgnoreCaseAndEmailContainingIgnoreCaseAndRoleContainingIgnoreCaseAndDeliveryAddressContainingIgnoreCaseAndCreationDateBetween(username,email, role, deliveryAddress, minCreationDate, maxCreationDate, request);
 
         accounts = pagedAccounts.getContent();
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("currentPage", pagedAccounts.getNumber());
         response.put("totalItems", pagedAccounts.getTotalElements());
         response.put("totalPages", pagedAccounts.getTotalPages());
