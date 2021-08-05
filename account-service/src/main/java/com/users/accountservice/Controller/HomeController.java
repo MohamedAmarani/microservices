@@ -162,7 +162,7 @@ public class HomeController {
                                                             @RequestParam(defaultValue = "", required = false) String role,
                                                             @RequestParam(defaultValue = "", required = false) String deliveryAddress,
                                                             @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
-                                                            @RequestParam(defaultValue = "today", required = false) Date maxCreationDate,
+                                                            @RequestParam(defaultValue = "2025-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
                                                             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
                                                             @RequestParam(value = "size", defaultValue = "5", required = false) int size,
                                                             @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
