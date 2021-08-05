@@ -13,6 +13,7 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
@@ -20,11 +21,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -96,6 +99,22 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) throws Exception {
+        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        final CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                if ("today".equals(text)) {
+                    setValue(new Date());
+                } else {
+                    super.setAsText(text);
+                }
+            }
+        };
+        binder.registerCustomEditor(Date.class, dateEditor);
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -152,20 +171,18 @@ public class HomeController {
                     //seleccionar solo los carritos con algun catalogId como el especificado
                     if (!inventoryId.equals("")) {
                         //solo las que tengan el productId si se ha especificado
-                        for (int i1 = 0; i1 < pagedCarts.getContent().size(); ++i1) {
-                            found = false;
-                            for (int j = 0; !found && j < pagedCarts.getContent().get(i1).getCartItems().size(); ++j) {
-                                if (pagedCarts.getContent().get(i1).getCartItems().get(j).getInventoryId().equals(inventoryId))
-                                    found = true;
-                            }
-                            if (found) {
-                                list.add(pagedCarts.getContent().get(i));
-                            }
+                        found = false;
+                        for (int j = 0; !found && j < pagedCarts.getContent().get(i).getCartItems().size(); ++j) {
+                            if (pagedCarts.getContent().get(i).getCartItems().get(j).getInventoryId().equals(inventoryId))
+                                found = true;
                         }
-                        pagedCarts = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+                        if (found)
+                            list.add(pagedCarts.getContent().get(i));
+                    }
+                    else
+                        list.add(pagedCarts.getContent().get(i));
                     }
                 }
-            }
             pagedCarts = new PageImpl<>(list, PageRequest.of(page, size), list.size());
         }
         else if (!inventoryId.equals("")) {
@@ -204,7 +221,7 @@ public class HomeController {
             result.add(cartDTO);
         }
 
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("currentPage", pagedCarts.getNumber());
         response.put("totalItems", pagedCarts.getTotalElements());
         response.put("totalPages", pagedCarts.getTotalPages());
