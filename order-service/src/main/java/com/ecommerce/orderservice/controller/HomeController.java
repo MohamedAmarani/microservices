@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiParam;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
@@ -19,11 +20,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -91,6 +94,22 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) throws Exception {
+        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        final CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                if ("today".equals(text)) {
+                    setValue(new Date());
+                } else {
+                    super.setAsText(text);
+                }
+            }
+        };
+        binder.registerCustomEditor(Date.class, dateEditor);
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -156,7 +175,7 @@ public class HomeController {
             result.add(orderDTO);
         }
 
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("currentPage", pagedOrders.getNumber());
         response.put("totalItems", pagedOrders.getTotalElements());
         response.put("totalPages", pagedOrders.getTotalPages());
