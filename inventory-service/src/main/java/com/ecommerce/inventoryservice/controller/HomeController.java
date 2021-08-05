@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
@@ -19,11 +20,13 @@ import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -92,6 +95,22 @@ public class HomeController {
     private synchronized void incrementCounter() {
         String timeStamp = new SimpleDateFormat("ss").format(Calendar.getInstance().getTime());
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) throws Exception {
+        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        final CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                if ("today".equals(text)) {
+                    setValue(new Date());
+                } else {
+                    super.setAsText(text);
+                }
+            }
+        };
+        binder.registerCustomEditor(Date.class, dateEditor);
     }
 
     @GetMapping("/hello")
@@ -200,7 +219,7 @@ public class HomeController {
             inventoryDTOs.add(inventoryDTO);
         }
 
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("currentPage", pagedInventories.getNumber());
         response.put("totalItems", pagedInventories.getTotalElements());
         response.put("totalPages", pagedInventories.getTotalPages());
