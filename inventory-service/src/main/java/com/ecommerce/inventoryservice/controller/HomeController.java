@@ -169,15 +169,13 @@ public class HomeController {
                     //seleccionar solo los inventarios con algun catalogId como el especificado
                     if (!catalogId.equals("")) {
                         //solo las que tengan el productId si se ha especificado
-                        for (int i1 = 0; i1 < pagedInventories.getContent().size(); ++i1) {
-                            found = false;
-                            for (int j = 0; !found && j < pagedInventories.getContent().get(i1).getInventoryItems().size(); ++j) {
-                                if (pagedInventories.getContent().get(i1).getInventoryItems().get(j).getCatalogId().equals(catalogId))
-                                    found = true;
-                            }
-                            if (found)
-                                list.add(pagedInventories.getContent().get(i));
+                        found = false;
+                        for (int j = 0; !found && j < pagedInventories.getContent().get(i).getInventoryItems().size(); ++j) {
+                            if (pagedInventories.getContent().get(i).getInventoryItems().get(j).getCatalogId().equals(catalogId))
+                                found = true;
                         }
+                        if (found)
+                            list.add(pagedInventories.getContent().get(i));
                     }
                     else
                         list.add(pagedInventories.getContent().get(i));
