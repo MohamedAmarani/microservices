@@ -179,6 +179,8 @@ public class HomeController {
                                 list.add(pagedInventories.getContent().get(i));
                         }
                     }
+                    else
+                        list.add(pagedInventories.getContent().get(i));
                 }
             }
             pagedInventories = new PageImpl<>(list, PageRequest.of(page, size), list.size());
