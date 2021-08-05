@@ -199,7 +199,7 @@ public class HomeController {
             catalogDTOs.add(catalogDTO);
         }
 
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("currentPage", pagedCatalogs.getNumber());
         response.put("totalItems", pagedCatalogs.getTotalElements());
         response.put("totalPages", pagedCatalogs.getTotalPages());
