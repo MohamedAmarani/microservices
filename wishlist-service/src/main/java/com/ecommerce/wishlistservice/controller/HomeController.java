@@ -163,19 +163,19 @@ public class HomeController {
                     //seleccionar solo los wishlist que contengan algun item con targetPrice que coincida con el especificado
                     if (!targetPrice.equals("")) {
                         //solo las que tengan el targetPrice especificado
-                        for (int i1 = 0; i1 < pagedWishlists.getContent().size(); ++i1) {
-                            found = false;
-                            for (int j = 0; !found && j < pagedWishlists.getContent().get(i1).getWishlistItems().size(); ++j) {
-                                if (pagedWishlists.getContent().get(i1).getWishlistItems().get(j).getTargetPrice() == Double.parseDouble(targetPrice))
-                                    found = true;
-                            }
-                            if (found)
-                                list.add(pagedWishlists.getContent().get(i));
+                        found = false;
+                        for (int j = 0; !found && j < pagedWishlists.getContent().get(i).getWishlistItems().size(); ++j) {
+                            if (pagedWishlists.getContent().get(i).getWishlistItems().get(j).getTargetPrice() == Double.parseDouble(targetPrice))
+                                found = true;
                         }
+                        if (found)
+                            list.add(pagedWishlists.getContent().get(i));
+                    }
+                    else
+                        list.add(pagedWishlists.getContent().get(i));
                     }
                 }
-            }
-                pagedWishlists = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+            pagedWishlists = new PageImpl<>(list, PageRequest.of(page, size), list.size());
         }
         else if (!targetPrice.equals("")) {
             //solo las que tengan el targetPrice especificado
@@ -192,7 +192,7 @@ public class HomeController {
         }
 
         wishlists = pagedWishlists.getContent();
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("currentPage", pagedWishlists.getNumber());
         response.put("totalItems", pagedWishlists.getTotalElements());
         response.put("totalPages", pagedWishlists.getTotalPages());

@@ -11,17 +11,20 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.KeyFactorySpi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -93,6 +96,22 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) throws Exception {
+        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        final CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                if ("today".equals(text)) {
+                    setValue(new Date());
+                } else {
+                    super.setAsText(text);
+                }
+            }
+        };
+        binder.registerCustomEditor(Date.class, dateEditor);
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -131,7 +150,7 @@ public class HomeController {
         Page<Discount> pagedDiscounts = discountRepository.findByCodeContainingIgnoreCaseAndCreationDateBetween(code, minCreationDate, maxCreationDate, request);
 
         discounts = pagedDiscounts.getContent();
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("currentPage", pagedDiscounts.getNumber());
         response.put("totalItems", pagedDiscounts.getTotalElements());
         response.put("totalPages", pagedDiscounts.getTotalPages());
