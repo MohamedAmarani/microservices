@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -103,6 +106,22 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) throws Exception {
+        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        final CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                if ("today".equals(text)) {
+                    setValue(new Date());
+                } else {
+                    super.setAsText(text);
+                }
+            }
+        };
+        binder.registerCustomEditor(Date.class, dateEditor);
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -142,7 +161,7 @@ public class HomeController {
         Page<Resource> pagedResources = resourceRepository.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndCreationDateBetween(name, description, minCreationDate, maxCreationDate, request);
 
         resources = pagedResources.getContent();
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("currentPage", pagedResources.getNumber());
         response.put("totalItems", pagedResources.getTotalElements());
         response.put("totalPages", pagedResources.getTotalPages());
