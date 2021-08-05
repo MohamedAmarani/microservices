@@ -165,8 +165,8 @@ public class HomeController {
                         });
 
                 Gson gson = new Gson();
-                InventoryItemDTO inventoryItemDTO = gson.fromJson(res.getBody(), InventoryItemDTO.class);
-                CartItemDTO cartItemDTO = new CartItemDTO(inventoryItemDTO.getProduct(), cartItem.getQuantity(), cartItem.getInventoryId(),
+                ProductDTO productDTO = gson.fromJson(res.getBody(), ProductDTO.class);
+                CartItemDTO cartItemDTO = new CartItemDTO(productDTO, cartItem.getQuantity(), cartItem.getInventoryId(),
                         cartItem.isAvailable(), cartItem.getCreationDate());
                 cartDTO.addItems(cartItemDTO);
             }
