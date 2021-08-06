@@ -185,19 +185,19 @@ public class HomeController {
     @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
     public Account getAccount(@ApiParam(value = "Id of the account to get", required = true) @PathVariable final String id) {
         incrementCounter();
-        Optional<Account> account;
+        Account account;
         try {
             try {
-                account = userRepository.findById(id);
+                account = userRepository.findById(id).get();
             } catch (Exception e1) {
-                account = userRepository.findByUsername(id);
+                account = userRepository.findByUsername(id).get();
             }
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Account not found"
             );
         }
-        return account.get();
+        return account);
     }
 
     @DeleteMapping("/{id}")
