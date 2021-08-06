@@ -8,10 +8,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends MongoRepository<Account, String> {
     public Account findByEmail(String email);
-    public List<Account> findByUsername(String name);
+    public Optional<Account> findByUsername(String username);
     public Page<Account> findByUsernameContainingIgnoreCaseAndEmailContainingIgnoreCaseAndRoleContainingIgnoreCaseAndDeliveryAddressContainingIgnoreCaseAndCreationDateBetween(String username, String email, String role, String deliveryAddress, Date minCreationDate, Date maxCreationDate, Pageable pageable);
 }
