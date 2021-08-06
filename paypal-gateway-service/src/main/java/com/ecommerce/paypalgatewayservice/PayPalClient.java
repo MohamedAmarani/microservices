@@ -5,10 +5,8 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 public class PayPalClient {
     String clientId = "AfoXWVmCgWponUqf5709_KA0gOOO_OKLN6CJXcMlXEglz_evSp_9HfZA-XTlnEI_lHSt5QbVOg2kTgqo";
@@ -17,8 +15,8 @@ public class PayPalClient {
     @Autowired
     Environment environment;
 
-    public Map<String, String> createPayment(String accountId, String originalPrice, String discountCode, String discountedAmount, String finalPrice) throws PayPalRESTException {
-        HashMap<String, String> response = new HashMap<>();
+    public Map<String, String> createPayment(String accountId, String originalPrice, String discountCode, String discountedAmount, String deliveryPrice, String finalPrice) throws PayPalRESTException {
+        HashMap<String, String> response = new LinkedHashMap<>();
         Amount amount = new Amount();
         amount.setCurrency("EUR");
         amount.setTotal(finalPrice);
@@ -60,6 +58,7 @@ public class PayPalClient {
                 response.put("originalPrice", originalPrice);
                 response.put("discountCode", discountCode);
                 response.put("discountedAmount", discountedAmount);
+                response.put("deliveryPrice", deliveryPrice);
                 response.put("finalPrice", finalPrice);
             }
         } catch (PayPalRESTException e) {

@@ -495,6 +495,8 @@ public class HomeController {
         double originalPrice = 0.0;
         String dC = "";
         double discountedAmount = 0.0;
+        double deliveryFreeMinimumPrice = 30.0;
+        double deliveryPrice = 2.9;
         double finalPrice = 0.0;
 
         //obtener precio total
@@ -604,10 +606,16 @@ public class HomeController {
             finalPrice = Double.valueOf(df.format(finalPrice));
         }
 
+        //sumar gastos de envio si el el precio del pedido es menor a minimo establecido para el envio gratuito
+        if (finalPrice < deliveryFreeMinimumPrice)
+            finalPrice += deliveryPrice;
+
         //realizar el pago
         obj.put("originalPrice", Double.toString(originalPrice));
         obj.put("discountCode", dC);
         obj.put("discountedAmount", Double.toString(discountedAmount));
+        if (finalPrice < deliveryFreeMinimumPrice)
+            obj.put("deliveryPrice", Double.toString(deliveryPrice));
         obj.put("finalPrice", Double.toString(finalPrice));
         // set headers
         HttpHeaders headers = new HttpHeaders();

@@ -103,9 +103,6 @@ public class HomeController {
     @ApiOperation(value = "Get information from the paypal-gateway-service instance", notes = "Retrieve information from a paypal-gateway-service instance")
     public String home() {
         incrementCounter();
-        // This is useful for debugging
-        // When having multiple instance of gallery service running at different ports.
-        // We load balance among them, and display which instance received the request.
         return "Hello from PayPal Gateway Service running at port: " + env.getProperty("local.server.port") +
                 " InstanceId " + instanceId;
     }
@@ -154,7 +151,7 @@ public class HomeController {
                                            @ApiParam(value = "Amount of money to be payed, in Euros.", required = true) @RequestBody Map<String, String> priceInformation) throws PayPalRESTException {
         incrementCounter();
         return payPalClient.createPayment(accountId, priceInformation.get("originalPrice"), priceInformation.get("discountCode"),
-                priceInformation.get("discountedAmount"), priceInformation.get("finalPrice"));
+                priceInformation.get("discountedAmount"), priceInformation.get("deliveryPrice"), priceInformation.get("finalPrice"));
     }
 
     //complete the payment
