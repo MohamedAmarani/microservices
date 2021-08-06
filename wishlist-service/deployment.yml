@@ -43,7 +43,7 @@ spec:
         args: ["while [ $(curl -sw '%{http_code}' http://config-service.default.svc:8080/info -o /dev/null --max-time 3) -ne 200 ]; do sleep 1; echo 'Waiting for the webserver...'; done"]
       containers:
         - name: wishlistse
-          image: scaredste/wishlist-service:v7.0.4
+          image: scaredste/wishlist-service:v8.0.1
           readinessProbe:
             httpGet:
               path: /info
