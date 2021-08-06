@@ -110,10 +110,10 @@ public class UserDetailsServiceImpl implements UserDetailsService  {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         incrementCounter();
-        final ResponseEntity<ResponseEntity<Map<String, Object>>> res = restTemplate.exchange("http://account-service:8080/",
-                        HttpMethod.GET, null, new ParameterizedTypeReference<ResponseEntity<Map<String, Object>>>() {});
-        ResponseEntity<Map<String, Object>> response = res.getBody();
-        List<AccountDTO> accounts = (List<AccountDTO>) response.getBody().get("accounts");
+        final ResponseEntity<ResponseEntity<Map<String, List<AccountDTO>>>> res = restTemplate.exchange("http://account-service:8080/",
+                        HttpMethod.GET, null, new ParameterizedTypeReference<ResponseEntity<Map<String, List<AccountDTO>>>>() {});
+        ResponseEntity<Map<String, List<AccountDTO>>> response = res.getBody();
+        List<AccountDTO> accounts = response.getBody().get("accounts");
 
         for (AccountDTO accountDTO: accounts) {
             if (accountDTO.getUsername().equals(username) && accountDTO.getRole().equals("ADMIN")) {
