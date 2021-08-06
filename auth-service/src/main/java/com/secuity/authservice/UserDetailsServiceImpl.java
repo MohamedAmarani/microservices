@@ -120,7 +120,6 @@ public class UserDetailsServiceImpl implements UserDetailsService  {
 
             return new User(accountDTO.getUsername(), accountDTO.getPassword(), grantedAuthorities);
         }
-
         throw new UsernameNotFoundException("Username: " + username + " not found");
     }
 
