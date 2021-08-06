@@ -197,7 +197,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Account not found"
             );
         }
-        return account);
+        return account;
     }
 
     @DeleteMapping("/{id}")
