@@ -187,15 +187,15 @@ public class HomeController {
         incrementCounter();
         Optional<Account> account;
         try {
-            account = userRepository.findById(id);
-        } catch (Exception e) {
             try {
-                account = userRepository.findByUsername(id);
+                account = userRepository.findById(id);
             } catch (Exception e1) {
-                throw new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Account not found"
-                );
+                account = userRepository.findByUsername(id);
             }
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Account not found"
+            );
         }
         return account.get();
     }
