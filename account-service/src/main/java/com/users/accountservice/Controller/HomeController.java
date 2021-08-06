@@ -767,9 +767,9 @@ public class HomeController {
         return msg.getSubject();
     }
 
-    @GetMapping("/admin")
+    /*@GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
         return "This is the admin area of account service running at port: " + env.getProperty("local.server.port");
-    }
+    }*/
 }
