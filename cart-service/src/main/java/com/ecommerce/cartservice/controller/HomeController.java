@@ -616,6 +616,8 @@ public class HomeController {
         obj.put("discountedAmount", Double.toString(discountedAmount));
         if (finalPrice < deliveryFreeMinimumPrice)
             obj.put("deliveryPrice", Double.toString(deliveryPrice));
+        else
+            obj.put("deliveryPrice", "0.0");
         obj.put("finalPrice", Double.toString(finalPrice));
         // set headers
         HttpHeaders headers = new HttpHeaders();
