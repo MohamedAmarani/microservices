@@ -233,7 +233,7 @@ public class HomeController {
         //encriptar contraseña
         account.setPassword(new BCryptPasswordEncoder().encode(account.getPassword()));
         account.setCreationDate(new Date());
-        if (userRepository.findByUsername(account.getUsername()).size() == 0) {
+        if (userRepository.findByUsername(account.getUsername()).isEmpty()) {
             Account account1 = userRepository.save(account);
             //crear carrito
             JSONObject obj = new JSONObject();
