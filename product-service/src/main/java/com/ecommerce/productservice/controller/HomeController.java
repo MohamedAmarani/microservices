@@ -160,6 +160,12 @@ public class HomeController {
         incrementCounter();
         List<Product> products;
         PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        //sumo un centimo en los maxOriginalPrice, maxCurrentPrice porque el between del mongorepository no es inclusivo, es exlusivo, y resto un centimo a minOriginalPrice y minCurrentPrice por el mismo motivo
+        maxOriginalPrice += 0.01;
+        maxCurrentPrice += 0.01;
+        minOriginalPrice -= 0.01;
+        minCurrentPrice -= 0.01;
+
         Page<Product> pagedProducts = productRepository.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndColorContainingIgnoreCaseAndSizeContainingIgnoreCaseAndTypeContainingIgnoreCaseAndSexContainingIgnoreCaseAndOriginalPriceBetweenAndCurrentPriceBetweenAndCreationDateBetween(name, description, color, productSize, type, sex, minOriginalPrice, maxOriginalPrice, minCurrentPrice, maxCurrentPrice, minCreationDate, maxCreationDate, request);
 
         products = pagedProducts.getContent();
