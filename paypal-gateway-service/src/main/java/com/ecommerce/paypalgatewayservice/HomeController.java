@@ -117,7 +117,7 @@ public class HomeController {
         incrementCounter();
         Object obj;
         try {
-            //comprovar que no va a info o cancel
+            //comprobar que no va a info o cancel
             obj = completePayment(accountId, paymentId, PayerID);
         } catch (Exception e) {
             throw new ResponseStatusException(
