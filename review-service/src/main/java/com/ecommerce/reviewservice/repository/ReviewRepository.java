@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface ReviewRepository extends MongoRepository<Review, String> {
     public Optional<Review> findById(String email);
-    public Page<Review> findByCreationDateBetween(Date minCreationDate, Date maxCreationDate, Pageable pageable);
+    public Page<Review> findByAccountIdContainingIgnoreCaseAndProductIdContainingIgnoreCaseAndCreationDateBetween(String accountId, String productId, Date minCreationDate, Date maxCreationDate, Pageable pageable);
 }
 

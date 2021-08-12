@@ -1,21 +1,27 @@
 package com.ecommerce.reviewservice.controller;
 
+import com.ecommerce.reviewservice.model.Review;
 import com.ecommerce.reviewservice.repository.ReviewRepository;
 import com.google.common.util.concurrent.AtomicDouble;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import java.text.DateFormat;
@@ -117,11 +123,118 @@ public class HomeController {
     @ApiOperation(value = "Get information from the review-service instance", notes = "Retrieve information from a review-service instance")
     public String home() {
         incrementCounter();
-        // This is useful for debugging
-        // When having multiple instance of gallery service running at different ports.
-        // We load balance among them, and display which instance received the request.
+
         return "Hello from Inventory Service running at port: " + env.getProperty("local.server.port") +
                 " InstanceId " + instanceId;
+    }
+
+    @GetMapping("")
+    @ApiOperation(value = "Get reviews", notes = "Retrieve reviews from the Database")
+    public ResponseEntity<Map<String, Object>> getReviews(@RequestParam(defaultValue = "", required = false) String accountId,
+                                                           @RequestParam(defaultValue = "", required = false) String productId,
+                                                           @RequestParam(defaultValue = "", required = false) int stars,
+                                                           @RequestParam(defaultValue = "", required = false) String comment,
+                                                           @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
+                                                           @RequestParam(defaultValue = "2025-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
+                                                           @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                                           @RequestParam(value = "size", defaultValue = "5", required = false) int size,
+                                                           @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
+        incrementCounter();
+        List<Review> reviews;
+        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        Page<Review> pagedReviews = reviewRepository.findByAccountIdContainingIgnoreCaseAndProductIdContainingIgnoreCaseAndCreationDateBetween(accountId, productId, minCreationDate, maxCreationDate, request);
+        List<Review> list = new ArrayList<>();
+
+        //seleccionar solo los inventarios con algun productId como el especificado
+        if (!productId.equals("")) {
+            //solo las que tengan el productId si se ha especificado
+            for (int i = 0; i < pagedReviews.getContent().size(); ++i) {
+                boolean found = false;
+                for (int j = 0; !found && j < pagedReviews.getContent().get(i).getInventoryItems().size(); ++j) {
+                    if (pagedReviews.getContent().get(i).getInventoryItems().get(j).getProductId().equals(productId))
+                        found = true;
+                }
+                if (found) {
+                    //seleccionar solo los inventarios con algun catalogId como el especificado
+                    if (!catalogId.equals("")) {
+                        //solo las que tengan el productId si se ha especificado
+                        found = false;
+                        for (int j = 0; !found && j < pagedReviews.getContent().get(i).getInventoryItems().size(); ++j) {
+                            if (pagedReviews.getContent().get(i).getInventoryItems().get(j).getCatalogId().equals(catalogId))
+                                found = true;
+                        }
+                        if (found)
+                            list.add(pagedReviews.getContent().get(i));
+                    }
+                    else
+                        list.add(pagedReviews.getContent().get(i));
+                }
+            }
+            pagedReviews = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+        else if (!catalogId.equals("")) {
+            //solo las que tengan el productId si se ha especificado
+            for (int i = 0; i < pagedReviews.getContent().size(); ++i) {
+                boolean found = false;
+                for (int j = 0; !found && j < pagedReviews.getContent().get(i).getInventoryItems().size(); ++j) {
+                    if (pagedReviews.getContent().get(i).getInventoryItems().get(j).getCatalogId().equals(catalogId))
+                        found = true;
+                }
+                if (found)
+                    list.add(pagedReviews.getContent().get(i));
+            }
+            pagedReviews = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+
+        reviews = pagedReviews.getContent();
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("currentPage", pagedReviews.getNumber());
+        response.put("totalItems", pagedReviews.getTotalElements());
+        response.put("totalPages", pagedReviews.getTotalPages());
+        response.put("reviews", reviews);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific review from the Database")
+    public Review getReview(@ApiParam(value = "Id of the review to get", required = true) @PathVariable final String id) {
+        incrementCounter();
+        Review review;
+        try {
+            review = reviewRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Review not found"
+            );
+        }
+        return review;
+    }
+
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delete a review", notes = "Provide an Id to delete a specific review from the Database")
+    public Review deleteReview(@ApiParam(value = "Id of the review to delete", required = true) @PathVariable final String id) {
+        incrementCounter();
+        Optional<Review> review = reviewRepository.findById(id);
+        Review review1;
+        try {
+            //borrar cuenta
+            review1 = review.get();
+            reviewRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Review not found"
+            );
+        }
+        return review1;
+    }
+
+    @PostMapping("")
+    @ApiOperation(value = "Create a review", notes = "Provide information to create a review")
+    public Review postReview(@ApiParam(value = "Information of the review to create", required = true) @RequestBody Review review) {
+        incrementCounter();
+        review.setCreationDate(new Date());
+        return reviewRepository.save(review);
     }
 
     @GetMapping("/admin")

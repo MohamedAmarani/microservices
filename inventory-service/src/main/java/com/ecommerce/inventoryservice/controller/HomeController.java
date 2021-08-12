@@ -125,9 +125,7 @@ public class HomeController {
     @ApiOperation(value = "Get information from the inventory-service instance", notes = "Retrieve information from a inventory-service instance")
     public String home() {
         incrementCounter();
-        // This is useful for debugging
-        // When having multiple instance of gallery service running at different ports.
-        // We load balance among them, and display which instance received the request.
+
         return "Hello from Inventory Service running at port: " + env.getProperty("local.server.port") +
                 " InstanceId " + instanceId;
     }
