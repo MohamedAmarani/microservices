@@ -6,18 +6,15 @@ import com.google.common.util.concurrent.AtomicDouble;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -166,7 +163,7 @@ public class HomeController {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific review from the Database")
+    @ApiOperation(value = "Get a review", notes = "Provide an Id to retrieve a specific review from the Database")
     public Review getReview(@ApiParam(value = "Id of the review to get", required = true) @PathVariable final String id) {
         incrementCounter();
         Review review;
@@ -243,6 +240,6 @@ public class HomeController {
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
-        return "This is the admin area of Review service running at port: " + env.getProperty("local.server.port");
+        return "This is the admin area of a Review service running at port: " + env.getProperty("local.server.port");
     }
 }

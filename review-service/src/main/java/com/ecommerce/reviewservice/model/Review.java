@@ -3,7 +3,6 @@ package com.ecommerce.reviewservice.model;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.Date;
 
 @Document
@@ -19,7 +18,7 @@ public class Review {
     String comment;
     @ApiModelProperty(notes = "Rating of the user whose id is accountId given to the product whose id is productId")
     int stars;
-    @ApiModelProperty(notes = "Creation date of the order")
+    @ApiModelProperty(notes = "Creation date of the review")
     Date creationDate;
 
     public Review() {
