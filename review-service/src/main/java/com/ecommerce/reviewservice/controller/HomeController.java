@@ -207,7 +207,7 @@ public class HomeController {
     }
 
     @PutMapping("")
-    @ApiOperation(value = "Create a review", notes = "Provide information to create a review")
+    @ApiOperation(value = "Edit the comment of a review", notes = "Provide information to edit the comment of a review")
     public Review editComment(@ApiParam(value = "Id of the review for which the comment has to be changed", required = true) @PathVariable final String id,
                               @ApiParam(value = "New comment of the review", required = true) @RequestBody Review review) {
         incrementCounter();
@@ -224,7 +224,7 @@ public class HomeController {
     }
 
     @PutMapping("")
-    @ApiOperation(value = "Create a review", notes = "Provide information to create a review")
+    @ApiOperation(value = "Eit the stars value of a review", notes = "Provide information to edit the stars value of a review")
     public Review editStars(@ApiParam(value = "Id of the review for which the stars value has to be changed", required = true) @PathVariable final String id,
                             @ApiParam(value = "New stars value for the review", required = true) @RequestBody Review review) {
         incrementCounter();
