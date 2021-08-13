@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: inventory-service
+  name: review-service
 spec:
   selector:
-    app: inventoryse
+    app: reviewse
   ports:
     - protocol: "TCP"
       # Port accessible inside cluster
@@ -18,16 +18,16 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: inventory-deployment
+  name: review-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: inventoryse
+      app: reviewse
   template:
     metadata:
       labels:
-        app: inventoryse
+        app: reviewse
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/path: 'actuator/prometheus'
@@ -42,8 +42,8 @@ spec:
         command: ["/bin/sh","-c"]
         args: ["while [ $(curl -sw '%{http_code}' http://config-service.default.svc:8080/info -o /dev/null --max-time 3) -ne 200 ]; do sleep 1; echo 'Waiting for the webserver...'; done"]
       containers:
-        - name: inventoryse
-          image: scaredste/inventory-service:v7.0.5
+        - name: reviewse
+          image: scaredste/review-service:v1.0.1
           readinessProbe:
             httpGet:
               path: /info
