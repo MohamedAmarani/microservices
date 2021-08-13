@@ -132,7 +132,7 @@ public class HomeController {
     @ApiOperation(value = "Get reviews", notes = "Retrieve reviews from the Database")
     public ResponseEntity<Map<String, Object>> getReviews(@RequestParam(defaultValue = "", required = false) String accountId,
                                                            @RequestParam(defaultValue = "", required = false) String productId,
-                                                           @RequestParam(defaultValue = "", required = false) int stars,
+                                                           @RequestParam(defaultValue = "-1", required = false) int stars,
                                                            @RequestParam(defaultValue = "", required = false) String comment,
                                                            @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
                                                            @RequestParam(defaultValue = "2025-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
@@ -142,45 +142,14 @@ public class HomeController {
         incrementCounter();
         List<Review> reviews;
         PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
-        Page<Review> pagedReviews = reviewRepository.findByAccountIdContainingIgnoreCaseAndProductIdContainingIgnoreCaseAndCreationDateBetween(accountId, productId, minCreationDate, maxCreationDate, request);
+        Page<Review> pagedReviews = reviewRepository.findByAccountIdContainingIgnoreCaseAndProductIdContainingIgnoreCaseAndCommentContainingIgnoreCaseAndCreationDateBetween(accountId, productId, comment, minCreationDate, maxCreationDate, request);
         List<Review> list = new ArrayList<>();
 
         //seleccionar solo los inventarios con algun productId como el especificado
-        if (!productId.equals("")) {
+        if (stars != -1) {
             //solo las que tengan el productId si se ha especificado
             for (int i = 0; i < pagedReviews.getContent().size(); ++i) {
-                boolean found = false;
-                for (int j = 0; !found && j < pagedReviews.getContent().get(i).getInventoryItems().size(); ++j) {
-                    if (pagedReviews.getContent().get(i).getInventoryItems().get(j).getProductId().equals(productId))
-                        found = true;
-                }
-                if (found) {
-                    //seleccionar solo los inventarios con algun catalogId como el especificado
-                    if (!catalogId.equals("")) {
-                        //solo las que tengan el productId si se ha especificado
-                        found = false;
-                        for (int j = 0; !found && j < pagedReviews.getContent().get(i).getInventoryItems().size(); ++j) {
-                            if (pagedReviews.getContent().get(i).getInventoryItems().get(j).getCatalogId().equals(catalogId))
-                                found = true;
-                        }
-                        if (found)
-                            list.add(pagedReviews.getContent().get(i));
-                    }
-                    else
-                        list.add(pagedReviews.getContent().get(i));
-                }
-            }
-            pagedReviews = new PageImpl<>(list, PageRequest.of(page, size), list.size());
-        }
-        else if (!catalogId.equals("")) {
-            //solo las que tengan el productId si se ha especificado
-            for (int i = 0; i < pagedReviews.getContent().size(); ++i) {
-                boolean found = false;
-                for (int j = 0; !found && j < pagedReviews.getContent().get(i).getInventoryItems().size(); ++j) {
-                    if (pagedReviews.getContent().get(i).getInventoryItems().get(j).getCatalogId().equals(catalogId))
-                        found = true;
-                }
-                if (found)
+                if (pagedReviews.getContent().get(i).getStars() == stars)
                     list.add(pagedReviews.getContent().get(i));
             }
             pagedReviews = new PageImpl<>(list, PageRequest.of(page, size), list.size());
@@ -235,6 +204,40 @@ public class HomeController {
         incrementCounter();
         review.setCreationDate(new Date());
         return reviewRepository.save(review);
+    }
+
+    @PutMapping("")
+    @ApiOperation(value = "Create a review", notes = "Provide information to create a review")
+    public Review editComment(@ApiParam(value = "Id of the review for which the comment has to be changed", required = true) @PathVariable final String id,
+                              @ApiParam(value = "New comment of the review", required = true) @RequestBody Review review) {
+        incrementCounter();
+        Review review1;
+        try {
+            review1 = reviewRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Review not found"
+            );
+        }
+        review1.setComment(review.getComment());
+        return reviewRepository.save(review1);
+    }
+
+    @PutMapping("")
+    @ApiOperation(value = "Create a review", notes = "Provide information to create a review")
+    public Review editStars(@ApiParam(value = "Id of the review for which the stars value has to be changed", required = true) @PathVariable final String id,
+                            @ApiParam(value = "New stars value for the review", required = true) @RequestBody Review review) {
+        incrementCounter();
+        Review review1;
+        try {
+            review1 = reviewRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Review not found"
+            );
+        }
+        review1.setStars(review.getStars());
+        return reviewRepository.save(review1);
     }
 
     @GetMapping("/admin")
