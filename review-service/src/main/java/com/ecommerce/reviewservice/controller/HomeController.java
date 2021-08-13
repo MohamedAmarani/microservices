@@ -145,7 +145,7 @@ public class HomeController {
         Page<Review> pagedReviews = reviewRepository.findByAccountIdContainingIgnoreCaseAndProductIdContainingIgnoreCaseAndCommentContainingIgnoreCaseAndCreationDateBetween(accountId, productId, comment, minCreationDate, maxCreationDate, request);
         List<Review> list = new ArrayList<>();
 
-        //seleccionar solo los inventarios con algun productId como el especificado
+        //seleccionar solo las reviews con el valor stars igual al especificado, si es que se ha especificado alguno
         if (stars != -1) {
             //solo las que tengan el productId si se ha especificado
             for (int i = 0; i < pagedReviews.getContent().size(); ++i) {
