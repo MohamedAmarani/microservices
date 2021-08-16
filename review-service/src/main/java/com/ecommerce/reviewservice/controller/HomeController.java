@@ -1,14 +1,17 @@
 package com.ecommerce.reviewservice.controller;
 
+import com.ecommerce.reviewservice.model.ProductDTO;
 import com.ecommerce.reviewservice.model.Review;
 import com.ecommerce.reviewservice.repository.ReviewRepository;
 import com.google.common.util.concurrent.AtomicDouble;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -199,7 +202,20 @@ public class HomeController {
     @ApiOperation(value = "Create a review", notes = "Provide information to create a review")
     public Review postReview(@ApiParam(value = "Information of the review to create", required = true) @RequestBody Review review) {
         incrementCounter();
+
+        //incrementar el numero de reviews y el averageScore del producto en cuestion
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        JSONObject obj = new JSONObject();
+        obj.put("newScore", Integer.toString(review.getStars()));
+        HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
+        // reducir el numero de items de un producto en el inventario
+        restTemplate.exchange("http://product-service:8080/" + review.getProductId() + "/averageScore",
+                HttpMethod.PUT, entity, new ParameterizedTypeReference<ProductDTO>() {
+                });
+
         review.setCreationDate(new Date());
+
         return reviewRepository.save(review);
     }
 

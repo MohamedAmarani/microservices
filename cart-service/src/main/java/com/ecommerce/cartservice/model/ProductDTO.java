@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +32,12 @@ public class ProductDTO {
     Type type;
     @ApiModelProperty(notes = "Target sex of the product")
     Sex sex;
+    @ApiModelProperty(notes = "Number of sales of the product")
+    int sales;
+    @ApiModelProperty(notes = "Number of reviews of the product")
+    double reviews;
+    @ApiModelProperty(notes = "Average score of the product")
+    double averageScore;
     @ApiModelProperty(notes = "Creation date of the product")
     Date creationDate;
 
@@ -40,7 +45,7 @@ public class ProductDTO {
     }
 
     public ProductDTO(String id, String name, String description, String color, double originalPrice, double currentPrice, List<Picture> pictures,
-                      Size size, Type type, Sex sex, Date creationDate) {
+                      Size size, Type type, Sex sex, int sales, int reviews, double averageScore, Date creationDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -51,6 +56,9 @@ public class ProductDTO {
         this.size = size;
         this.type = type;
         this.sex = sex;
+        this.sales = sales;
+        this.reviews = reviews;
+        this.averageScore = averageScore;
         this.creationDate = creationDate;
     }
 
@@ -138,6 +146,30 @@ public class ProductDTO {
         this.sex = sex;
     }
 
+    public int getSales() {
+        return sales;
+    }
+
+    public void setSales(int sales) {
+        this.sales = sales;
+    }
+
+    public double getAverageScore() {
+        return averageScore;
+    }
+
+    public void setAverageScore(double averageScore) {
+        this.averageScore = averageScore;
+    }
+
+    public double getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(double reviews) {
+        this.reviews = reviews;
+    }
+
     public Date getCreationDate() {
         return creationDate;
     }
@@ -161,5 +193,3 @@ enum Type {
 enum Sex {
     Male, Female, Unisex
 }
-
-

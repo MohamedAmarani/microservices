@@ -182,7 +182,10 @@ public class HomeController {
     @ApiOperation(value = "Create a product", notes = "Provide information to create a product")
     public Product postProduct(@ApiParam(value = "Product to create", required = true) @RequestBody Product product) {
         incrementCounter();
-        try{
+        try {
+            product.setSales(0);
+            product.setReviews(0);
+            product.setAverageScore(0);
             product.setCurrentPrice(product.getOriginalPrice());
             product.setCreationDate(new Date());
             return productRepository.save(product);
@@ -356,6 +359,43 @@ public class HomeController {
                     HttpMethod.PUT, entity, new ParameterizedTypeReference<Map<String, String>>() {
                     });
         }
+        return product;
+    }
+
+    @PutMapping("/{id}/sales")
+    @ApiOperation(value = "Increase the sales of a product", notes = "Provide the Id of the product for which the number of sales has to be increased")
+    public Product increaseSales(@ApiParam(value = "Id of the product for which the number of sales has to be increased", required = true) @PathVariable final String id) {
+        incrementCounter();
+        Product product = null;
+        //si no existe ningun producto con ese id retornamos null
+        try {
+            product = productRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found"
+            );
+        }
+        product.increaseSales();
+        product = productRepository.save(product);
+        return product;
+    }
+
+    @PutMapping("/{id}/averageScore")
+    @ApiOperation(value = "Update the average score of a product", notes = "Provide the Id of the product for which the average score has to be updated")
+    public Product updateAverageScore(@ApiParam(value = "Id of the product for which the average score has to be updated", required = true) @PathVariable final String id,
+                                      @ApiParam(value = "New score", required = true) @RequestBody Map<String, String> newScoreBody) {
+        incrementCounter();
+        Product product = null;
+        //si no existe ningun producto con ese id retornamos null
+        try {
+            product = productRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Product not found"
+            );
+        }
+        product.updateAverageScore(Double.parseDouble(newScoreBody.get("newScore")));
+        product = productRepository.save(product);
         return product;
     }
 

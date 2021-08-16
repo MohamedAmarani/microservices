@@ -635,7 +635,15 @@ public class HomeController {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
 
-        HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers;
+
+        //aumetar el numero de ventas de cada producto del carrito
+        for (CartItem cartItem: cart.get().getCartItems()) {
+            restTemplate.exchange("http://product-service:8080/" + cartItem.getProductId() + "/sales",
+                    HttpMethod.PUT, null, new ParameterizedTypeReference<ProductDTO>() {
+                    });
+        }
+
         //eliminar items del inventario
         for (CartItem cartItem: cart.get().getCartItems()) {
             JSONObject obj = new JSONObject();

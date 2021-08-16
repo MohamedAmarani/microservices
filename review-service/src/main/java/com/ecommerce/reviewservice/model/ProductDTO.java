@@ -1,18 +1,15 @@
-package com.ecommerce.productservice.model;
+package com.ecommerce.reviewservice.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Document
 @ApiModel(description = "Details obout a product")
-public class Product {
+public class ProductDTO {
     @ApiModelProperty(notes = "Unique id of the product")
     @Id
     String id;
@@ -24,14 +21,12 @@ public class Product {
     @ApiModelProperty(notes = "Name of the color of the product")
     String color;
     @ApiModelProperty(notes = "Pictures of the product")
-    @NotNull(message = "At least one picture is required")
     List<Picture> pictures = new ArrayList<>();
     @ApiModelProperty(notes = "Original price of the product")
     double originalPrice;
     @ApiModelProperty(notes = "Current price of the product")
     double currentPrice;
     @ApiModelProperty(notes = "Size of the product")
-    @NotNull(message = "Size is required")
     Size size;
     @ApiModelProperty(notes = "Type of the product")
     Type type;
@@ -46,8 +41,11 @@ public class Product {
     @ApiModelProperty(notes = "Creation date of the product")
     Date creationDate;
 
-    public Product(String id, String name, String description, String color, double originalPrice, double currentPrice, List<Picture> pictures,
-                   Size size, Type type, Sex sex, int sales, int reviews, double averageScore, Date creationDate) {
+    public ProductDTO() {
+    }
+
+    public ProductDTO(String id, String name, String description, String color, double originalPrice, double currentPrice, List<Picture> pictures,
+                      Size size, Type type, Sex sex, int sales, int reviews, double averageScore, Date creationDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -124,10 +122,6 @@ public class Product {
         pictures.add(picture);
     }
 
-    public void setSizeFromString(String size) {
-        this.size = Size.valueOf(size);
-    }
-
     public void setSize(Size size) {
         this.size = size;
     }
@@ -144,10 +138,6 @@ public class Product {
         this.type = type;
     }
 
-    public void setTypeFromString(String type) {
-        this.type = Type.valueOf(type);
-    }
-
     public Sex getSex() {
         return sex;
     }
@@ -156,20 +146,12 @@ public class Product {
         this.sex = sex;
     }
 
-    public void setSexFromString(String sex) {
-        this.sex = Sex.valueOf(sex);
-    }
-
     public int getSales() {
         return sales;
     }
 
     public void setSales(int sales) {
         this.sales = sales;
-    }
-
-    public void increaseSales() {
-        this.sales += 1;
     }
 
     public double getAverageScore() {
@@ -186,13 +168,6 @@ public class Product {
 
     public void setReviews(double reviews) {
         this.reviews = reviews;
-    }
-
-    public void updateAverageScore(double newScore) {
-        this.reviews += 1;
-        double a = 1 /(double) reviews;
-        double b = 1 - a;
-        this.averageScore = (a * newScore) + (b * averageScore);
     }
 
     public Date getCreationDate() {
