@@ -180,7 +180,7 @@ public class Product {
         this.averageScore = averageScore;
     }
 
-    public double getReviews() {
+    public int getReviews() {
         return reviews;
     }
 
