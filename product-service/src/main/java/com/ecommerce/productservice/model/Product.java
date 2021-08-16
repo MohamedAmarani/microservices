@@ -40,7 +40,7 @@ public class Product {
     @ApiModelProperty(notes = "Number of sales of the product")
     int sales;
     @ApiModelProperty(notes = "Number of reviews of the product")
-    double reviews;
+    int reviews;
     @ApiModelProperty(notes = "Average score of the product")
     double averageScore;
     @ApiModelProperty(notes = "Creation date of the product")
@@ -184,7 +184,7 @@ public class Product {
         return reviews;
     }
 
-    public void setReviews(double reviews) {
+    public void setReviews(int reviews) {
         this.reviews = reviews;
     }
 
