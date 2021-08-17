@@ -29,7 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/reviews")
 public class HomeController {
     @Autowired
     private Environment env;
@@ -214,6 +214,7 @@ public class HomeController {
                 HttpMethod.PUT, entity, new ParameterizedTypeReference<ProductDTO>() {
                 });
 
+        review.setLikes(0);
         review.setCreationDate(new Date());
 
         return reviewRepository.save(review);
@@ -237,7 +238,7 @@ public class HomeController {
     }
 
     @PatchMapping("/{id}/stars")
-    @ApiOperation(value = "Eit the stars value of a review", notes = "Provide information to edit the stars value of a review")
+    @ApiOperation(value = "Edit the stars value of a review", notes = "Provide information to edit the stars value of a review")
     public Review editStars(@ApiParam(value = "Id of the review for which the stars value has to be changed", required = true) @PathVariable final String id,
                             @ApiParam(value = "New stars value for the review", required = true) @RequestBody Review review) {
         incrementCounter();
@@ -250,6 +251,22 @@ public class HomeController {
             );
         }
         review1.setStars(review.getStars());
+        return reviewRepository.save(review1);
+    }
+
+    @PatchMapping("/{id}/likes")
+    @ApiOperation(value = "Like a review", notes = "Provide the id of the review to like")
+    public Review likeReview(@ApiParam(value = "Id of the review of which the likes counter has to be increased by one", required = true) @PathVariable final String id) {
+        incrementCounter();
+        Review review1;
+        try {
+            review1 = reviewRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Review not found"
+            );
+        }
+        review1.incrementLikes();
         return reviewRepository.save(review1);
     }
 

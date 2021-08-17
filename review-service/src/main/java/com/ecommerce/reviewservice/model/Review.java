@@ -18,6 +18,8 @@ public class Review {
     String comment;
     @ApiModelProperty(notes = "Rating of the user whose id is accountId given to the product whose id is productId")
     int stars;
+    @ApiModelProperty(notes = "Number of likes given to the review by users")
+    int likes;
     @ApiModelProperty(notes = "Creation date of the review")
     Date creationDate;
 
@@ -70,6 +72,18 @@ public class Review {
 
     public void setStars(int stars) {
         this.stars = stars;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public void incrementLikes() {
+        this.likes += 1;
     }
 
     public Date getCreationDate() {
