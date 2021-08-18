@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class Review {
     @ApiModelProperty(notes = "Number of likes given to the review by users")
     int likes;
     @ApiModelProperty(notes = "Id's of the users who liked the review")
-    List<AccountIdDTO> likers;
+    List<AccountIdDTO> likers = new ArrayList<>();
     @ApiModelProperty(notes = "Creation date of the review")
     Date creationDate;
 
