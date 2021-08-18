@@ -375,7 +375,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Product not found"
             );
         }
-        product.increaseSales(quantityBody.get("newScore"));
+        product.increaseSales(quantityBody.get("quantity"));
         product = productRepository.save(product);
         return product;
     }
