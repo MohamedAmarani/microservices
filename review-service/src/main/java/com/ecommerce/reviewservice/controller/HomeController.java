@@ -256,7 +256,8 @@ public class HomeController {
 
     @PatchMapping("/{id}/likes")
     @ApiOperation(value = "Like a review", notes = "Provide the id of the review to like")
-    public Review likeReview(@ApiParam(value = "Id of the review of which the likes counter has to be increased by one", required = true) @PathVariable final String id) {
+    public Review likeReview(@ApiParam(value = "Id of the review of which the likes counter has to be increased by one", required = true) @PathVariable final String id,
+                             @ApiParam(value = "AccountId of the user who liked the review", required = true) @RequestBody Map<String, String> likerUserBody) {
         incrementCounter();
         Review review1;
         try {
@@ -266,7 +267,14 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Review not found"
             );
         }
-        review1.incrementLikes();
+        try {
+            review1.incrementLikes(likerUserBody.get("accountId"));
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "The account already liked this review"
+            );
+        }
+
         return reviewRepository.save(review1);
     }
 
