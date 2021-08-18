@@ -489,7 +489,7 @@ public class HomeController {
     @RequestMapping(value = "/{cartId}/checkout", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Checkout a cart", notes = "Proceed to do the checkout of a given cart, paying with Paypal")
     public Object doCheckoutPart1(@ApiParam(value = "Id of the cart for which the checkout has to be done", required = true) @PathVariable final String cartId,
-                                  @ApiParam(value = "Discount code, if any", required = false) @RequestBody (required=false) Map<String, String> discountCodeBody) {
+                                  @ApiParam(value = "Discount code, if any", required = false) @RequestBody (required = false) Map<String, String> discountCodeBody) {
         incrementCounter();
         Optional<Cart> cart = cartRepository.findById(cartId);
         double originalPrice = 0.0;
@@ -525,7 +525,7 @@ public class HomeController {
         finalPrice = Double.valueOf(df.format(finalPrice));
         originalPrice = finalPrice;
         //comprovar que el codigo de descuento, si hay, es valido, y aplicarlo
-        if (discountCodeBody != null) {
+        if (discountCodeBody.containsKey("discountCode")) {
             String discountCode = discountCodeBody.get("discountCode");
             dC = discountCode;
             final ResponseEntity<String> res;
