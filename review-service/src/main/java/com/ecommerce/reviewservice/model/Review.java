@@ -92,7 +92,7 @@ public class Review {
     public void incrementLikes(String accountId) {
         //ver si el usuario ya le ha dado like a la review
         for (AccountIdDTO accountIdDTO: likers)
-            if (accountIdDTO.getAccountId() == accountId)
+            if (accountIdDTO.getAccountId().equals(accountId))
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT, "The account already liked this review"
                 );
