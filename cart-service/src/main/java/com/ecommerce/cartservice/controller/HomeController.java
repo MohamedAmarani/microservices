@@ -639,8 +639,14 @@ public class HomeController {
 
         //aumetar el numero de ventas de cada producto del carrito
         for (CartItem cartItem: cart.get().getCartItems()) {
+            JSONObject obj = new JSONObject();
+            obj.put("quantity", cartItem.getQuantity());
+            // set headers
+            headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
             restTemplate.exchange("http://product-service:8080/" + cartItem.getProductId() + "/sales",
-                    HttpMethod.PUT, null, new ParameterizedTypeReference<ProductDTO>() {
+                    HttpMethod.PUT, entity, new ParameterizedTypeReference<ProductDTO>() {
                     });
         }
 
@@ -653,7 +659,7 @@ public class HomeController {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> entity = new HttpEntity<String>(obj.toString(), headers);
             // reducir el numero de items de un producto en el inventario
-            final ResponseEntity<ProductDTO> res1 = restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
+            restTemplate.exchange("http://inventory-service:8080/" + cartItem.getInventoryId() +
                             "/products/" + cartItem.getProductId() + "/reduceStock",
                     HttpMethod.PUT, entity, new ParameterizedTypeReference<ProductDTO>() {
                     });

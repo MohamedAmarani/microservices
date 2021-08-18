@@ -362,8 +362,9 @@ public class HomeController {
     }
 
     @PutMapping("/{id}/sales")
-    @ApiOperation(value = "Increase the sales of a product", notes = "Provide the Id of the product for which the number of sales has to be increased")
-    public Product increaseSales(@ApiParam(value = "Id of the product for which the number of sales has to be increased", required = true) @PathVariable final String id) {
+    @ApiOperation(value = "Increase the sales of a product", notes = "Provide the Id of the product for which the number of sales has to be increased by the quantity given in the body")
+    public Product increaseSales(@ApiParam(value = "Id of the product for which the number of sales has to be increased", required = true) @PathVariable final String id,
+                                 @ApiParam(value = "Quantity by which the number of sales has to be increased", required = true) @RequestBody Map<String, Integer> quantityBody) {
         incrementCounter();
         Product product = null;
         //si no existe ningun producto con ese id retornamos null
@@ -374,7 +375,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Product not found"
             );
         }
-        product.increaseSales();
+        product.increaseSales(quantityBody.get("newScore"));
         product = productRepository.save(product);
         return product;
     }
@@ -382,7 +383,7 @@ public class HomeController {
     @PutMapping("/{id}/averageScore")
     @ApiOperation(value = "Update the average score of a product", notes = "Provide the Id of the product for which the average score has to be updated")
     public Product updateAverageScore(@ApiParam(value = "Id of the product for which the average score has to be updated", required = true) @PathVariable final String id,
-                                      @ApiParam(value = "New score", required = true) @RequestBody Map<String, String> newScoreBody) {
+                                      @ApiParam(value = "New score", required = true) @RequestBody Map<String, Integer> newScoreBody) {
         incrementCounter();
         Product product = null;
         //si no existe ningun producto con ese id retornamos null
@@ -393,7 +394,7 @@ public class HomeController {
                     HttpStatus.NOT_FOUND, "Product not found"
             );
         }
-        product.updateAverageScore(Double.parseDouble(newScoreBody.get("newScore")));
+        product.updateAverageScore(newScoreBody.get("newScore"));
         product = productRepository.save(product);
         return product;
     }

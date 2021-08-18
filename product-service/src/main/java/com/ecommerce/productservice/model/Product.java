@@ -168,8 +168,8 @@ public class Product {
         this.sales = sales;
     }
 
-    public void increaseSales() {
-        this.sales += 1;
+    public void increaseSales(int quantity) {
+        this.sales += quantity;
     }
 
     public double getAverageScore() {
@@ -188,7 +188,7 @@ public class Product {
         this.reviews = reviews;
     }
 
-    public void updateAverageScore(double newScore) {
+    public void updateAverageScore(int newScore) {
         this.reviews += 1;
         double a = 1 /(double) reviews;
         double b = 1 - a;
