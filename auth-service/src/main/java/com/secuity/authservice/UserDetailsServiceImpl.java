@@ -114,7 +114,7 @@ public class UserDetailsServiceImpl implements UserDetailsService  {
                         HttpMethod.GET, null, new ParameterizedTypeReference<AccountDTO>() {});
         AccountDTO accountDTO = res.getBody();
 
-        if (accountDTO.getUsername().equals(username) && accountDTO.getRole().equals("ADMIN")) {
+        if (accountDTO.getUsername().equals(username)) {
             List<GrantedAuthority> grantedAuthorities = AuthorityUtils
                     .commaSeparatedStringToAuthorityList("ROLE_" + accountDTO.getRole());
 
