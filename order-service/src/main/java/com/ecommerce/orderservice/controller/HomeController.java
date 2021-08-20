@@ -122,9 +122,6 @@ public class HomeController {
     @ApiOperation(value = "Get information from the order-service instance", notes = "Retrieve information from a order-service instance")
     public String home() {
         incrementCounter();
-        // This is useful for debugging
-        // When having multiple instance of gallery service running at different ports.
-        // We load balance among them, and display which instance received the request.
         return "Hello from Order Service running at port: " + env.getProperty("local.server.port");
     }
 
@@ -178,7 +175,7 @@ public class HomeController {
         response.put("currentPage", pagedOrders.getNumber());
         response.put("totalItems", pagedOrders.getTotalElements());
         response.put("totalPages", pagedOrders.getTotalPages());
-        response.put("carts", result);
+        response.put("orders", result);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -316,14 +313,11 @@ public class HomeController {
     }
 
 
-    // a fallback method to be called if failure happened
+    // el metodo fallback a llamar si ocurre algun fallo
     public List<OrderDTO> fallback(String catalogId, Throwable hystrixCommand) {
         return new ArrayList<>();
     }
 
-    // -------- Admin Area --------
-    // This method should only be accessed by users with role of 'admin'
-    // We'll add the logic of role based auth later
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
