@@ -60,16 +60,13 @@ public class CredentialValidator extends UsernamePasswordAuthenticationFilter   
         }
     }
 
-    // Upon successful authentication, generate a token.
-    // The 'auth' passed to successfulAuthentication() is the current authenticated user.
+
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
         Long now = System.currentTimeMillis();
         String token = Jwts.builder()
                 .setSubject(auth.getName())
-                // Convert to list of strings.
-                // This is important because it affects the way we get them back in the Gateway.
                 .claim("authorities", auth.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .setIssuedAt(new Date(now))
@@ -77,11 +74,9 @@ public class CredentialValidator extends UsernamePasswordAuthenticationFilter   
                 .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret().getBytes())
                 .compact();
 
-        // Add token to header
         response.addHeader(jwtConfig.getHeader(), jwtConfig.getPrefix() + token);
     }
 
-    // A (temporary) class just to represent the user credentials
     private static class UserCredentials {
         private String username, password;
 

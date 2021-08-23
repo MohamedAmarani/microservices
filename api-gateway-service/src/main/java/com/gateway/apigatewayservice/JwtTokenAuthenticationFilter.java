@@ -37,12 +37,6 @@ public class JwtTokenAuthenticationFilter extends  OncePerRequestFilter {
             return;
         }
 
-        // If there is no token provided and hence the user won't be authenticated.
-        // It's Ok. Maybe the user accessing a public path or asking for a token.
-
-        // All secured paths that needs a token are already defined and secured in config class.
-        // And If user tried to access without access token, then he won't be authenticated and an exception will be thrown.
-
         // 3. Get the token
         String token = header.replace(jwtConfig.getPrefix(), "");
 
@@ -58,7 +52,8 @@ public class JwtTokenAuthenticationFilter extends  OncePerRequestFilter {
             if (username != null) {
                 @SuppressWarnings("unchecked")
                 List<String> authorities = (List<String>) claims.get("authorities");
-
+                for (String au: authorities)
+                    System.out.println(au);
                 // 5. Create auth object
                 // UsernamePasswordAuthenticationToken: A built-in object, used by spring to represent the current authenticated / being authenticated user.
                 // It needs a list of authorities, which has type of GrantedAuthority interface, where SimpleGrantedAuthority is an implementation of that interface
