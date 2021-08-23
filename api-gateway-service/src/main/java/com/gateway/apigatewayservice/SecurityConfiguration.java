@@ -38,12 +38,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/info").permitAll()
                 // allow GET metrics
                 .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
-                //permitimos callbacks de paypal y google auth
+
+                //permito callbacks de paypal y google auth
                 .antMatchers(HttpMethod.GET, "/paypal/success/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/paypal/cancel/**").permitAll()
+
                 .antMatchers(HttpMethod.GET, "/googleAuth/return**").permitAll()
                 .antMatchers(HttpMethod.GET, "/googleAuth/oauth2/authorization/google**").permitAll()
-                // must be an admin if trying to access admin area (authentication is also required here)
+
+                // se ha de tener rol ADMIN para acceder a los siguientes endpoints
                 .antMatchers(HttpMethod.POST,"/products/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT,"/products/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH,"/products/**").hasRole("ADMIN")
@@ -52,7 +55,31 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT,"/catalogs/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH,"/catalogs/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE,"/catalogs/**").hasRole("ADMIN")
-                // Any other request must be authenticated
+                .antMatchers(HttpMethod.POST,"/inventories/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/inventories/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH,"/inventories/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/inventories/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/carts/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/orders/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/orders/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH,"/orders/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/orders/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/deliveries/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/deliveries/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH,"/deliveries/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/deliveries/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/discounts/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/discounts/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH,"/discounts/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/discounts/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/wishlists/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/resources/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/resources/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH,"/resources/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/resources/**").hasRole("ADMIN")
+
+                // para el resto, solo es necesario estar autentificado, por lo que tanto los usuario con rol ADMIN como los usuarios
+                // con rol USER podran acceder
                 .anyRequest().authenticated();
     }
 
