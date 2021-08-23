@@ -18,7 +18,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableSwagger2
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 
 public class ProductServiceApplication {
 

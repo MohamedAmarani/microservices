@@ -178,7 +178,7 @@ public class HomeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @PostMapping("")
     @ApiOperation(value = "Create a product", notes = "Provide information to create a product")
     public Product postProduct(@ApiParam(value = "Product to create", required = true) @RequestBody Product product) {

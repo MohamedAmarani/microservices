@@ -44,7 +44,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/googleAuth/return**").permitAll()
                 .antMatchers(HttpMethod.GET, "/googleAuth/oauth2/authorization/google**").permitAll()
                 // must be an admin if trying to access admin area (authentication is also required here)
-                .antMatchers("/group").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/products/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/products/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH,"/products/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/products/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/catalogs/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/catalogs/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH,"/catalogs/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/catalogs/**").hasRole("ADMIN")
                 // Any other request must be authenticated
                 .anyRequest().authenticated();
     }
