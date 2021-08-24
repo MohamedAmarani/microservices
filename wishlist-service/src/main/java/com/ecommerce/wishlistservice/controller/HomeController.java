@@ -6,6 +6,7 @@ import com.ecommerce.wishlistservice.repository.WishlistItemRepository;
 import com.ecommerce.wishlistservice.repository.WishlistRepository;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.google.gson.Gson;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -116,6 +117,7 @@ public class HomeController {
         binder.registerCustomEditor(Date.class, dateEditor);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -124,6 +126,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the wishlist-service instance", notes = "Retrieve information from a cart-service instance")
     public String home() {
@@ -132,6 +135,7 @@ public class HomeController {
                 " InstanceId " + instanceId;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("")
     @ApiOperation(value = "Get all wishlists", notes = "Retrieve all wishlists from the Database")
     public ResponseEntity<Map<String, Object>> getWishlists(@RequestParam(defaultValue = "", required = false) String productId,
@@ -198,6 +202,7 @@ public class HomeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{wishlistId}")
     @ApiOperation(value = "Get a cart", notes = "Provide an Id to retrieve a specific wishlist from the Database and all its wishlist items")
     public Wishlist getWishlist(@ApiParam(value = "Id of the discount that wants to be used", required = true) @PathVariable final String wishlistId) {
@@ -213,6 +218,7 @@ public class HomeController {
         return wishlist;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/priceReduced")
     @ApiOperation(value = "Notify users when one of their wishlist items price is within their target price", notes = "When the price of a product gets reduced, call the account-service to notify all users" +
             "that have it in their wishlist and the new product price is withing their specified target price")
@@ -249,6 +255,7 @@ public class HomeController {
                     }
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("")
     @ApiOperation(value = "Create a wishlist", notes = "Provide information to create a wishlist in the database")
     public Wishlist postWishlist(@ApiParam(value = "Information of the wishlist to create", required = true) @RequestBody (required = false) Wishlist wishlist) {
@@ -264,6 +271,7 @@ public class HomeController {
         return wishlist;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{wishlistId}")
     @ApiOperation(value = "Delete a wishlist", notes = "Provide the Id of the wishlist that has to be deleted from the database")
     public Wishlist deleteWishlist(@ApiParam(value = "Id of the wishlist that has to be deleted", required = true) @PathVariable final String wishlistId) {
@@ -280,7 +288,7 @@ public class HomeController {
         return wishlist;
     }
 
-    //@ApiParam(value = "Discount code, if any", required = true) @RequestBody Map<String, String> wishlistItemIdBody
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{wishlistId}/items/{wishlistItemProductId}")
     @ApiOperation(value = "Delete a wishlist item", notes = "Provide the Id of the wishlist that that contains the wishlist item that has to be deleted from the database")
     public Wishlist deleteWishlistItem(@ApiParam(value = "Id of the wishlist that contains the wishlist item to delete", required = true) @PathVariable final String wishlistId,
@@ -305,6 +313,7 @@ public class HomeController {
         return wishlist;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/{wishlistId}")
     @ApiOperation(value = "Add a wishlist item to a wishlist", notes = "Provide the Id of the wishlist where a wishlist item has to be added and the information" +
             "of the wishlist item to add")
@@ -332,6 +341,7 @@ public class HomeController {
         return wishlist;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{wishlistId}/items/{wishlistItemProductId}/targetPrice")
     @ApiOperation(value = "Change the target price of a wishlist item", notes = "Provide the Id of the wishlist where a wishlist item target price has to be changed" +
             "of the wishlist item to add")
@@ -360,6 +370,12 @@ public class HomeController {
         );
     }
 
+    // el metodo fallback a llamar si ocurre algun fallo
+    public List<Wishlist> fallback(String wishlistId, Throwable hystrixCommand) {
+        return new ArrayList<>();
+    }
+
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();

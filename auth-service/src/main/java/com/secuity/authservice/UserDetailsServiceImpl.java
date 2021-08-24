@@ -2,8 +2,8 @@ package com.secuity.authservice;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-
 import com.google.common.util.concurrent.AtomicDouble;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.secuity.authservice.model.AccountDTO;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
 import javax.annotation.PostConstruct;
 
 @RestController
@@ -93,6 +92,7 @@ public class UserDetailsServiceImpl implements UserDetailsService  {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/auth/info")
     public String getInfo() {
         incrementCounter();
@@ -121,6 +121,11 @@ public class UserDetailsServiceImpl implements UserDetailsService  {
             return new User(accountDTO.getUsername(), accountDTO.getPassword(), grantedAuthorities);
         }
         throw new UsernameNotFoundException("Username: " + username + " not found");
+    }
+
+    // el metodo fallback a llamar si ocurre algun fallo
+    public List<String> fallback(String accountId, Throwable hystrixCommand) {
+        return new ArrayList<>();
     }
 
 }

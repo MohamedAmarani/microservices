@@ -3,6 +3,7 @@ package com.ecommerce.resourceservice.controller;
 import com.ecommerce.resourceservice.model.Resource;
 import com.ecommerce.resourceservice.repository.ResourceRepository;
 import com.google.common.util.concurrent.AtomicDouble;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -122,6 +123,7 @@ public class HomeController {
         binder.registerCustomEditor(Date.class, dateEditor);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -130,6 +132,7 @@ public class HomeController {
         return new ResponseEntity<String>(env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the resource-service instance", notes = "Retrieve information from a resource-service instance")
     public String getInfo() {
@@ -145,7 +148,7 @@ public class HomeController {
                 " InstanceId " + instanceId + " " + counter;
     }
 
-
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("")
     @ApiOperation(value = "Get all resources", notes = "Retrieve all resources from the Database")
     public ResponseEntity<Map<String, Object>> getResources(@RequestParam(defaultValue = "", required = false) String name,
@@ -170,6 +173,7 @@ public class HomeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{id}")
     @ApiOperation(value = "Get a resource", notes = "Provide the Id of the specific resource to retrieve from the Database")
     public Resource getResource(@ApiParam(value = "Id of the resource to get", required = true) @PathVariable final String id) throws Exception {
@@ -191,6 +195,7 @@ public class HomeController {
         return resource;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("")
     @ApiOperation(value = "Create a resource", notes = "Provide information to create a resource")
     public Resource postResource(@ApiParam(value = "Resource to create", required = true) @RequestBody Map<String, String> resourceBody) throws IOException {
@@ -229,6 +234,7 @@ public class HomeController {
         return resource;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete a resource", notes = "Provide an Id to delete a specific resource from the Database")
     public Resource deleteResource(@ApiParam(value = "Id of the resource to delete", required = true) @PathVariable final String id) throws Exception {
@@ -247,6 +253,7 @@ public class HomeController {
         return resource;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{id}/download")
     @ApiOperation(value = "Download a resource", notes = "Provide the Id of the specific resource to download from the Database")
     public void downloadResource(@ApiParam(value = "Id of the resource to download", required = true) @PathVariable final String id,
@@ -284,6 +291,12 @@ public class HomeController {
         }
     }
 
+    // el metodo fallback a llamar si ocurre algun fallo
+    public List<Resource> fallback(String resourceId, Throwable hystrixCommand) {
+        return new ArrayList<>();
+    }
+
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();

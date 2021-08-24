@@ -2,6 +2,7 @@ package com.ecommerce.googleauthservice.controller;
 
 import com.ecommerce.googleauthservice.model.AccountDTO;
 import com.google.common.util.concurrent.AtomicDouble;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -87,6 +88,7 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -95,6 +97,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the google-auth-service instance", notes = "Retrieve information from a google-auth-service instance")
     public String home() {
@@ -106,7 +109,8 @@ public class HomeController {
                 " InstanceId " + instanceId;
     }
 
-    /*@GetMapping("/fun")
+    /* endpoint para testear
+    @GetMapping("/fun")
     public ResponseEntity<String> getHellod() {
         incrementCounter();
         final ResponseEntity<String> res2 = restTemplate.exchange("http://account-service:8080/" + "602a72269ae0650a89271487",
@@ -115,6 +119,7 @@ public class HomeController {
         return new ResponseEntity<String>(res2.getBody().toString(), HttpStatus.OK);
     }*/
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/return")
     @ApiOperation(value = "Callback of the Google OAuth authorization",
             notes = "Retrieve a Google access token out of the authorization code and generate own JWT access token for the user. " +
@@ -186,13 +191,15 @@ public class HomeController {
         return "Authorization: " + hdrs.get("Authorization").toString();
     }
 
-    @PreAuthorize("hasRole('GOOGLE')")
+    // el metodo fallback a llamar si ocurre algun fallo
+    public List<String> fallback(String accountId, Throwable hystrixCommand) {
+        return new ArrayList<>();
+    }
+
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String homes() {
         incrementCounter();
-        // This is useful for debugging
-        // When having multiple instance of gallery service running at different ports.
-        // We load balance among them, and display which instance received the request.
         return "This is the admin area of Google Auth service running at port: " + env.getProperty("local.server.port");
     }
 }

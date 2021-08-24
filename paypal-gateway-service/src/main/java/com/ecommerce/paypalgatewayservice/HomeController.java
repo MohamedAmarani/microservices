@@ -1,6 +1,7 @@
 package com.ecommerce.paypalgatewayservice;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.PaymentExecution;
 import com.paypal.base.rest.APIContext;
@@ -91,6 +92,7 @@ public class HomeController {
         requestsLastMinute.put(timeStamp, requestsLastMinute.get(timeStamp) + 1);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -99,6 +101,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the paypal-gateway-service instance", notes = "Retrieve information from a paypal-gateway-service instance")
     public String home() {
@@ -107,6 +110,7 @@ public class HomeController {
                 " InstanceId " + instanceId;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping(value = "/{accountId}", params = {
             "PayerID"
     })
@@ -127,6 +131,7 @@ public class HomeController {
         return obj;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/success/{accountId}")
     @ApiOperation(value = "Manage success in payment", notes = "If the payment goes well the user will be redirected here.")
     public Object successfulPayment(@ApiParam(value = "Id of the cart that tried to be checked out", required = true) @PathVariable final String accountId,
@@ -136,6 +141,7 @@ public class HomeController {
         return completePayment(accountId, paymentId, PayerID);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/cancel/{accountId}")
     @ApiOperation(value = "Manage error in payment", notes = "If the payment goes wrong the user will be redirected here.")
     public Map<String, Object> cancelPayment(@ApiParam(value = "Id of the cart that tried to be checked out", required = true) @PathVariable final String accountId) throws PayPalRESTException {
@@ -145,6 +151,7 @@ public class HomeController {
         return response;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping(value = "/make/payment/{accountId}")
     @ApiOperation(value = "Create a payment", notes = "A payment will be created and its amount of money will be passed as a parameter.")
     public Map<String, String> makePayment(@ApiParam(value = "Id of the client that wants to check out", required = true) @PathVariable final String accountId,
@@ -164,9 +171,11 @@ public class HomeController {
         return res.getBody();
     }
 
-    // -------- Admin Area --------
-    // This method should only be accessed by users with role of 'admin'
-    // We'll add the logic of role based auth later
+    // el metodo fallback a llamar si ocurre algun fallo
+    public List<String> fallback(String accountId, Throwable hystrixCommand) {
+        return new ArrayList<>();
+    }
+
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();

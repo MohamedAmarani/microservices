@@ -4,6 +4,7 @@ import com.ecommerce.reviewservice.model.ProductDTO;
 import com.ecommerce.reviewservice.model.Review;
 import com.ecommerce.reviewservice.repository.ReviewRepository;
 import com.google.common.util.concurrent.AtomicDouble;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -111,6 +112,7 @@ public class HomeController {
         binder.registerCustomEditor(Date.class, dateEditor);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -119,6 +121,7 @@ public class HomeController {
         return new ResponseEntity<String>(env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the review-service instance", notes = "Retrieve information from a review-service instance")
     public String home() {
@@ -128,6 +131,7 @@ public class HomeController {
                 " InstanceId " + instanceId;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("")
     @ApiOperation(value = "Get reviews", notes = "Retrieve reviews from the Database")
     public ResponseEntity<Map<String, Object>> getReviews(@RequestParam(defaultValue = "", required = false) String accountId,
@@ -165,6 +169,7 @@ public class HomeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{id}")
     @ApiOperation(value = "Get a review", notes = "Provide an Id to retrieve a specific review from the Database")
     public Review getReview(@ApiParam(value = "Id of the review to get", required = true) @PathVariable final String id) {
@@ -180,6 +185,7 @@ public class HomeController {
         return review;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete a review", notes = "Provide an Id to delete a specific review from the Database")
     public Review deleteReview(@ApiParam(value = "Id of the review to delete", required = true) @PathVariable final String id) {
@@ -198,6 +204,7 @@ public class HomeController {
         return review1;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("")
     @ApiOperation(value = "Create a review", notes = "Provide information to create a review")
     public Review postReview(@ApiParam(value = "Information of the review to create", required = true) @RequestBody Review review) {
@@ -220,6 +227,7 @@ public class HomeController {
         return reviewRepository.save(review);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{id}/comment")
     @ApiOperation(value = "Edit the comment of a review", notes = "Provide information to edit the comment of a review")
     public Review editComment(@ApiParam(value = "Id of the review for which the comment has to be changed", required = true) @PathVariable final String id,
@@ -237,6 +245,7 @@ public class HomeController {
         return reviewRepository.save(review1);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{id}/stars")
     @ApiOperation(value = "Edit the stars value of a review", notes = "Provide information to edit the stars value of a review")
     public Review editStars(@ApiParam(value = "Id of the review for which the stars value has to be changed", required = true) @PathVariable final String id,
@@ -254,6 +263,7 @@ public class HomeController {
         return reviewRepository.save(review1);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{id}/likes")
     @ApiOperation(value = "Like a review", notes = "Provide the id of the review to like")
     public Review likeReview(@ApiParam(value = "Id of the review of which the likes counter has to be increased by one", required = true) @PathVariable final String id,
@@ -278,6 +288,12 @@ public class HomeController {
         return reviewRepository.save(review1);
     }
 
+    // el metodo fallback a llamar si ocurre algun fallo
+    public List<Review> fallback(String reviewId, Throwable hystrixCommand) {
+        return new ArrayList<>();
+    }
+
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
