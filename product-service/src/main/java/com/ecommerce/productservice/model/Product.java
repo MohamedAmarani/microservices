@@ -46,6 +46,9 @@ public class Product {
     @ApiModelProperty(notes = "Creation date of the product")
     Date creationDate;
 
+    public Product() {
+    }
+
     public Product(String id, String name, String description, String color, double originalPrice, double currentPrice, List<Picture> pictures,
                    Size size, Type type, Sex sex, int sales, int reviews, double averageScore, Date creationDate) {
         this.id = id;

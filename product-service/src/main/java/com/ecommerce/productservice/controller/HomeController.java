@@ -3,6 +3,7 @@ package com.ecommerce.productservice.controller;
 import com.ecommerce.productservice.model.Product;
 import com.ecommerce.productservice.repository.ProductRepository;
 import com.google.common.util.concurrent.AtomicDouble;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -117,6 +118,7 @@ public class HomeController {
         binder.registerCustomEditor(Date.class, dateEditor);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -125,6 +127,7 @@ public class HomeController {
         return new ResponseEntity<String>(env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the product-service instance", notes = "Retrieve information from a product-service instance")
     public String getInfo() {
@@ -140,6 +143,7 @@ public class HomeController {
                 " InstanceId " + instanceId + " " + counter;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("")
     @ApiOperation(value = "Get all products", notes = "Retrieve all products from the Database")
     public ResponseEntity<Map<String, Object>> getProducts(@RequestParam(defaultValue = "", required = false) String name,
@@ -178,7 +182,7 @@ public class HomeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("")
     @ApiOperation(value = "Create a product", notes = "Provide information to create a product")
     public Product postProduct(@ApiParam(value = "Product to create", required = true) @RequestBody Product product) {
@@ -197,6 +201,7 @@ public class HomeController {
         }
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{id}")
     @ApiOperation(value = "Get a product", notes = "Provide the Id of the specific product to retrieve from the Database")
     public Product getProduct(@ApiParam(value = "Id of the product to get", required = true) @PathVariable final String id) throws Exception {
@@ -213,6 +218,7 @@ public class HomeController {
         return product;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{id}/description")
     @ApiOperation(value = "Change a product description", notes = "Provide the Id of the product for which the description has to be changed")
     public Product patchProductDescription(@ApiParam(value = "Id of the product for which the description has to be changed", required = true) @PathVariable final String id,
@@ -232,6 +238,7 @@ public class HomeController {
         return product;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{id}/color")
     @ApiOperation(value = "Change a product color", notes = "Provide the Id of the product for which the color has to be changed")
     public Product patchProductColor(@ApiParam(value = "Id of the product for which the color has to be changed", required = true) @PathVariable final String id,
@@ -251,6 +258,7 @@ public class HomeController {
         return product;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{id}/size")
     @ApiOperation(value = "Change a product size", notes = "Provide the Id of the product for which the size has to be changed")
     public Product patchProductSize(@ApiParam(value = "Id of the product for which the size has to be changed", required = true) @PathVariable final String id,
@@ -276,6 +284,7 @@ public class HomeController {
         return product;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{id}/type")
     @ApiOperation(value = "Change a product current price", notes = "Provide the Id of the product for which the type has to be changed")
     public Product patchProductType(@ApiParam(value = "Id of the product for which the type has to be changed", required = true) @PathVariable final String id,
@@ -301,6 +310,7 @@ public class HomeController {
         return product;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{id}/sex")
     @ApiOperation(value = "Change a product sex", notes = "Provide the Id of the product for which the sex has to be changed")
     public Product patchProductSex(@ApiParam(value = "Id of the product for which the type has to be changed", required = true) @PathVariable final String id,
@@ -326,6 +336,7 @@ public class HomeController {
         return product;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{id}/currentPrice")
     @ApiOperation(value = "Change a product current price", notes = "Provide the Id of the product for which the current price has to be changed")
     public Product patchProductRegularPrice(@ApiParam(value = "Id of the product to get", required = true) @PathVariable final String id,
@@ -363,6 +374,7 @@ public class HomeController {
         return product;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/{id}/sales")
     @ApiOperation(value = "Increase the sales of a product", notes = "Provide the Id of the product for which the number of sales has to be increased by the quantity given in the body")
     public Product increaseSales(@ApiParam(value = "Id of the product for which the number of sales has to be increased", required = true) @PathVariable final String id,
@@ -382,6 +394,7 @@ public class HomeController {
         return product;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/{id}/averageScore")
     @ApiOperation(value = "Update the average score of a product", notes = "Provide the Id of the product for which the average score has to be updated")
     public Product updateAverageScore(@ApiParam(value = "Id of the product for which the average score has to be updated", required = true) @PathVariable final String id,
@@ -401,6 +414,7 @@ public class HomeController {
         return product;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Get a product", notes = "Provide an Id to delete a specific product from the Database")
     public Product deleteProduct(@ApiParam(value = "Id of the product to delete", required = true) @PathVariable final String id) throws Exception {
@@ -418,12 +432,19 @@ public class HomeController {
         return product;
     }
 
+    // el metodo fallback a llamar si falla alguna peticion
+    public Product fallback(String catalogId, Throwable hystrixCommand) {
+        return new Product();
+    }
+
+    /* endpoint para testear
     @GetMapping("/na")
     public String getNa() {
         incrementCounter();
-        return "holas";
-    }
+        return "hola";
+    }*/
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String getAdmin() {
         incrementCounter();

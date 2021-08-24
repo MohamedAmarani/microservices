@@ -124,7 +124,8 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
-    /*@GetMapping("/pr/r")
+    /* enpoints para testear
+    @GetMapping("/pr/r")
     public String getPrr() {
         RestTemplate restTemplate = new RestTemplate();
         String resourceUrl = "http://product-service/na";
@@ -142,17 +143,16 @@ public class HomeController {
         return response.getBody().toString();
     }*/
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the catalog-service instance", notes = "Retrieve information from a catalog-service instance")
     public String home() {
         incrementCounter();
-        // This is useful for debugging
-        // When having multiple instance of gallery service running at different ports.
-        // We load balance among them, and display which instance received the request.
         return "Hello from Catalog Service running at port: " + env.getProperty("local.server.port") +
                 " InstanceId " + instanceId;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("")
     @ApiOperation(value = "Get all catalogs", notes = "Retrieve all catalogs from the Database")
     public ResponseEntity<Map<String, Object>> getCatalogs(@RequestParam(defaultValue = "", required = false) String productId,
@@ -208,8 +208,7 @@ public class HomeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //@HystrixCommand(fallbackMethod = "fallback")
-    //poner escalera de llamadas a todos los servicios
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{id}")
     @ApiOperation(value = "Get a catalog", notes = "Provide an Id to retrieve a specific catalog from the Database")
     public CatalogDTO getCatalog(@ApiParam(value = "Id of the catalog to get", required = true) @PathVariable final String id) {
@@ -239,6 +238,7 @@ public class HomeController {
         return result;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete a catalog", notes = "Provide an Id to delete a specific catalog from the Database")
     public CatalogDTO deleteCatalog(@ApiParam(value = "Id of the catalog to delete", required = true) @PathVariable final String id) throws Exception {
@@ -269,6 +269,7 @@ public class HomeController {
         return result;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("")
     @ApiOperation(value = "Create a catalog", notes = "Provide information to create a catalog")
     public CatalogDTO createCatalog() {
@@ -278,11 +279,12 @@ public class HomeController {
         return new CatalogDTO(catalog.getId(), new ArrayList<>(), catalog.getCreationDate());
     }
 
-    // a fallback method to be called if failure happened
+    // el metodo fallback a llamar si falla alguna peticion
     public CatalogDTO fallback(String catalogId, Throwable hystrixCommand) {
         return new CatalogDTO();
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/{catalogId}")
     @ApiOperation(value = "Add product to a catalog", notes = "Add a product to a catalog")
     public ProductDTO addProductToCatalog(@ApiParam(value = "Id of the catalog for which a product has to be added", required = true) @PathVariable final String catalogId,
@@ -304,6 +306,7 @@ public class HomeController {
         return  res.getBody();
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/na")
     public String getNa() {
         incrementCounter();
@@ -313,6 +316,7 @@ public class HomeController {
         return  res.getBody();
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{catalogId}/products/{productId}")
     @ApiOperation(value = "Get a product from a given catalog", notes = "Retrieve a product from a given catalog")
     public ProductDTO getCatalogProduct(@ApiParam(value = "Id of the catalog for which a product has to be retrieved", required = true) @PathVariable final String catalogId,
@@ -333,6 +337,7 @@ public class HomeController {
         );
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
