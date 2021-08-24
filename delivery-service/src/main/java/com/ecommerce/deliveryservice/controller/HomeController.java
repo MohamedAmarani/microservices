@@ -5,6 +5,7 @@ import com.ecommerce.deliveryservice.model.OrderDTO;
 import com.ecommerce.deliveryservice.repository.DeliveryRepository;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.google.gson.Gson;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -106,6 +107,7 @@ public class HomeController {
         binder.registerCustomEditor(Date.class, dateEditor);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -114,6 +116,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the delivery-service instance", notes = "Retrieve information from a delivery-service instance")
     public String home() {
@@ -124,6 +127,7 @@ public class HomeController {
         return "Hello from Delivery Service running at port: " + env.getProperty("local.server.port");
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("")
     @ApiOperation(value = "Get all deliveries", notes = "Retrieve all deliveries from the Database")
     public ResponseEntity<Map<String, Object>> getDeliveries(@RequestParam(defaultValue = "", required = false) String orderId,
@@ -148,7 +152,7 @@ public class HomeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //@HystrixCommand(fallbackMethod = "fallback")
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{id}")
     @ApiOperation(value = "Get a delivery", notes = "Provide an Id to retrieve a specific delivery from the Database")
     public Delivery getDelivery(@ApiParam(value = "Id of the delivery to get", required = true) @PathVariable final String id) {
@@ -162,6 +166,7 @@ public class HomeController {
         }
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete a delivery", notes = "Provide an Id to delete a specific delivery from the Database")
     public Delivery deleteDelivery(@ApiParam(value = "Id of the delivery to delete", required = true) @PathVariable final String id) throws Exception {
@@ -178,6 +183,7 @@ public class HomeController {
         return delivery;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("")
     @ApiOperation(value = "Create a delivery", notes = "Provide information to create a delivery")
     public Delivery createDelivery(@ApiParam(value = "Delivery to create", required = true) @RequestBody Map<String, String> myJsonRequest) {
@@ -186,6 +192,7 @@ public class HomeController {
                 new Date()));
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{id}/nextEvent")
     @ApiOperation(value = "Update the delivery state", notes = "Proceed to get to the next stage of the delivery")
     public Delivery continueProcess(@ApiParam(value = "Id of the delivery for which the state has to be updated", required = true) @PathVariable final String id) {
@@ -209,6 +216,7 @@ public class HomeController {
         return delivery;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{id}/estimatedDateOfArrival")
     @ApiOperation(value = "Update the delivery estimated date of arrival", notes = "Proceed to update the date of the delivery")
     public Delivery updateEstimatedDateOfArrival(@ApiParam(value = "Id of the delivery for which the date has to be updated", required = true) @PathVariable final String id,
@@ -234,14 +242,12 @@ public class HomeController {
         return delivery;
     }
 
-    // a fallback method to be called if failure happened
-    public List<Delivery> fallback(String catalogId, Throwable hystrixCommand) {
+    // metodo fallback a llamar si falla alguna peticion
+    public List<Delivery> fallback(String deliveryId, Throwable hystrixCommand) {
         return new ArrayList<>();
     }
 
-    // -------- Admin Area --------
-    // This method should only be accessed by users with role of 'admin'
-    // We'll add the logic of role based auth later
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();

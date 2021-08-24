@@ -139,6 +139,7 @@ public class HomeController {
         binder.registerCustomEditor(Date.class, dateEditor);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -147,6 +148,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the account-service instance", notes = "Retrieve information from a account-service instance")
     public String home() {
@@ -155,6 +157,7 @@ public class HomeController {
         " InstanceId " + instanceId;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("")
     @ApiOperation(value = "Get all accounts", notes = "Retrieve all accounts from the Database")
     public ResponseEntity<Map<String, Object>> getAccounts(@RequestParam(defaultValue = "", required = false) String username,
@@ -181,6 +184,7 @@ public class HomeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{id}")
     @ApiOperation(value = "Get an account", notes = "Provide an Id to retrieve a specific account from the Database")
     public Account getAccount(@ApiParam(value = "Id of the account to get", required = true) @PathVariable final String id) {
@@ -200,6 +204,7 @@ public class HomeController {
         return account;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete an account", notes = "Provide an Id to delete a specific account from the Database")
     public Account deleteAccount(@ApiParam(value = "Id of the account to delete", required = true) @PathVariable final String id) {
@@ -226,6 +231,7 @@ public class HomeController {
         return account1;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("")
     @ApiOperation(value = "Create an account", notes = "Provide information to create an account")
     public Account postAccount(@ApiParam(value = "Information of the account to create", required = true) @RequestBody Account account) throws MessagingException {
@@ -265,6 +271,7 @@ public class HomeController {
         );
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{accountId}/password")
     @ApiOperation(value = "Change the password of an account", notes = "Provide the new password")
     public Account changePassword(@ApiParam(value = "Id of the account for which the password has to be changed", required = true) @PathVariable final String accountId,
@@ -281,6 +288,7 @@ public class HomeController {
         return userRepository.save(account.get());
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{accountId}/deliveryAddress")
     @ApiOperation(value = "Change the delivery address of an account", notes = "Provide the new delivery address")
     public Account changeDeliveryAddress(@ApiParam(value = "Id of the account for which the delivery address has to be changed", required = true) @PathVariable final String accountId,
@@ -297,6 +305,7 @@ public class HomeController {
         return userRepository.save(account.get());
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{accountId}/deposit")
     @ApiOperation(value = "Add credit to an account", notes = "Provide the quantity of credit to add")
     public Account depositCredit(@ApiParam(value = "Id of the account for which a deposit of credit has to be done", required = true) @PathVariable final String accountId,
@@ -313,6 +322,7 @@ public class HomeController {
         return userRepository.save(account.get());
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/{accountId}/buy")
     @ApiOperation(value = "Decrease credit after a purchase", notes = "Provide the quantity of credits to subtract from the account")
     public Account makeBuy(@ApiParam(value = "Id of the account for which credits have to be subtracted", required = true) @PathVariable final String accountId,
@@ -329,6 +339,7 @@ public class HomeController {
         return userRepository.save(account.get());
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("/{accountId}/deliveryUpdateEmail")
     @ApiOperation(value = "Send an email with the delivery state update information", notes = "Notify the required user when a delivery state is updated")
     public void sendDeliveryUpdateEmail(@ApiParam(value = "Id of the account for which a delivery state update email has to be sent", required = true) @PathVariable final String accountId,
@@ -340,6 +351,7 @@ public class HomeController {
             emailDeliveryDelivered(userRepository.findById(accountId).get(), deliveryDTO);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("/{accountId}/deliveryDateUpdateEmail")
     @ApiOperation(value = "Send an email with the delivery date update information", notes = "Notify the required user when a delivery estimated date of arrival is updated")
     public void sendDeliveryDateUpdateEmail(@ApiParam(value = "Id of the account for which a delivery date update email has to be sent", required = true) @PathVariable final String accountId,
@@ -348,6 +360,7 @@ public class HomeController {
         emailDeliveryDateUpdate(userRepository.findById(accountId).get(), deliveryDTO);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("/{accountId}/orderSuccessEmail")
     @ApiOperation(value = "Send an email with the order information", notes = "Notify the required user when an order has been carried out successfully")
     public void sendOrderSuccessEmail(@ApiParam(value = "Id of the account that has made the order", required = true) @PathVariable final String accountId,
@@ -356,6 +369,7 @@ public class HomeController {
         emailOrderSuccess(userRepository.findById(accountId).get(), deliveryDTO);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("/newDiscountEmail")
     @ApiOperation(value = "Send an email with the new discount information", notes = "Notify the required users when a new discount is created")
     public void sendNewDiscountEmail(@ApiParam(value = "Information of the new discount", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
@@ -373,6 +387,7 @@ public class HomeController {
         }
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("/enabledDiscountEmail")
     @ApiOperation(value = "Send an email notifying that a disabled discount is back enabled", notes = "Notify the required users when a new discount is back enabled")
     public void sendEnabledDiscountEmail(@ApiParam(value = "Information of the updated discount", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
@@ -390,6 +405,7 @@ public class HomeController {
         }
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("/disabledDiscountEmail")
     @ApiOperation(value = "Send an email notifying that a specific discount has been disabled", notes = "Notify the required users when an enabled discounts gets disabled")
     public void sendDisabledDiscountEmail(@ApiParam(value = "Information of the updated discount", required = true) @RequestBody DiscountDTO discountDTO) throws MessagingException {
@@ -407,6 +423,7 @@ public class HomeController {
         }
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("/{accountId}/reachedTargetPriceEmail")
     @ApiOperation(value = "Send an email notifying a user that a wishlist item has reached the specified target price", notes = "Notify the required user when one of their wishlist items has a price within the specified desired price")
     public void sendReachedTargetPriceEmail(@ApiParam(value = "Id of the account to notify", required = true) @PathVariable final String accountId,
@@ -767,9 +784,15 @@ public class HomeController {
         return msg.getSubject();
     }
 
-    /*@GetMapping("/admin")
+    // el metodo fallback a llamar si ocurre algun fallo
+    public List<Account> fallback(String accountId, Throwable hystrixCommand) {
+        return new ArrayList<>();
+    }
+
+    @HystrixCommand(fallbackMethod = "fallback")
+    @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
         return "This is the admin area of account service running at port: " + env.getProperty("local.server.port");
-    }*/
+    }
 }

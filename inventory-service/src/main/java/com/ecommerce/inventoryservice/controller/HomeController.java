@@ -113,6 +113,7 @@ public class HomeController {
         binder.registerCustomEditor(Date.class, dateEditor);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -121,6 +122,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the inventory-service instance", notes = "Retrieve information from a inventory-service instance")
     public String home() {
@@ -130,6 +132,8 @@ public class HomeController {
                 " InstanceId " + instanceId;
     }
 
+    /* petición para testear
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/do")
     public String getPr() {
         incrementCounter();
@@ -138,8 +142,9 @@ public class HomeController {
         ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
 
         return response.getBody().toString();
-    }
+    }*/
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("")
     @ApiOperation(value = "Get all inventories", notes = "Retrieve all inventories from the Database")
     public ResponseEntity<Map<String, Object>> getInventories(@RequestParam(defaultValue = "", required = false) String productId,
@@ -258,6 +263,7 @@ public class HomeController {
         return response;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete an inventory", notes = "Provide an Id to delete a specific inventory from the Database")
     public InventoryDTO deleteInventory(@ApiParam(value = "Id of the inventory to delete", required = true) @PathVariable final String id) throws Exception {
@@ -292,6 +298,7 @@ public class HomeController {
         return response;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("")
     @ApiOperation(value = "Delete all inventories", notes = "Delete all inventories and their respective items from the Database")
     public void deleteInventories() throws Exception {
@@ -299,7 +306,7 @@ public class HomeController {
         inventoryRepository.deleteAll();
     }
 
-
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("")
     @ApiOperation(value = "Create an inventory", notes = "Provide information to create an inventory")
     public Inventory createInventory(@ApiParam(value = "Information of the inventory to create", required = true) @RequestBody Inventory inventory) {
@@ -308,13 +315,13 @@ public class HomeController {
         return inventoryRepository.save(inventory);
     }
 
-    // a fallback method to be called if failure happened
-    public List<ProductDTO> fallback(String catalogId, Throwable hystrixCommand) {
+    // metodo fallback a llamar si falla alguna peticion
+    public List<InventoryDTO> fallback(String inventoryId, Throwable hystrixCommand) {
         return new ArrayList<>();
     }
 
-    //@HystrixCommand(fallbackMethod = "fallback")
     //obtener un producto de un inventario
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{inventoryId}/products/{productId}")
     @ApiOperation(value = "Get a product from an inventory", notes = "Provide information of a product from an inventory")
     public InventoryItemDTO getInventory(@ApiParam(value = "Id of the inventory for which we a product has to be retrieved", required = true) @PathVariable final String inventoryId,
@@ -345,6 +352,7 @@ public class HomeController {
         );
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/{id}")
     @ApiOperation(value = "Add an inventory item to an inventory", notes = "Insert a product to an existing inventory")
     //añadir un producto a un inventario
@@ -394,8 +402,8 @@ public class HomeController {
         );
     }
 
-    //decrement items
-    //HAY QUE LLAMAR A UPDATEAVAILABILITY
+    //reduce stock, actualizo todos los carritos para actualizar la disponibilidad
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/{id}/products/{productId}/reduceStock")
     @ApiOperation(value = "Reduce stock of a product of an inventory", notes = "Reduce product stock from an inventory")
     public InventoryItemDTO addProductToCart(@ApiParam(value = "Id of the inventory for which a product stock has to be decremented", required = true) @PathVariable final String id,
@@ -432,8 +440,8 @@ public class HomeController {
         );
     }
 
-    //add stock
-    //HAY QUE LLAMAR A UPDATEAVAILABILITY
+    //add stock, actualizo todos los carritos para actualizar la disponibilidad
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/{id}/products/{productId}/addStock")
     @ApiOperation(value = "Increment stock of a product of an inventory", notes = "Increase product stock from an inventory")
     public InventoryItemDTO addStock(@ApiParam(value = "Id of the inventory for which a product stock has to be incremented", required = true) @PathVariable final String id,
@@ -470,6 +478,7 @@ public class HomeController {
         );
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();

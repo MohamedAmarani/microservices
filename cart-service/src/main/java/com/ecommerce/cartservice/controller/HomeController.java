@@ -115,6 +115,7 @@ public class HomeController {
         binder.registerCustomEditor(Date.class, dateEditor);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -123,6 +124,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the cart-service instance", notes = "Retrieve information from a cart-service instance")
     public String home() {
@@ -134,6 +136,7 @@ public class HomeController {
                 " InstanceId " + instanceId;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/do")
     public String getPr() {
         incrementCounter();
@@ -144,6 +147,7 @@ public class HomeController {
         return response.getBody().toString();
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("")
     @ApiOperation(value = "Get all carts", notes = "Retrieve all carts from the Database")
     public ResponseEntity<Map<String, Object>> getCarts(@RequestParam(defaultValue = "", required = false) String productId,
@@ -398,7 +402,7 @@ public class HomeController {
         return cartDTO;
     }*/
 
-
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("")
     @ApiOperation(value = "Create a cart", notes = "Provide information to create a cart")
     public Cart createCart(@ApiParam(value = "Information of the cart to create", required = true) @RequestBody Cart cart) {
@@ -408,11 +412,12 @@ public class HomeController {
     }
 
     // a fallback method to be called if failure happened
-    public List<ProductDTO> fallback(String catalogId, Throwable hystrixCommand) {
+    public List<CartDTO> fallback(String cartId, Throwable hystrixCommand) {
         return new ArrayList<>();
     }
 
     //añadir producto a cart
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/{cartId}")
     @ApiOperation(value = "Add certain quantity of an inventory product to cart", notes = "Add a product available in the inventory to a cart")
     public CartDTO addInventoryProductToCart(@ApiParam(value = "Id of the cart on which an inventory product has to be added", required = true) @PathVariable final String cartId,
@@ -486,6 +491,7 @@ public class HomeController {
         return cartDTO;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @RequestMapping(value = "/{cartId}/checkout", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Checkout a cart", notes = "Proceed to do the checkout of a given cart, paying with Paypal")
     public Object doCheckoutPart1(@ApiParam(value = "Id of the cart for which the checkout has to be done", required = true) @PathVariable final String cartId,
@@ -629,6 +635,7 @@ public class HomeController {
         return res.getBody().toString();
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @RequestMapping(value = "/{cartId}/checkout2", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Checkout a cart, 2nd part", notes = "Checkout logic to be executed after the payment has been made")
     public Object doCheckoutPart2(@ApiParam(value = "Id of the cart for which the second part of the checkout has to be done", required = true) @PathVariable final String cartId) {
@@ -724,6 +731,7 @@ public class HomeController {
         return jo.toString();
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/update")
     @ApiOperation(value = "Update the availability of all carts", notes = "Update all inventory products of the carts in function of " +
             "the available items on the inventory")
@@ -753,6 +761,7 @@ public class HomeController {
         }
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();

@@ -4,6 +4,7 @@ import com.ecommerce.orderservice.model.*;
 import com.ecommerce.orderservice.repository.OrderRepository;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.google.gson.Gson;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -110,6 +111,7 @@ public class HomeController {
         binder.registerCustomEditor(Date.class, dateEditor);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -118,6 +120,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the order-service instance", notes = "Retrieve information from a order-service instance")
     public String home() {
@@ -125,6 +128,7 @@ public class HomeController {
         return "Hello from Order Service running at port: " + env.getProperty("local.server.port");
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("")
     @ApiOperation(value = "Get all orders", notes = "Retrieve all orders from the Database")
     public ResponseEntity<Map<String, Object>> getOrders(@RequestParam(defaultValue = "", required = false) String deliveryId,
@@ -180,7 +184,7 @@ public class HomeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //@HystrixCommand(fallbackMethod = "fallback")
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{id}")
     @ApiOperation(value = "Get an order", notes = "Provide an Id to retrieve a specific order from the Database")
     public OrderDTO getOrder(@ApiParam(value = "Id of the order to get", required = true) @PathVariable final String id) {
@@ -209,6 +213,7 @@ public class HomeController {
         return orderDTO;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("")
     @ApiOperation(value = "Create an order", notes = "Provide information to create an order")
     public OrderDTO createOrder(@ApiParam(value = "Information of the order to create", required = true) @RequestBody Cart cart) {
@@ -240,6 +245,7 @@ public class HomeController {
         return orderDTO;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete an order", notes = "Provide an Id to delete a specific order from the Database")
     public OrderDTO deleteOrder(@ApiParam(value = "Id of the order to delete", required = true) @PathVariable final String id) {
@@ -271,6 +277,7 @@ public class HomeController {
         return orderDTO;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("")
     @ApiOperation(value = "Delete all order", notes = "Delete all orders from the Database")
     public void deleteOrders() {
@@ -278,6 +285,7 @@ public class HomeController {
     }
 
     //set delivery id
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/{orderId}/deliveryId")
     @ApiOperation(value = "Add deliveryId to the order", notes = "Link the order to a delivery by giving a deliveryId")
     public OrderDTO setDeliveryId(@ApiParam(value = "Id of the order for which the delivery has to be linked", required = true) @PathVariable final String orderId,
@@ -314,10 +322,11 @@ public class HomeController {
 
 
     // el metodo fallback a llamar si ocurre algun fallo
-    public List<OrderDTO> fallback(String catalogId, Throwable hystrixCommand) {
+    public List<OrderDTO> fallback(String orderId, Throwable hystrixCommand) {
         return new ArrayList<>();
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();

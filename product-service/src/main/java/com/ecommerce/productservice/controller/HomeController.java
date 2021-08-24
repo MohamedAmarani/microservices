@@ -433,7 +433,7 @@ public class HomeController {
     }
 
     // el metodo fallback a llamar si falla alguna peticion
-    public Product fallback(String catalogId, Throwable hystrixCommand) {
+    public Product fallback(String productId, Throwable hystrixCommand) {
         return new Product();
     }
 

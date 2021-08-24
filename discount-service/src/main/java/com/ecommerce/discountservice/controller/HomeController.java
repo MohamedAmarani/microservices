@@ -112,6 +112,7 @@ public class HomeController {
         binder.registerCustomEditor(Date.class, dateEditor);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/hello")
     public ResponseEntity<String> getHello() {
         incrementCounter();
@@ -120,6 +121,7 @@ public class HomeController {
         return new ResponseEntity<String>( env.getProperty("message"), HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/info")
     @ApiOperation(value = "Get information from the discount-service instance", notes = "Retrieve information from a cart-service instance")
     public String home() {
@@ -131,6 +133,7 @@ public class HomeController {
                 " InstanceId " + instanceId;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("")
     @ApiOperation(value = "Get all discounts", notes = "Retrieve all discounts from the Database")
     public ResponseEntity<Map<String, Object>> getDiscounts(@RequestParam(defaultValue = "", required = false) String code,
@@ -159,6 +162,7 @@ public class HomeController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/{discountId}")
     @ApiOperation(value = "Get a specific discount", notes = "Provide the id of the discount to retrieve")
     public Discount getDiscount(@ApiParam(value = "Id of the discount that has to be retrieved", required = true) @PathVariable final String discountId) {
@@ -178,6 +182,7 @@ public class HomeController {
         return discount;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("")
     @ApiOperation(value = "Create a discount", notes = "Provide information to create a discount")
     public Discount postDiscount(@ApiParam(value = "Information of the discount to create", required = true) @RequestBody Discount discount) {
@@ -200,6 +205,7 @@ public class HomeController {
         return discount;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("/{discountId}")
     @ApiOperation(value = "Delete a specific discount", notes = "Provide the id of the discount to delete")
     public Discount deleteDiscount(@ApiParam(value = "Id of the discount that has to be deleted", required = true) @PathVariable final String discountId) {
@@ -209,6 +215,7 @@ public class HomeController {
         return discount;
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @DeleteMapping("")
     @ApiOperation(value = "Delete all discounts", notes = "Delete all discounts of the database")
     public List<Discount> deleteDiscounts() {
@@ -217,6 +224,7 @@ public class HomeController {
         return discountRepository.findAll();
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PutMapping("/{discountId}/useDiscount")
     @ApiOperation(value = "Use a discount", notes = "Increment by one the number of uses of the given discount")
     public Discount useDiscount(@ApiParam(value = "Id of the discount that has to be used", required = true) @PathVariable final String discountId) {
@@ -226,6 +234,7 @@ public class HomeController {
         return discountRepository.save(discount);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{discountId}/enable")
     @ApiOperation(value = "Enable a specific discount", notes = "Enables the discount to be used")
     public Discount enableDiscount(@ApiParam(value = "Id of the discount that has to be enabled", required = true) @PathVariable final String discountId) {
@@ -244,6 +253,7 @@ public class HomeController {
         return discountRepository.save(discount);
     }
 
+    @HystrixCommand(fallbackMethod = "fallback")
     @PatchMapping("/{discountId}/disable")
     @ApiOperation(value = "Disable a specific discount", notes = "Disables the discount in order to make it not redeemable")
     public Discount disableDiscount(@ApiParam(value = "Id of the discount that has to be disabled", required = true) @PathVariable final String discountId) {
@@ -262,9 +272,12 @@ public class HomeController {
         return discountRepository.save(discount);
     }
 
-    // -------- Admin Area --------
-    // This method should only be accessed by users with role of 'admin'
-    // We'll add the logic of role based auth later
+    // metodo fallback a llamar si falla alguna peticion
+    public List<Discount> fallback(String discountId, Throwable hystrixCommand) {
+        return new ArrayList<>();
+    }
+
+    @HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
