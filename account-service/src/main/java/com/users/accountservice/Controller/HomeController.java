@@ -783,10 +783,10 @@ public class HomeController {
         return new ArrayList<>();
     }
 
-    @HystrixCommand(fallbackMethod = "fallback")
+    /*@HystrixCommand(fallbackMethod = "fallback")
     @GetMapping("/admin")
     public String homeAdmin() {
         incrementCounter();
         return "This is the admin area of account service running at port: " + env.getProperty("local.server.port");
-    }
+    }*/
 }
