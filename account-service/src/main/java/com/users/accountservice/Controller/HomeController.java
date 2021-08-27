@@ -741,7 +741,7 @@ public class HomeController {
             reducedPercentage = Double.valueOf(df.format(reducedPercentage));
             text += "<tr>\n" +
                     "<td>" + cartItemDTO.getProduct().getName() + "</td>\n" +
-                    "<td>" + cartItemDTO.getProduct().getCurrentPrice() + " (" + reducedPercentage + "%)" + "</td>\n" +
+                    "<td>" + cartItemDTO.getProduct().getCurrentPrice() + (reducedPercentage != 0 ? " (" + reducedPercentage + "%)" : "") + "</td>\n" +
                     "<td>" + cartItemDTO.getQuantity() + "</td>\n" +
                     "</tr>\n";
         }
