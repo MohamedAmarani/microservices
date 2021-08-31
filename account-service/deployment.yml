@@ -9,7 +9,7 @@ spec:
     - protocol: "TCP"
       port: 8080
       targetPort: 8080
-  type: ClusterIP
+  type: LoadBalancer
 
 ---
 apiVersion: apps/v1
@@ -40,7 +40,7 @@ spec:
         args: ["while [ $(curl -sw '%{http_code}' http://config-service.default.svc:8080/info -o /dev/null --max-time 3) -ne 200 ]; do sleep 1; echo 'Waiting for the webserver...'; done"]
       containers:
         - name: accountse
-          image: scaredste/account-service:v12.0.8
+          image: scaredste/account-service:v12.0.9
           readinessProbe:
             httpGet:
               path: /info

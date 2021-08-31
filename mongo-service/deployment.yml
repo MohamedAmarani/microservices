@@ -11,8 +11,7 @@ spec:
       port: 27017
       # Port to forward to inside the pod
       targetPort: 27017
-      nodePort: 30017
-  type: NodePort
+  type: LoadBalancer
 
 ---
 apiVersion: apps/v1
