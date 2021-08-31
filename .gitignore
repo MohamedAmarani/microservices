@@ -1,0 +1,3 @@
+/paypal-gateway-service/src/main/java/com/ecommerce/paypalgatewayservice/PayPalClient.java
+/account-service/src/main/resources/bootstrap.properties
+/google-auth-service/src/main/resources/bootstrap.properties
