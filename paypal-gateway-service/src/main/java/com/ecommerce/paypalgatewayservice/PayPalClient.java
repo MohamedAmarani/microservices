@@ -9,8 +9,8 @@ import org.springframework.core.env.Environment;
 import java.util.*;
 
 public class PayPalClient {
-    String clientId = "AfoXWVmCgWponUqf5709_KA0gOOO_OKLN6CJXcMlXEglz_evSp_9HfZA-XTlnEI_lHSt5QbVOg2kTgqo";
-    String clientSecret = "ELp07QJ7bNwOoGzPsotPAGRtwW50s-COMeki0NO8INJHb8gHS5o2vWL52zlT6ltoQm8ziszfqEtqluxz";
+    String clientId = <CLIENT-ID>;
+    String clientSecret = <CLIENT-SECRET>;
 
     @Autowired
     Environment environment;
@@ -35,8 +35,8 @@ public class PayPalClient {
 
         RedirectUrls redirectUrls = new RedirectUrls();
         
-        redirectUrls.setCancelUrl("http://ec2-35-180-204-28.eu-west-3.compute.amazonaws.com/api/latest/paypal/cancel/" + accountId);
-        redirectUrls.setReturnUrl("http://ec2-35-180-204-28.eu-west-3.compute.amazonaws.com/api/latest/paypal/success/" + accountId);
+        redirectUrls.setCancelUrl(<CANCEL-URL> + accountId);
+        redirectUrls.setReturnUrl(<RETURN-URL> + accountId);
 
         payment.setRedirectUrls(redirectUrls);
 
