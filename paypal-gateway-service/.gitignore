@@ -1,6 +1,6 @@
 HELP.md
 target/
-src/main/resources/bootstrap.properties
+src/main/java/com/ecommerce/paypalgatewayservice/PayPalClient.java
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
