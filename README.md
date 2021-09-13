@@ -69,29 +69,29 @@ En este microservicio he implementado toda la gestión relativa al pago de los u
 
 ## Ejemplos de notificaciones via email
 
-###	Alguno de los productos de la lista de deseos (wishlist) de un usuario ha llegado al precio especificado por dicho usuario (adjuntando las imágenes del producto en el email).
+###	1. Alguno de los productos de la lista de deseos (wishlist) de un usuario ha llegado al precio especificado por dicho usuario (adjuntando las imágenes del producto en el email).
 ![eyru](https://user-images.githubusercontent.com/61777025/133082189-f156bde1-b342-4042-80d2-55421cd14af7.png)
 
-###	Se ha creado un nuevo código de descuento en una tienda electrónica para un conjunto de usuarios (pueden ser todos los usuarios o un subconjunto de ellos, depende de cómo este definido el atributo users del descuento en cuestión).
+###	2. Se ha creado un nuevo código de descuento en una tienda electrónica para un conjunto de usuarios (pueden ser todos los usuarios o un subconjunto de ellos, depende de cómo este definido el atributo users del descuento en cuestión).
 ![awa](https://user-images.githubusercontent.com/61777025/133082295-5b2dbdaf-bef5-406b-a0ce-9af211edaf30.png)
 
-###	Se ha deshabilitado un código de descuento en una tienda electrónica.
+###	3. Se ha deshabilitado un código de descuento en una tienda electrónica.
 ![rwdsdd](https://user-images.githubusercontent.com/61777025/133082554-c846d163-489b-430e-bd12-f741319b5e32.png)
 
-###	Se ha habilitado un código de descuento en una tienda electrónica.
+###	4. Se ha habilitado un código de descuento en una tienda electrónica.
 ![llyufhj](https://user-images.githubusercontent.com/61777025/133082620-6e9bad08-8ca7-48f2-8f12-953bc1527089.png)
 
-###	Se ha actualizado el estado del envío de un pedido.
+###	5. Se ha actualizado el estado del envío de un pedido.
 ![jfgjrtt](https://user-images.githubusercontent.com/61777025/133082703-7717a894-f166-40b5-b2d8-01e5e8381493.png)
 
-###	Se ha actualizado la fecha estimada de entrega de un envío.
+###	6. Se ha actualizado la fecha estimada de entrega de un envío.
 ![yrut](https://user-images.githubusercontent.com/61777025/133082800-a6db3a7d-0f72-4f6c-a174-a89a79f259e9.png)
 
-###	Se ha entregado con éxito un pedido a un usuario.
+###	7. Se ha entregado con éxito un pedido a un usuario.
 ![eqwr](https://user-images.githubusercontent.com/61777025/133082949-127d58f4-2da3-42d3-9123-ba492e67cb1f.png)
 
-###	Un usuario ha realizado un pedido con éxito (con los datos del pedido realizado).
+###	8. Un usuario ha realizado un pedido con éxito (con los datos del pedido realizado).
 ![etqeqr](https://user-images.githubusercontent.com/61777025/133083103-6ef83a9f-7bae-49ec-8bf3-d728f64bbc51.png)
 
-###	Se registrado con éxito un usuario en una tienda electrónica.
+###	9. Se registrado con éxito un usuario en una tienda electrónica.
 ![jytr](https://user-images.githubusercontent.com/61777025/133083224-ac7e95d6-e703-4375-ae20-ee3eed15e768.png)
