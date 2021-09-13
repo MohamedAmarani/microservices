@@ -163,7 +163,7 @@ public class HomeController {
                                                            @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
         List<Catalog> catalogs;
-        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        PageRequest request = PageRequest.of(page, 99999, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
         Page<Catalog> pagedCatalogs = catalogRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
         List<Catalog> list = new ArrayList<>();
 
@@ -180,6 +180,10 @@ public class HomeController {
                     list.add(pagedCatalogs.getContent().get(i));
             }
             pagedCatalogs = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+        else {
+            request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+            pagedCatalogs = catalogRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
         }
 
         List<CatalogDTO> catalogDTOs = new ArrayList<>();

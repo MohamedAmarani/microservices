@@ -158,7 +158,7 @@ public class HomeController {
                                                         @RequestParam(value = "size", defaultValue = "5", required = false) int size,
                                                         @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
-        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        PageRequest request = PageRequest.of(page, 99999, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
         Page<Cart> pagedCarts = cartRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
         List<Cart> list = new ArrayList<>();
 
@@ -202,6 +202,10 @@ public class HomeController {
                 }
             }
             pagedCarts = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+        else {
+            request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+            pagedCarts = cartRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
         }
 
         List<CartDTO> result = new ArrayList<>();
@@ -358,7 +362,7 @@ public class HomeController {
 
             cartDTO.addItems(cartItemDTO);
         }
-        cartRepository.deleteById(cartId);
+
         return cartDTO;
     }
 
@@ -531,7 +535,7 @@ public class HomeController {
         finalPrice = Double.valueOf(df.format(finalPrice));
         originalPrice = finalPrice;
         //comprovar que el codigo de descuento, si hay, es valido, y aplicarlo
-        if (discountCodeBody.containsKey("discountCode")) {
+        if (discountCodeBody != null && discountCodeBody.containsKey("discountCode")) {
             String discountCode = discountCodeBody.get("discountCode");
             dC = discountCode;
             final ResponseEntity<String> res;

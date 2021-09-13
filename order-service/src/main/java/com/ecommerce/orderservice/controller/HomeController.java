@@ -139,7 +139,7 @@ public class HomeController {
                                                          @RequestParam(value = "size", defaultValue = "5", required = false) int size,
                                                          @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
-        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        PageRequest request = PageRequest.of(page, 99999, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
         Page<Order> pagedOrders = orderRepository.findByDeliveryIdContainingIgnoreCaseAndCreationDateBetween(deliveryId, minCreationDate, maxCreationDate, request);
         List<Order> list = new ArrayList<>();
 
@@ -151,6 +151,10 @@ public class HomeController {
                         list.add(pagedOrders.getContent().get(i));
             }
             pagedOrders = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+        else {
+            request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+            pagedOrders = orderRepository.findByDeliveryIdContainingIgnoreCaseAndCreationDateBetween(deliveryId, minCreationDate, maxCreationDate, request);
         }
 
         List<OrderDTO> result = new ArrayList<>();

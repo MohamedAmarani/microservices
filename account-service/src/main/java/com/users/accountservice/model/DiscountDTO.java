@@ -73,7 +73,7 @@ public class DiscountDTO {
     }
 
     public void setPercentage(boolean percentage) {
-        percentage = percentage;
+        this.percentage = percentage;
     }
 
     public boolean isPercentage() {

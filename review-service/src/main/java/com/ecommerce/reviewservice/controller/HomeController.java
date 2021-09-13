@@ -145,7 +145,7 @@ public class HomeController {
                                                            @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
         List<Review> reviews;
-        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        PageRequest request = PageRequest.of(page, 99999, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
         Page<Review> pagedReviews = reviewRepository.findByAccountIdContainingIgnoreCaseAndProductIdContainingIgnoreCaseAndCommentContainingIgnoreCaseAndCreationDateBetween(accountId, productId, comment, minCreationDate, maxCreationDate, request);
         List<Review> list = new ArrayList<>();
 
@@ -157,6 +157,10 @@ public class HomeController {
                     list.add(pagedReviews.getContent().get(i));
             }
             pagedReviews = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+        else {
+            request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+            pagedReviews = reviewRepository.findByAccountIdContainingIgnoreCaseAndProductIdContainingIgnoreCaseAndCommentContainingIgnoreCaseAndCreationDateBetween(accountId, productId, comment, minCreationDate, maxCreationDate, request);
         }
 
         reviews = pagedReviews.getContent();

@@ -126,9 +126,6 @@ public class HomeController {
     @ApiOperation(value = "Get information from the discount-service instance", notes = "Retrieve information from a cart-service instance")
     public String home() {
         incrementCounter();
-        // This is useful for debugging
-        // When having multiple instance of gallery service running at different ports.
-        // We load balance among them, and display which instance received the request.
         return "Hello from Discount Service running at port: " + env.getProperty("local.server.port") +
                 " InstanceId " + instanceId;
     }
@@ -137,11 +134,6 @@ public class HomeController {
     @GetMapping("")
     @ApiOperation(value = "Get all discounts", notes = "Retrieve all discounts from the Database")
     public ResponseEntity<Map<String, Object>> getDiscounts(@RequestParam(defaultValue = "", required = false) String code,
-                                                            /*@RequestParam(defaultValue = "", required = false) String percentage,
-                                                            @RequestParam(defaultValue = "", required = false) String minimumAmount,
-                                                            @RequestParam(defaultValue = "", required = false) String currentUses,
-                                                            @RequestParam(defaultValue = "", required = false) String maxUses,
-                                                            @RequestParam(defaultValue = "", required = false) String enabled,*/
                                                             @RequestParam(defaultValue = "1970-01-01T00:00:0.000+00:00", required = false) Date minCreationDate,
                                                             @RequestParam(defaultValue = "2024-01-01T00:00:0.000+00:00", required = false) Date maxCreationDate,
                                                             @RequestParam(value = "page", defaultValue = "0", required = false) int page,

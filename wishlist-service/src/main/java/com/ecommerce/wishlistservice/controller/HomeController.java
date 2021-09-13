@@ -147,7 +147,7 @@ public class HomeController {
                                                             @RequestParam(value = "sort", defaultValue = "creationDate,asc", required = false) String sort) {
         incrementCounter();
         List<Wishlist> wishlists;
-        PageRequest request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+        PageRequest request = PageRequest.of(page, 99999, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
         Page<Wishlist> pagedWishlists = wishlistRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
         List<Wishlist> list = new ArrayList<>();
 
@@ -190,6 +190,10 @@ public class HomeController {
                     list.add(pagedWishlists.getContent().get(i));
             }
             pagedWishlists = new PageImpl<>(list, PageRequest.of(page, size), list.size());
+        }
+        else {
+            request = PageRequest.of(page, size, Sort.by(new Sort.Order(sort.split(",")[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sort.split(",")[0])));
+            pagedWishlists = wishlistRepository.findByCreationDateBetween(minCreationDate, maxCreationDate, request);
         }
 
         wishlists = pagedWishlists.getContent();
