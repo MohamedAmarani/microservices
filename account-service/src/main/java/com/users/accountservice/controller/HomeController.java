@@ -1,4 +1,4 @@
-package com.users.accountservice.Controller;
+package com.users.accountservice.controller;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import com.google.gson.Gson;
